@@ -3,8 +3,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lambdawaker-draw"
-version = "0.1.0"
+name = "lambdawaker-draw-pattern"
+version = "0.1.1"
 description = "Drawing utilities for generating geometric patterns and grids using Pillow and aggdraw"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -13,16 +13,9 @@ authors = [
 ]
 keywords = ["graphics", "drawing", "pillow", "aggdraw", "geometry", "grid", "patterns"]
 classifiers = [
-  "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
-  "Programming Language :: Python :: 3.8",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
   "Topic :: Multimedia :: Graphics",
 ]
 dependencies = [

@@ -2,7 +2,7 @@ from PIL import Image
 import aggdraw
 import math
 
-from src.lambdawaker.draw.grid.simple_shapes import circle, star
+from simple_shapes import circle
 
 
 def create_shapes_grid(width, height, radius,
@@ -94,20 +94,3 @@ def draw_shapes_grid(draw, size, radius,
                 draw_function(draw, (rot_x, rot_y), radius, angle, pen, brush, **draw_parameters)
 
     draw.flush()
-
-
-## Create a grid of sharp 6-pointed stars
-star_grid = create_shapes_grid(
-    width=1000,
-    height=1000,
-    radius=40,
-    draw_function=star,
-    draw_parameters=dict(
-        points=6, inner_radius=25
-    ),
-    separation=10,
-    angle=0,
-    thickness=2
-)
-
-star_grid.show()
