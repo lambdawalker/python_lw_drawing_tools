@@ -1,13 +1,14 @@
-from PIL import Image
-import aggdraw
 import math
 
-from simple_shapes import circle
+import aggdraw
+from PIL import Image
+
+from lambdawaker.draw.grid.simple_shapes import circle
 
 
-def create_shapes_grid(width, height, radius,
+def create_shapes_grid(width=800, height=800, radius=15,
                        draw_function=circle, draw_parameters=None,
-                       separation=0, angle=0, thickness=2,
+                       separation=10, angle=0, thickness=2,
                        color=(0, 0, 0, 255), outline=(0, 0, 0, 255)
                        ):
     """Create an RGBA image and draw a grid of shapes.
@@ -35,10 +36,11 @@ def create_shapes_grid(width, height, radius,
 
     draw_shapes_grid(draw, size, radius,
                      draw_function=draw_function,
-                     draw_parameters = draw_parameters,
+                     draw_parameters=draw_parameters,
                      separation=separation, angle=angle, thickness=thickness,
                      color=color, outline=outline)
     return img
+
 
 def draw_shapes_grid(draw, size, radius,
                      draw_function=None,
@@ -94,3 +96,5 @@ def draw_shapes_grid(draw, size, radius,
                 draw_function(draw, (rot_x, rot_y), radius, angle, pen, brush, **draw_parameters)
 
     draw.flush()
+
+
