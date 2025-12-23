@@ -2,7 +2,7 @@ from PIL import Image
 import aggdraw
 import math
 
-from scr.grid.simple_shapes import circle, star
+from src.lambdawaker.draw.grid.simple_shapes import circle, star
 
 
 def create_shapes_grid(width, height, radius,

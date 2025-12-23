@@ -13,7 +13,7 @@ Quick start
 Hexagon grid
 
 ```python
-from scr.grid.hexagon_grid import create_hexagon_grid
+from lambdawaker.draw.grid.hexagon_grid import create_hexagon_grid
 
 img = create_hexagon_grid(
     width=600,
@@ -30,7 +30,7 @@ img.show()
 Angled parallel lines
 
 ```python
-from scr.waves.parallel_lines import create_parallel_lines
+from lambdawaker.draw.waves.parallel_lines import create_parallel_lines
 
 img = create_parallel_lines(
     width=800,

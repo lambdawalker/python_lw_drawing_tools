@@ -3,12 +3,11 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lambda-draw-tools"
+name = "lambdawaker-draw"
 version = "0.1.0"
 description = "Drawing utilities for generating geometric patterns and grids using Pillow and aggdraw"
 readme = "README.md"
 requires-python = ">=3.8"
-license = { file = "LICENSE" }
 authors = [
   { name = "LambdaWalker", email = "lambdawaker@isdavid.com" }
 ]
@@ -16,7 +15,6 @@ keywords = ["graphics", "drawing", "pillow", "aggdraw", "geometry", "grid", "pat
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3 :: Only",
@@ -39,13 +37,7 @@ Issues = "https://github.com/lambdawalker/python_lw_drawing_tools/issues"
 
 # Configure setuptools to discover packages (grid, waves, header)
 [tool.setuptools.packages.find]
-include = [
-  "grid*",
-  "waves*",
-  "header*",
-]
+where = ["src"]
+include = ["lambdawaker.*"]
 
-[tool.setuptools.package-data]
-"" = [
-  "*.png",
-]
+
