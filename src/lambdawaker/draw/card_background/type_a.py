@@ -8,6 +8,7 @@ from PIL import Image
 from lambdawaker.draw import header
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
+from lambdawaker.draw.fill.linear_gradient import draw_gradient
 from lambdawaker.draw.grid import simple_shapes
 from lambdawaker.draw.grid.concentric_polygins import draw_concentric_polygons
 from lambdawaker.draw.grid.shapes_grid import create_shapes_grid
@@ -90,19 +91,29 @@ if __name__ == "__main__":
         outline=outline
     )
 
+    draw = aggdraw.Draw(pattern)
+
+    draw_gradient(
+        draw,
+        (width, height),
+        start_color=primary_color,
+        end_color=primary_color.harmonious_color()
+    )
+
     header_draw_function = select_random_function_from_module(
         header,
         name_pattern="draw_.*"
     )
-
-    draw = aggdraw.Draw(pattern)
     header_draw_function(
         draw,
-        200,
+        150,
         color= primary_color
-        .complementary_color()
-        .add_alpha(-.005)
+        .analogous_colors()[0]
+        .add_alpha(-.1)
         .random_shade()
     )
+    print(primary_color.to_rgba())
+
 
     pattern.show()
+    pattern.save("t.png")
