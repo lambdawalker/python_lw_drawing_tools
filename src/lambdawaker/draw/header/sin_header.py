@@ -1,19 +1,19 @@
 import aggdraw
 import math
 from PIL import Image
+from typing import Tuple
 
-
-def draw_sine_header(canvas, height=100, amplitude=20, frequency=2, color=(0, 0, 0, 255)):
+def draw_sine_header(draw: aggdraw.Draw, height: int = 100, amplitude: float = 20, frequency: float = 2, color: Tuple[int, int, int, int] = (0, 0, 0, 255)) -> None:
     """
     Creates a header with a sine-wave bottom edge.
 
-    :param canvas: The aggdraw.Draw object.
+    :param draw: The aggdraw.Draw object.
     :param height: The vertical center point of the wave.
     :param amplitude: The height of the wave peaks.
     :param frequency: How many full waves span the width.
     :param color: Tuple (R, G, B, A).
     """
-    width, _ = canvas.size
+    width, _ = draw.size
     brush = aggdraw.Brush(color)
     path = aggdraw.Path()
 
@@ -39,19 +39,19 @@ def draw_sine_header(canvas, height=100, amplitude=20, frequency=2, color=(0, 0,
     path.close()
 
     # 5. Render onto canvas
-    canvas.path(path, brush)
-    canvas.flush()
+    draw.path(path, brush)
+    draw.flush()
 
 
 def create_sine_header(
-    width=800,
-    height=400,
-    header_height=100,
-    amplitude=20,
-    frequency=2,
-    color=(0, 0, 0, 255),
-    bg_color=(0, 0, 0, 0),
-):
+    width: int = 800,
+    height: int = 400,
+    header_height: int = 100,
+    amplitude: float = 20,
+    frequency: float = 2,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+) -> Image.Image:
     """
     Create an image and render a sine-wave header on top.
 
@@ -70,7 +70,7 @@ def create_sine_header(
     img = Image.new("RGBA", (width, height), bg_color)
     draw = aggdraw.Draw(img)
     draw_sine_header(
-        canvas=draw,
+        draw=draw,
         height=header_height,
         amplitude=amplitude,
         frequency=frequency,
@@ -78,5 +78,3 @@ def create_sine_header(
     )
     draw.flush()
     return img
-
-

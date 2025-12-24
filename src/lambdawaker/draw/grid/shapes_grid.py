@@ -1,4 +1,5 @@
 import math
+from typing import Callable, Dict, Optional, Tuple
 
 import aggdraw
 from PIL import Image
@@ -6,11 +7,12 @@ from PIL import Image
 from lambdawaker.draw.grid.simple_shapes import circle
 
 
-def create_shapes_grid(width=800, height=800, radius=15,
-                       draw_function=circle, draw_parameters=None,
-                       separation=10, angle=0, thickness=2,
-                       color=(0, 0, 0, 255), outline=(0, 0, 0, 255)
-                       ):
+def create_shapes_grid(width: int = 800, height: int = 800, radius: float = 15,
+                       draw_function: Callable = circle, draw_parameters: Optional[Dict] = None,
+                       separation: float = 10, angle: float = 0, thickness: float = 2,
+                       color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+                       outline: Tuple[int, int, int, int] = (0, 0, 0, 255)
+                       ) -> Image.Image:
     """Create an RGBA image and draw a grid of shapes.
 
     Args:
@@ -42,11 +44,12 @@ def create_shapes_grid(width=800, height=800, radius=15,
     return img
 
 
-def draw_shapes_grid(draw, size, radius,
-                     draw_function=None,
-                     draw_parameters=None,
-                     separation=0, angle=0, thickness=2,
-                     color=(0, 0, 0, 255), outline=(0, 0, 0, 255)):
+def draw_shapes_grid(draw: aggdraw.Draw, size: Tuple[int, int], radius: float,
+                     draw_function: Optional[Callable] = None,
+                     draw_parameters: Optional[Dict] = None,
+                     separation: float = 0, angle: float = 0, thickness: float = 2,
+                     color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+                     outline: Tuple[int, int, int, int] = (0, 0, 0, 255)) -> None:
     """Draw a staggered grid of shapes into an existing aggdraw context.
 
     Args:
@@ -96,5 +99,3 @@ def draw_shapes_grid(draw, size, radius,
                 draw_function(draw, (rot_x, rot_y), radius, angle, pen, brush, **draw_parameters)
 
     draw.flush()
-
-

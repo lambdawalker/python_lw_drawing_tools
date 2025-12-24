@@ -1,19 +1,19 @@
 from PIL import Image
 import aggdraw
 import math
-
+from typing import Tuple
 
 def create_angled_square_waves(
-    width=800,
-    height=800,
-    spacing=50,
-    thickness=2,
-    amplitude=25,
-    wavelength=80,
-    angle=0,
-    color=(0, 0, 0, 255),
-    bg_color=(0, 0, 0, 0),
-):
+    width: int = 800,
+    height: int = 800,
+    spacing: int = 50,
+    thickness: float = 2,
+    amplitude: float = 25,
+    wavelength: float = 80,
+    angle: float = 0,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+) -> Image.Image:
     """
     Create an RGBA image and draw rotated parallel square waves on it.
 
@@ -54,15 +54,15 @@ def create_angled_square_waves(
 
 
 def draw_angled_square_waves(
-    draw,
-    area_size,
-    spacing=50,
-    thickness=2,
-    amplitude=25,
-    wavelength=80,
-    angle=0,
-    color=(0, 0, 0, 255),
-):
+    draw: aggdraw.Draw,
+    area_size: Tuple[int, int],
+    spacing: int = 50,
+    thickness: float = 2,
+    amplitude: float = 25,
+    wavelength: float = 80,
+    angle: float = 0,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+) -> None:
     """
     Draw a set of parallel square waves at a given rotation into a context.
 

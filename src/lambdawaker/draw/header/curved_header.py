@@ -1,11 +1,12 @@
 import aggdraw
+from PIL import Image
+from typing import Tuple
 
-
-def draw_curved_header(canvas, height=100, curve_depth=50, color=(0, 0, 0, 255)):
+def draw_curved_header(draw: aggdraw.Draw, height: int = 100, curve_depth: float = 50, color: Tuple[int, int, int, int] = (0, 0, 0, 255)) -> None:
     """
     Creates a header with a curved bottom edge using aggdraw.path()
     """
-    width, _ = canvas.size
+    width, _ = draw.size
     brush = aggdraw.Brush(color)
 
     # 1. Define the Path coordinates/commands
@@ -25,20 +26,20 @@ def draw_curved_header(canvas, height=100, curve_depth=50, color=(0, 0, 0, 255))
     # 2. DRAW the path using the canvas object
     # The syntax is: canvas.path(path, pen_or_brush)
     # Or: canvas.path(path_string, pen, brush)
-    canvas.path(path, brush)
+    draw.path(path, brush)
 
     # 3. Flush to the PIL image
-    canvas.flush()
+    draw.flush()
 
 
 def create_curved_header(
-    width=800,
-    height=400,
-    header_height=100,
-    curve_depth=50,
-    color=(0, 0, 0, 255),
-    bg_color=(0, 0, 0, 0),
-):
+    width: int = 800,
+    height: int = 400,
+    header_height: int = 100,
+    curve_depth: float = 50,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+) -> Image.Image:
     """
     Create an image and render a curved header on top.
 
@@ -53,11 +54,8 @@ def create_curved_header(
     Returns:
         PIL.Image.Image: The generated image.
     """
-    from PIL import Image
-
     img = Image.new("RGBA", (width, height), bg_color)
     draw = aggdraw.Draw(img)
-    draw_curved_header(canvas=draw, height=header_height, curve_depth=curve_depth, color=color)
+    draw_curved_header(draw=draw, height=header_height, curve_depth=curve_depth, color=color)
     draw.flush()
     return img
-

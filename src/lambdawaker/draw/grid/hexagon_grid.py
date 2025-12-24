@@ -1,15 +1,16 @@
 from PIL import Image
 import aggdraw
 import math
+from typing import Tuple, Optional
 
 def create_hexagon_grid(
-        width=800,
-        height=800,
-        hexagon_size=20,
-        thickness=2.0,
-        angle=0,
-        color=(0, 0, 0, 255),
-        bg_color=(0, 0, 0, 0)):
+        width: int = 800,
+        height: int = 800,
+        hexagon_size: float = 20,
+        thickness: float = 2.0,
+        angle: float = 0,
+        color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0)) -> Image.Image:
     """
     Create an RGBA image and draw a hexagonal grid on it.
 
@@ -47,13 +48,13 @@ def create_hexagon_grid(
 
 
 def draw_hexagon_grid(
-        draw,
-        area_size,
-        hexagon_size=50,
-        thickness=2.0,
-        angle=0,
-        color=(0, 0, 0, 255),
-):
+        draw: aggdraw.Draw,
+        area_size: Tuple[int, int],
+        hexagon_size: float = 50,
+        thickness: float = 2.0,
+        angle: float = 0,
+        color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+) -> None:
     """
     Draw a hexagon tiling across a given area onto an existing `aggdraw` context.
 
@@ -70,8 +71,6 @@ def draw_hexagon_grid(
         angle (float): Rotation of the entire grid in degrees. Positive values
             rotate counterclockwise around the center of the area.
         color (tuple): Stroke color as an RGBA tuple.
-        center (tuple[int, int] | None): The center point of the grid as
-            `(x, y)` in pixels. If `None`, the grid is centered on `area_size`.
 
     Returns:
         None: The drawing is rendered directly into `draw`.
@@ -129,6 +128,3 @@ def draw_hexagon_grid(
             draw.line(points, pen)
 
     draw.flush()
-
-
-

@@ -1,17 +1,17 @@
 from PIL import Image
 import aggdraw
 import math
-
+from typing import Tuple
 
 def create_triangle_grid(
-    width=800,
-    height=800,
-    size=50,
-    thickness=2.0,
-    angle=0,
-    color=(0, 0, 0, 255),
-    bg_color=(0, 0, 0, 0),
-):
+    width: int = 800,
+    height: int = 800,
+    size: float = 50,
+    thickness: float = 2.0,
+    angle: float = 0,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+) -> Image.Image:
     """
     Create an RGBA image and draw an equilateral triangle tiling on it.
 
@@ -47,13 +47,13 @@ def create_triangle_grid(
 
 
 def draw_triangle_grid(
-    draw,
-    area_size,
-    size=50,
-    thickness=2.0,
-    angle=0,
-    color=(0, 0, 0, 255),
-):
+    draw: aggdraw.Draw,
+    area_size: Tuple[int, int],
+    size: float = 50,
+    thickness: float = 2.0,
+    angle: float = 0,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+) -> None:
     """
     Draw a tiling of equilateral triangles across a given area into a context.
 
@@ -124,5 +124,3 @@ def draw_triangle_grid(
             draw.line(path, pen)
 
     draw.flush()
-
-create_triangle_grid().show()

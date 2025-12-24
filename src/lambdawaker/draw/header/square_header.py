@@ -1,11 +1,12 @@
 import aggdraw
+from PIL import Image
+from typing import Tuple
 
-
-def draw_squared_header(canvas, height=100, color=(0, 0, 0, 255)):
+def draw_squared_header(draw: aggdraw.Draw, height: int = 100, color: Tuple[int, int, int, int] = (0, 0, 0, 255)) -> None:
     """
     Fills the top area of the canvas to create a header section.
 
-    :param canvas: The aggdraw.Draw object.
+    :param draw: The aggdraw.Draw object.
     :param height: The vertical distance from the top to fill.
     :param color: A tuple (R, G, B).
     """
@@ -16,22 +17,22 @@ def draw_squared_header(canvas, height=100, color=(0, 0, 0, 255)):
     # Define the coordinates for the header rectangle: (x0, y0, x1, y1)
     # We get the width from the canvas's internal surface if needed,
     # but drawing past the edge is safe in aggdraw.
-    width = canvas.size[0]
+    width = draw.size[0]
 
     # Draw the rectangle (no Pen/outline needed for a simple fill)
-    canvas.rectangle((0, 0, width, height), brush)
+    draw.rectangle((0, 0, width, height), brush)
 
     # Ensure the drawing is flushed to the image buffer
-    canvas.flush()
+    draw.flush()
 
 
 def create_squared_header(
-    width=800,
-    height=400,
-    header_height=100,
-    color=(0, 0, 0, 255),
-    bg_color=(0, 0, 0, 0),
-):
+    width: int = 800,
+    height: int = 400,
+    header_height: int = 100,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+) -> Image.Image:
     """
     Create an image and render a rectangular header on top.
 
@@ -45,22 +46,20 @@ def create_squared_header(
     Returns:
         PIL.Image.Image: The generated image.
     """
-    from PIL import Image
-
     img = Image.new("RGBA", (width, height), bg_color)
     draw = aggdraw.Draw(img)
-    draw_squared_header(canvas=draw, height=header_height, color=color)
+    draw_squared_header(draw=draw, height=header_height, color=color)
     draw.flush()
     return img
 
 
 def create_square_header(
-    width=800,
-    height=400,
-    header_height=100,
-    color=(0, 0, 0, 255),
-    bg_color=(0, 0, 0, 0),
-):
+    width: int = 800,
+    height: int = 400,
+    header_height: int = 100,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+) -> Image.Image:
     """Alias for create_squared_header for convenience."""
     return create_squared_header(
         width=width,
@@ -69,4 +68,3 @@ def create_square_header(
         color=color,
         bg_color=bg_color,
     )
-

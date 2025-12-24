@@ -1,19 +1,20 @@
 import math
+from typing import Tuple
 
 import aggdraw
 from PIL import Image
 
 
 def create_concentric_polygons(
-        width=800,
-        height=800,
-        sides=6,
-        rotation_step=5,
-        spacing=15,
-        color=(0, 0, 0, 255),
-        thickness=2,
-        fill_opacity=0,
-        bg_color=(0, 0, 0, 0)):
+        width: int = 800,
+        height: int = 800,
+        sides: int = 6,
+        rotation_step: float = 5,
+        spacing: float = 15,
+        color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        thickness: float = 2,
+        fill_opacity: int = 0,
+        bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0)) -> Image.Image:
     """
     Create an RGBA image and draw concentric polygons on it.
 
@@ -50,10 +51,20 @@ def create_concentric_polygons(
     return img
 
 
-def draw_concentric_polygons(draw, canvas_size, sides=6, rotation_step=5,
-                             spacing=15, color=(0, 0, 0, 255), thickness=2, fill_opacity=0):
+def draw_concentric_polygons(draw: aggdraw.Draw, canvas_size: Tuple[int, int], sides: int = 6, rotation_step: float = 5,
+                             spacing: float = 15, color: Tuple[int, int, int, int] = (0, 0, 0, 255), thickness: float = 2, fill_opacity: int = 0) -> None:
     """
     Draws concentric polygons until the entire canvas is covered.
+
+    Args:
+        draw (aggdraw.Draw): The drawing context.
+        canvas_size (tuple[int, int]): The size of the canvas (width, height).
+        sides (int): Number of sides for the polygons.
+        rotation_step (float): Degrees of rotation added per nested layer.
+        spacing (float): Pixel distance between each consecutive polygon.
+        color (tuple): RGBA tuple for the outline color.
+        thickness (float): Stroke thickness of polygon edges in pixels.
+        fill_opacity (int): Alpha value for subtle fill (0-255; 0 is transparent).
     """
     cx, cy = canvas_size[0] // 2, canvas_size[1] // 2
 

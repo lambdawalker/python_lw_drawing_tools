@@ -1,19 +1,19 @@
 from PIL import Image
 import math
 import aggdraw
-
+from typing import Tuple
 
 def create_sine_waves(
-    width=800,
-    height=800,
-    spacing=30,
-    thickness=2,
-    amplitude=40,
-    frequency=0.01,
-    angle=45,
-    color=(0, 0, 0, 255),
-    bg_color=(0, 0, 0, 0),
-):
+    width: int = 800,
+    height: int = 800,
+    spacing: int = 30,
+    thickness: float = 2,
+    amplitude: float = 40,
+    frequency: float = 0.01,
+    angle: float = 45,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+) -> Image.Image:
     """
     Create an RGBA image and draw rotated parallel sine waves on it.
 
@@ -55,15 +55,15 @@ def create_sine_waves(
 
 
 def draw_sine_waves(
-    draw,
-    area_size,
-    spacing=30,
-    thickness=2,
-    amplitude=40,
-    frequency=0.01,
-    angle=45,
-    color=(0, 0, 0, 255),
-):
+    draw: aggdraw.Draw,
+    area_size: Tuple[int, int],
+    spacing: int = 30,
+    thickness: float = 2,
+    amplitude: float = 40,
+    frequency: float = 0.01,
+    angle: float = 45,
+    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+) -> None:
     """
     Draw a set of parallel sine waves at a given rotation into a context.
 
@@ -112,4 +112,3 @@ def draw_sine_waves(
             draw.line(pts, pen)
 
     draw.flush()
-

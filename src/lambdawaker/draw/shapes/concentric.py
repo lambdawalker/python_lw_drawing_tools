@@ -1,11 +1,11 @@
 import aggdraw
 from PIL import Image
 import math
+from typing import Tuple
 
-
-def rotating_polygons(draw, center, sides=6, num_polygons=10,
-                      spacing=20, rotation_step=10,
-                      color=(0, 0, 0, 255), thickness=2):
+def rotating_polygons(draw: aggdraw.Draw, center: Tuple[float, float], sides: int = 6, num_polygons: int = 10,
+                      spacing: float = 20, rotation_step: float = 10,
+                      color: Tuple[int, int, int, int] = (0, 0, 0, 255), thickness: float = 2) -> None:
     """
     Draws concentric rotating polygons using aggdraw.
 

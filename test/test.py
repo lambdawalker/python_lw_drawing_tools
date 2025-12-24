@@ -1,4 +1,3 @@
-import pytest
 from PIL import Image
 
 from lambdawaker.draw.grid.shapes_grid import create_shapes_grid

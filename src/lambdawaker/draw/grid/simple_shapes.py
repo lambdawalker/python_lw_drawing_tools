@@ -1,13 +1,14 @@
 import math
+import aggdraw
+from typing import Tuple, Any
 
-
-def circle(draw, center, radius, _, pen, brush, **__):
+def circle(draw: aggdraw.Draw, center: Tuple[float, float], radius: float, _: Any, pen: aggdraw.Pen, brush: aggdraw.Brush, **__: Any) -> None:
     """Draws a circle (angle doesn't change a circle's appearance)."""
     x, y = center
     draw.ellipse((x - radius, y - radius, x + radius, y + radius), pen, brush)
 
 
-def square(draw, center, radius, angle, pen, brush, **_):
+def square(draw: aggdraw.Draw, center: Tuple[float, float], radius: float, angle: float, pen: aggdraw.Pen, brush: aggdraw.Brush, **_: Any) -> None:
     """Draws a square rotated by the grid angle."""
     cx, cy = center
     rad = math.radians(angle)
@@ -31,7 +32,7 @@ def square(draw, center, radius, angle, pen, brush, **_):
     draw.polygon(rotated_corners, pen, brush)
 
 
-def triangle(draw, center, radius, angle, pen, brush, **_):
+def triangle(draw: aggdraw.Draw, center: Tuple[float, float], radius: float, angle: float, pen: aggdraw.Pen, brush: aggdraw.Brush, **_: Any) -> None:
     """Draws an equilateral triangle rotated by the grid angle."""
     cx, cy = center
     # Convert base angle to radians
@@ -50,7 +51,7 @@ def triangle(draw, center, radius, angle, pen, brush, **_):
     draw.polygon(vertices, pen, brush)
 
 
-def polygon(draw, center, radius, angle, pen, brush, sides=5, **_):
+def polygon(draw: aggdraw.Draw, center: Tuple[float, float], radius: float, angle: float, pen: aggdraw.Pen, brush: aggdraw.Brush, sides: int = 5, **_: Any) -> None:
     """
     Draws a regular polygon with 'n' sides.
     - sides=3: Triangle
@@ -73,7 +74,7 @@ def polygon(draw, center, radius, angle, pen, brush, sides=5, **_):
     draw.polygon(vertices, pen, brush)
 
 
-def star(draw, center, radius, angle, pen, brush, points=5, inner_radius=None, **_):
+def star(draw: aggdraw.Draw, center: Tuple[float, float], radius: float, angle: float, pen: aggdraw.Pen, brush: aggdraw.Brush, points: int = 5, inner_radius: float = None, **_: Any) -> None:
     """
     Draws a star with 'n' points.
     - points: Number of star tips
