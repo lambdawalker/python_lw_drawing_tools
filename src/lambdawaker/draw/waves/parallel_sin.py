@@ -2,6 +2,7 @@ from PIL import Image
 import math
 import aggdraw
 from typing import Tuple
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 
 def create_sine_waves(
     width: int = 800,
@@ -11,8 +12,8 @@ def create_sine_waves(
     amplitude: float = 40,
     frequency: float = 0.01,
     angle: float = 45,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+    color: ColorUnion = (0, 0, 0, 255),
+    bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """
     Create an RGBA image and draw rotated parallel sine waves on it.
@@ -31,14 +32,17 @@ def create_sine_waves(
             values create more oscillations per pixel along the wave.
         angle (float): Rotation angle in degrees; positive values rotate
             counterclockwise around the image center.
-        color (tuple): Stroke color as an RGBA tuple.
-        bg_color (tuple): Background color for the created image as RGBA;
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
+        bg_color (ColorUnion): Background color for the created image as RGBA or HSLuvColor;
             default is fully transparent black `(0, 0, 0, 0)`.
 
     Returns:
         PIL.Image.Image: The generated image containing the angled sine waves.
     """
-    img = Image.new("RGBA", (width, height), bg_color)
+    color = to_hsluv_color(color)
+    bg_color = to_hsluv_color(bg_color)
+
+    img = Image.new("RGBA", (width, height), bg_color.to_rgba())
     draw = aggdraw.Draw(img)
     draw_sine_waves(
         draw=draw,
@@ -62,7 +66,7 @@ def draw_sine_waves(
     amplitude: float = 40,
     frequency: float = 0.01,
     angle: float = 45,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    color: ColorUnion = (0, 0, 0, 255),
 ) -> None:
     """
     Draw a set of parallel sine waves at a given rotation into a context.
@@ -81,13 +85,14 @@ def draw_sine_waves(
             values create more oscillations per pixel along the wave.
         angle (float): Rotation angle in degrees; positive values rotate
             counterclockwise.
-        color (tuple): Stroke color as an RGBA tuple.
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
 
     Returns:
         None: The drawing is rendered directly into `draw`.
     """
+    color = to_hsluv_color(color)
     width, height = area_size
-    pen = aggdraw.Pen(color, thickness)
+    pen = aggdraw.Pen(color.to_rgba(), thickness)
 
     rad = math.radians(angle)
     cx, cy = width / 2.0, height / 2.0

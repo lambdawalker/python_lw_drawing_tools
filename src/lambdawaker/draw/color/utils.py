@@ -86,7 +86,7 @@ def parse_multi_unit(format_str: str) -> Dict[str, float]:
     # 1. An optional plus or minus [+-]?
     # 2. Digits and an optional decimal \d+\.?\d*
     # 3. The unit label [hsl] (case-insensitive)
-    pattern = r"([+-]?\d+\.?\d*)\s*([hsl])"
+    pattern = r"([+-]?\d+\.?\d*)\s*(\w)"
 
     # Find all matches
     matches = re.findall(pattern, format_str.lower())
@@ -97,7 +97,7 @@ def parse_multi_unit(format_str: str) -> Dict[str, float]:
     return {unit: float(val) for val, unit in matches}
 
 
-def parse_hsl_string(format_str: str) -> Dict[str, float]:
+def parse_hsla_string(format_str: str) -> Dict[str, float]:
     """
     Parses an HSL modification string into a dictionary of offsets.
 
@@ -113,14 +113,15 @@ def parse_hsl_string(format_str: str) -> Dict[str, float]:
     default = {
         "h": 0,
         "s": 0,
-        "l": 0
+        "l": 0,
+        "a": 0
     }
 
     default.update(raw)
     return default
 
 
-def hsl_string_to_tuple(format_str: str) -> Tuple[float, float, float]:
+def hsla_string_to_tuple(format_str: str) -> Tuple[float, float, float, float]:
     """
     Parses an HSL modification string into a tuple of (h, s, l) offsets.
 
@@ -130,8 +131,8 @@ def hsl_string_to_tuple(format_str: str) -> Tuple[float, float, float]:
     Returns:
         tuple: A tuple (h, s, l) of float offsets.
     """
-    raw = parse_hsl_string(format_str)
-    return raw["h"], raw["s"], raw["l"]
+    raw = parse_hsla_string(format_str)
+    return raw["h"], raw["s"], raw["l"], raw["a"]
 
 
 def is_inside(angle: float, arc: Tuple[float, float]) -> bool:

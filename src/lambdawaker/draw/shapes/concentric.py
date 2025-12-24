@@ -2,10 +2,11 @@ import aggdraw
 from PIL import Image
 import math
 from typing import Tuple
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 
 def rotating_polygons(draw: aggdraw.Draw, center: Tuple[float, float], sides: int = 6, num_polygons: int = 10,
                       spacing: float = 20, rotation_step: float = 10,
-                      color: Tuple[int, int, int, int] = (0, 0, 0, 255), thickness: float = 2) -> None:
+                      color: ColorUnion = (0, 0, 0, 255), thickness: float = 2) -> None:
     """
     Draws concentric rotating polygons using aggdraw.
 
@@ -15,12 +16,13 @@ def rotating_polygons(draw: aggdraw.Draw, center: Tuple[float, float], sides: in
     :param num_polygons: Total number of nested polygons
     :param spacing: Pixel distance between each consecutive polygon
     :param rotation_step: Degrees of rotation to add per nested layer
-    :param color: RGBA tuple for the outline
+    :param color: RGBA tuple for the outline or HSLuvColor
     :param thickness: Line width
     """
+    color = to_hsluv_color(color)
 
     # Define the pen for drawing
-    pen = aggdraw.Pen(color, thickness)
+    pen = aggdraw.Pen(color.to_rgba(), thickness)
     cx, cy = center
 
     for i in range(1, num_polygons + 1):

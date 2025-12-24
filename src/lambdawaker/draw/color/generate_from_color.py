@@ -5,7 +5,8 @@ if TYPE_CHECKING:
     from lambdawaker.draw.color.HSLuvColor import HSLuvColor
 
 
-def compute_random_shade_color(base_color: 'HSLuvColor', lightness_limit: int = 30, min_distance: int = 10) -> 'HSLuvColor':
+def compute_random_shade_color(base_color: 'HSLuvColor', lightness_limit: int = 30,
+                               min_distance: int = 10) -> 'HSLuvColor':
     """
     Computes a random shade of the given base color by modifying its lightness.
 
@@ -76,7 +77,8 @@ def compute_analogous_colors(color: 'HSLuvColor', factor: float = 1 / 8) -> Tupl
     return compute_equidistant_variants(color, factor, "ANALOGOUS")
 
 
-def compute_equidistant_variants(color: 'HSLuvColor', factor: float, tag_subfix: str = "EV") -> Tuple['HSLuvColor', 'HSLuvColor']:
+def compute_equidistant_variants(color: 'HSLuvColor', factor: float, tag_subfix: str = "EV") -> Tuple[
+    'HSLuvColor', 'HSLuvColor']:
     """
     Computes two color variants equidistant from the base color's hue.
 
@@ -97,3 +99,25 @@ def compute_equidistant_variants(color: 'HSLuvColor', factor: float, tag_subfix:
     b = color - ((factor * 360), 0, 0)
     b.tag = f"{tag_subfix} B"
     return a, b
+
+
+def compute_harmonious_color(base_color: 'HSLuvColor', hue_offset: int = 90,
+                             lightness_offset: int = 15, saturation_offset: int = 15) -> 'HSLuvColor':
+    """
+    Computes a harmonious color by slightly adjusting the hue, saturation, and lightness
+    of the base color. This aims to create a color that "plays nice" with the original.
+
+    Args:
+        base_color (HSLuvColor): The starting color.
+        hue_offset (int): The maximum absolute amount to change the hue by (in degrees).
+        lightness_offset (int): The maximum absolute amount to change the lightness by.
+        saturation_offset (int): The maximum absolute amount to change the saturation by.
+
+    Returns:
+        HSLuvColor: A new HSLuvColor instance representing the harmonious color, tagged "HARMONIOUS".
+    """
+    c = base_color + (random.randint(-hue_offset, hue_offset),
+                      random.randint(-saturation_offset, saturation_offset),
+                      random.randint(-lightness_offset, lightness_offset))
+    c.tag = "HARMONIOUS"
+    return c

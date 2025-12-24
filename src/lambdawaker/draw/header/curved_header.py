@@ -1,13 +1,16 @@
 import aggdraw
 from PIL import Image
-from typing import Tuple
 
-def draw_curved_header(draw: aggdraw.Draw, height: int = 100, curve_depth: float = 50, color: Tuple[int, int, int, int] = (0, 0, 0, 255)) -> None:
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
+
+
+def draw_curved_header(draw, height: int = 100, curve_depth: float = 50, color: ColorUnion = (0, 0, 0, 255)) -> None:
     """
     Creates a header with a curved bottom edge using aggdraw.path()
     """
+    color = to_hsluv_color(color)
     width, _ = draw.size
-    brush = aggdraw.Brush(color)
+    brush = aggdraw.Brush(color.to_rgba())
 
     # 1. Define the Path coordinates/commands
     # aggdraw.Path() accepts a list of coordinates or a symbol string,
@@ -33,12 +36,12 @@ def draw_curved_header(draw: aggdraw.Draw, height: int = 100, curve_depth: float
 
 
 def create_curved_header(
-    width: int = 800,
-    height: int = 400,
-    header_height: int = 100,
-    curve_depth: float = 50,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+        width: int = 800,
+        height: int = 400,
+        header_height: int = 100,
+        curve_depth: float = 50,
+        color: ColorUnion = (0, 0, 0, 255),
+        bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """
     Create an image and render a curved header on top.
@@ -48,13 +51,16 @@ def create_curved_header(
         height (int): Image height.
         header_height (int): Vertical position where the curve meets the sides.
         curve_depth (int|float): How far the curve dips below the header_height.
-        color (tuple): Fill color for the header as an RGBA tuple.
-        bg_color (tuple): Background color (RGBA).
+        color (ColorUnion): Fill color for the header as an RGBA tuple or HSLuvColor.
+        bg_color (ColorUnion): Background color (RGBA or HSLuvColor).
 
     Returns:
         PIL.Image.Image: The generated image.
     """
-    img = Image.new("RGBA", (width, height), bg_color)
+    color = to_hsluv_color(color)
+    bg_color = to_hsluv_color(bg_color)
+
+    img = Image.new("RGBA", (width, height), bg_color.to_rgba())
     draw = aggdraw.Draw(img)
     draw_curved_header(draw=draw, height=header_height, curve_depth=curve_depth, color=color)
     draw.flush()

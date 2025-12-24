@@ -2,8 +2,9 @@ import aggdraw
 import math
 from PIL import Image
 from typing import Tuple
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 
-def draw_sine_header(draw: aggdraw.Draw, height: int = 100, amplitude: float = 20, frequency: float = 2, color: Tuple[int, int, int, int] = (0, 0, 0, 255)) -> None:
+def draw_sine_header(draw: aggdraw.Draw, height: int = 100, amplitude: float = 20, frequency: float = 2, color: ColorUnion = (0, 0, 0, 255)) -> None:
     """
     Creates a header with a sine-wave bottom edge.
 
@@ -11,10 +12,11 @@ def draw_sine_header(draw: aggdraw.Draw, height: int = 100, amplitude: float = 2
     :param height: The vertical center point of the wave.
     :param amplitude: The height of the wave peaks.
     :param frequency: How many full waves span the width.
-    :param color: Tuple (R, G, B, A).
+    :param color: Tuple (R, G, B, A) or HSLuvColor.
     """
+    color = to_hsluv_color(color)
     width, _ = draw.size
-    brush = aggdraw.Brush(color)
+    brush = aggdraw.Brush(color.to_rgba())
     path = aggdraw.Path()
 
     # 1. Start at top-left and go to top-right
@@ -49,8 +51,8 @@ def create_sine_header(
     header_height: int = 100,
     amplitude: float = 20,
     frequency: float = 2,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+    color: ColorUnion = (0, 0, 0, 255),
+    bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """
     Create an image and render a sine-wave header on top.
@@ -61,13 +63,16 @@ def create_sine_header(
         header_height (int): Vertical position of the wave baseline.
         amplitude (float): Wave amplitude in pixels.
         frequency (float): Number of full waves across the width.
-        color (tuple): Fill color for the header (RGBA tuple).
-        bg_color (tuple): Background color (RGBA tuple).
+        color (ColorUnion): Fill color for the header (RGBA tuple or HSLuvColor).
+        bg_color (ColorUnion): Background color (RGBA tuple or HSLuvColor).
 
     Returns:
         PIL.Image.Image: The generated image.
     """
-    img = Image.new("RGBA", (width, height), bg_color)
+    color = to_hsluv_color(color)
+    bg_color = to_hsluv_color(bg_color)
+
+    img = Image.new("RGBA", (width, height), bg_color.to_rgba())
     draw = aggdraw.Draw(img)
     draw_sine_header(
         draw=draw,

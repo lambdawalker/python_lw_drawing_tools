@@ -4,14 +4,15 @@ from typing import Callable, Dict, Optional, Tuple
 import aggdraw
 from PIL import Image
 
+from lambdawaker.draw.color.HSLuvColor import HSLuvColor, ColorUnion, to_hsluv_color
 from lambdawaker.draw.grid.simple_shapes import circle
 
 
 def create_shapes_grid(width: int = 800, height: int = 800, radius: float = 15,
                        draw_function: Callable = circle, draw_parameters: Optional[Dict] = None,
                        separation: float = 10, angle: float = 0, thickness: float = 2,
-                       color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-                       outline: Tuple[int, int, int, int] = (0, 0, 0, 255)
+                       color: ColorUnion = HSLuvColor(0, 0, 0, 255),
+                       outline: ColorUnion = None
                        ) -> Image.Image:
     """Create an RGBA image and draw a grid of shapes.
 
@@ -24,12 +25,15 @@ def create_shapes_grid(width: int = 800, height: int = 800, radius: float = 15,
         separation (float): Extra spacing added between shapes.
         angle (float): Rotation angle for the grid.
         thickness (float): Outline thickness in pixels.
-        color (tuple): Fill color as an RGBA tuple.
-        outline (tuple): Outline color as an RGBA tuple.
+        color (ColorUnion): Fill color as an RGBA tuple or HSLuvColor.
+        outline (ColorUnion): Outline color as an RGBA tuple or HSLuvColor.
 
     Returns:
         PIL.Image.Image: The generated image.
     """
+    color = to_hsluv_color(color)
+    outline = to_hsluv_color(outline)
+
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     draw = aggdraw.Draw(img)
     size = img.size
@@ -48,8 +52,8 @@ def draw_shapes_grid(draw: aggdraw.Draw, size: Tuple[int, int], radius: float,
                      draw_function: Optional[Callable] = None,
                      draw_parameters: Optional[Dict] = None,
                      separation: float = 0, angle: float = 0, thickness: float = 2,
-                     color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-                     outline: Tuple[int, int, int, int] = (0, 0, 0, 255)) -> None:
+                     color: ColorUnion = (0, 0, 0, 255),
+                     outline: ColorUnion = (0, 0, 0, 255)) -> None:
     """Draw a staggered grid of shapes into an existing aggdraw context.
 
     Args:
@@ -61,15 +65,18 @@ def draw_shapes_grid(draw: aggdraw.Draw, size: Tuple[int, int], radius: float,
         separation (float): Extra spacing between neighbors.
         angle (float): Grid rotation angle in degrees.
         thickness (float): Outline thickness in pixels.
-        color (tuple): Fill color as an RGBA tuple.
-        outline (tuple): Outline color as an RGBA tuple.
+        color (ColorUnion): Fill color as an RGBA tuple or HSLuvColor.
+        outline (ColorUnion): Outline color as an RGBA tuple or HSLuvColor.
     """
+    color = to_hsluv_color(color)
+    outline = to_hsluv_color(outline)
+
     draw_function = draw_function if draw_function is not None else circle
     draw_parameters = draw_parameters if draw_parameters is not None else {}
     width, height = size
 
-    brush = aggdraw.Brush(color)
-    pen = aggdraw.Pen(outline, thickness)
+    brush = aggdraw.Brush(color.to_rgba())
+    pen = aggdraw.Pen(outline.to_rgba(), thickness)
 
     eff_r = radius + (separation / 2)
     h_spacing = eff_r * 2

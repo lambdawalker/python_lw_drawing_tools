@@ -1,16 +1,21 @@
-import hsluv
 from typing import Tuple, Union, Iterator
 
-from lambdawaker.draw.color.generate_from_color import compute_random_shade_color, compute_complementary_color, compute_triadic_colors, compute_analogous_colors, compute_equidistant_variants
-from lambdawaker.draw.color.utils import clamp_hue, clamp, hsl_string_to_tuple
+import hsluv
+
+from lambdawaker.draw.color.generate_from_color import compute_random_shade_color, compute_complementary_color, \
+    compute_triadic_colors, compute_analogous_colors, compute_equidistant_variants, compute_harmonious_color
+from lambdawaker.draw.color.utils import clamp_hue, clamp, hsla_string_to_tuple
 
 
 class HSLuvColor:
     """
     Represents a color in the HSLuv color space with support for range constraints and basic manipulation.
     """
-    def __init__(self, hue: float, saturation: float, lightness: float,
-                 h_range: Tuple[float, float] = (0, 360), s_range: Tuple[float, float] = (0, 100), l_range: Tuple[float, float] = (0, 100), tag: str = ""):
+
+    def __init__(self, hue: float, saturation: float, lightness: float, alpha: float = 1.0,
+                 h_range: Tuple[float, float] = (0, 360), s_range: Tuple[float, float] = (0, 100),
+                 l_range: Tuple[float, float] = (0, 100),
+                 a_range: Tuple[float, float] = (0, 1), tag: str = ""):
         """
         Initialize HSLuv with value constraints.
 
@@ -21,41 +26,60 @@ class HSLuvColor:
             h_range (tuple): Min and max allowed values for hue.
             s_range (tuple): Min and max allowed values for saturation.
             l_range (tuple): Min and max allowed values for lightness.
+            alpha (float): The alpha (opacity) value (0.0-1.0).
             tag (str): An optional tag or label for the color.
         """
         self.h_range = (h_range[0] % 360, h_range[1] % 360)
         self.s_range = s_range
         self.l_range = l_range
+        self.a_range = a_range
 
         # Initialize and clamp values to range
         self.hue = clamp_hue(hue, self.h_range)
         self.saturation = clamp(saturation, s_range)
         self.lightness = clamp(lightness, l_range)
+        self.alpha = clamp(alpha, (0.0, 1.0))
         self.tag = tag
 
-    def add_hue(self, amount: float) -> 'HSLuvColor':
+    def add_hue(self, amount: float, tag: str = "ADD HUE") -> 'HSLuvColor':
         """
         Returns a new HSLuvColor with the hue adjusted by the given amount.
         """
         # We calculate the new position and then apply the circular constraint
         hue = clamp_hue(self.hue + amount, self.h_range)
-        return HSLuvColor(hue, saturation=self.saturation, lightness=self.lightness)
+        return HSLuvColor(hue, saturation=self.saturation, lightness=self.lightness,
+                          alpha=self.alpha, h_range=self.h_range, s_range=self.s_range,
+                          l_range=self.l_range, a_range=self.a_range, tag=tag)
 
-    def add_saturation(self, amount: float) -> 'HSLuvColor':
+    def add_saturation(self, amount: float, tag: str = "ADD SATURATION") -> 'HSLuvColor':
         """
         Returns a new HSLuvColor with the saturation adjusted by the given amount.
         """
         saturation = clamp(self.saturation + amount, self.s_range)
-        return HSLuvColor(self.hue, saturation=saturation, lightness=self.lightness)
+        return HSLuvColor(self.hue, saturation=saturation, lightness=self.lightness, alpha=self.alpha,
+                          h_range=self.h_range, s_range=self.s_range, l_range=self.l_range, a_range=self.a_range,
+                          tag=tag)
 
-    def add_lightness(self, amount: float) -> 'HSLuvColor':
+    def add_lightness(self, amount: float, tag: str = "ADD LIGHTNESS") -> 'HSLuvColor':
         """
         Returns a new HSLuvColor with the lightness adjusted by the given amount.
         """
         lightness = clamp(self.lightness + amount, self.l_range)
-        return HSLuvColor(self.hue, saturation=self.saturation, lightness=lightness)
+        return HSLuvColor(self.hue, saturation=self.saturation, lightness=lightness, alpha=self.alpha,
+                          h_range=self.h_range, s_range=self.s_range, l_range=self.l_range, a_range=self.a_range,
+                          tag=tag)
 
-    def __sub__(self, other: Union[str, Tuple[float, float, float], 'HSLuvColor']) -> 'HSLuvColor':
+    def add_alpha(self, amount: float, tag: str = "ADD ALPHA") -> 'HSLuvColor':
+        """
+        Returns a new HSLuvColor with the alpha adjusted by the given amount.
+        """
+        alpha = clamp(self.alpha + amount, self.a_range)
+        return HSLuvColor(self.hue, saturation=self.saturation, lightness=self.lightness, alpha=alpha,
+                          h_range=self.h_range, s_range=self.s_range, l_range=self.l_range, a_range=self.a_range,
+                          tag=tag)
+
+    def __sub__(self, other: Union[
+        str, Tuple[float, float, float], Tuple[float, float, float, float], 'HSLuvColor']) -> 'HSLuvColor':
         """
         Allows hsluv - "50H" syntax.
         Returns a new instance to keep with Python's immutable __sub__ convention,
@@ -64,35 +88,38 @@ class HSLuvColor:
         corrected = other
         if isinstance(other, str):
             try:
-                corrected = hsl_string_to_tuple(other)
+                corrected = hsla_string_to_tuple(other)
             except (ValueError, IndexError):
                 raise ValueError(f"Invalid format: {other}. Use format like '50H'.")
 
         corrected = -corrected[0], -corrected[1], -corrected[2]
         return self.__add__(corrected)
 
-    def __add__(self, other: Union[str, Tuple[float, float, float], 'HSLuvColor']) -> 'HSLuvColor':
-        """
-        Allows hsluv + "50H" syntax.
-        Returns a new instance to keep with Python's immutable __add__ convention,
-        or modifies self if you prefer in-place.
+    def __add__(self, other: Union[
+        str, Tuple[float, float, float], Tuple[float, float, float, float], 'HSLuvColor']) -> 'HSLuvColor':
+        """Allows hsluv + "50H" syntax.
+        Returns a new instance to keep with Python's immutable __add__ convention, or modifies self if you prefer
+        in-place.
+        If `other` is a tuple, it should have 4 floats (H, S, L, A).
         """
         corrected = other
         if isinstance(other, str):
             try:
-                corrected = hsl_string_to_tuple(other)
+                corrected = hsla_string_to_tuple(other)
             except (ValueError, IndexError):
                 raise ValueError(f"Invalid format: {corrected}. Use format like '50H'.")
 
         if isinstance(corrected, (tuple, list, HSLuvColor)):
-            new_h, new_s, new_l = self.hue, self.saturation, self.lightness
+            new_h, new_s, new_l, new_a = self.hue, self.saturation, self.lightness, self.alpha
             new_h += corrected[0]
             new_s += corrected[1]
             new_l += corrected[2]
+            if len(corrected) > 3:
+                new_a += corrected[3]
         else:
             raise NotImplemented
 
-        return HSLuvColor(new_h, new_s, new_l, self.h_range, self.s_range, self.l_range)
+        return HSLuvColor(new_h, new_s, new_l, new_a, self.h_range, self.s_range, self.l_range, self.a_range)
 
     def __getitem__(self, index: int) -> float:
         """Allows access via color[0], color[1], color[2]"""
@@ -114,12 +141,12 @@ class HSLuvColor:
     def __len__(self) -> int:
         return 3
 
-    def to_rgb(self) -> Tuple[int, int, int]:
+    def to_rgba(self) -> tuple[int, int, int, int]:
         """
         Converts the HSLuv color to an RGB tuple with values in the range [0, 255].
         """
         r, g, b = hsluv.hsluv_to_rgb((self.hue, self.saturation, self.lightness))
-        return int(r * 255), int(g * 255), int(b * 255)
+        return int(r * 255), int(g * 255), int(b * 255), int(self.alpha * 255)
 
     def __repr__(self) -> str:
         return f"HSLuv(H={self.hue:.1f}, S={self.saturation:.1f}, L={self.lightness:.1f})"
@@ -132,6 +159,15 @@ class HSLuvColor:
         """Returns the complementary color."""
         return compute_complementary_color(self)
 
+    def harmonious_color(self, hue_offset: int = 90, lightness_offset: int = 15,
+                         saturation_offset: int = 15) -> 'HSLuvColor':
+        return compute_harmonious_color(
+            self,
+            hue_offset=hue_offset,
+            lightness_offset=lightness_offset,
+            saturation_offset=saturation_offset
+        )
+
     def triadic_colors(self, factor: float = 1 / 3) -> Tuple['HSLuvColor', 'HSLuvColor']:
         """Returns the triadic color variants."""
         return compute_triadic_colors(self, factor=factor)
@@ -143,3 +179,29 @@ class HSLuvColor:
     def equidistant_variants(self, factor: float) -> Tuple['HSLuvColor', 'HSLuvColor']:
         """Returns two color variants equidistant from this color's hue."""
         return compute_equidistant_variants(self, factor=factor)
+
+
+ColorUnion = Union[str, Tuple[float, float, float], Tuple[float, float, float, float], HSLuvColor, None]
+
+
+def to_hsluv_color(color: ColorUnion) -> HSLuvColor:
+    """
+    Converts various color representations into an HSLuvColor object.
+
+    Args:
+        color (ColorUnion): The color to convert. Can be a string (e.g., "50H"),
+                            a tuple (H, S, L) or (H, S, L, A), or an existing HSLuvColor object.
+
+    Returns:
+        HSLuvColor: The converted HSLuvColor object.
+    """
+    if isinstance(color, HSLuvColor):
+        return color
+    elif isinstance(color, str):
+        return HSLuvColor(*hsla_string_to_tuple(color))
+    elif isinstance(color, (tuple, list)):
+        return HSLuvColor(*color)
+    elif color is None:
+        return HSLuvColor(0, 0, 0, 0)
+    else:
+        raise TypeError(f"Unsupported color type: {type(color)}")

@@ -4,6 +4,8 @@ from typing import Tuple
 import aggdraw
 from PIL import Image
 
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
+
 
 def create_concentric_polygons(
         width: int = 800,
@@ -11,10 +13,10 @@ def create_concentric_polygons(
         sides: int = 6,
         rotation_step: float = 5,
         spacing: float = 15,
-        color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        color: ColorUnion = (0, 0, 0, 255),
         thickness: float = 2,
         fill_opacity: int = 0,
-        bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0)) -> Image.Image:
+        bg_color: ColorUnion = (0, 0, 0, 0)) -> Image.Image:
     """
     Create an RGBA image and draw concentric polygons on it.
 
@@ -27,15 +29,18 @@ def create_concentric_polygons(
         sides (int): Number of sides for the polygons (e.g., 6 for hexagons).
         rotation_step (float): Degrees of rotation added per nested layer.
         spacing (float): Pixel distance between each consecutive polygon.
-        color (tuple): RGBA tuple for the outline color.
+        color (ColorUnion): RGBA tuple for the outline color or HSLuvColor.
         thickness (float): Stroke thickness of polygon edges in pixels.
         fill_opacity (int): Alpha value for subtle fill (0-255; 0 is transparent).
-        bg_color (tuple): Background color for the created image (RGBA; default transparent).
+        bg_color (ColorUnion): Background color for the created image (RGBA; default transparent).
 
     Returns:
         PIL.Image.Image: The generated image containing the concentric polygons.
     """
-    img = Image.new("RGBA", (width, height), bg_color)
+    color = to_hsluv_color(color)
+    bg_color = to_hsluv_color(bg_color)
+
+    img = Image.new("RGBA", (width, height), bg_color.to_rgba())
     draw = aggdraw.Draw(img)
 
     draw_concentric_polygons(
@@ -52,7 +57,7 @@ def create_concentric_polygons(
 
 
 def draw_concentric_polygons(draw: aggdraw.Draw, canvas_size: Tuple[int, int], sides: int = 6, rotation_step: float = 5,
-                             spacing: float = 15, color: Tuple[int, int, int, int] = (0, 0, 0, 255), thickness: float = 2, fill_opacity: int = 0) -> None:
+                             spacing: float = 15, color: ColorUnion = (0, 0, 0, 255), thickness: float = 2, fill_opacity: int = 0) -> None:
     """
     Draws concentric polygons until the entire canvas is covered.
 
@@ -62,10 +67,11 @@ def draw_concentric_polygons(draw: aggdraw.Draw, canvas_size: Tuple[int, int], s
         sides (int): Number of sides for the polygons.
         rotation_step (float): Degrees of rotation added per nested layer.
         spacing (float): Pixel distance between each consecutive polygon.
-        color (tuple): RGBA tuple for the outline color.
+        color (ColorUnion): RGBA tuple for the outline color or HSLuvColor.
         thickness (float): Stroke thickness of polygon edges in pixels.
         fill_opacity (int): Alpha value for subtle fill (0-255; 0 is transparent).
     """
+    color = to_hsluv_color(color)
     cx, cy = canvas_size[0] // 2, canvas_size[1] // 2
 
     # Calculate the distance to the furthest corner to ensure full coverage
@@ -86,9 +92,10 @@ def draw_concentric_polygons(draw: aggdraw.Draw, canvas_size: Tuple[int, int], s
 
         # Optional: Add a subtle fill to create depth
         # Use the input color's RGB with custom alpha for fill
-        fill_color = (color[0], color[1], color[2], fill_opacity)
+        rgba = color.to_rgba()
+        fill_color = (rgba[0], rgba[1], rgba[2], fill_opacity)
         brush = aggdraw.Brush(fill_color)
-        pen = aggdraw.Pen(color, thickness)
+        pen = aggdraw.Pen(rgba, thickness)
 
         draw.polygon(points, pen, brush)
 

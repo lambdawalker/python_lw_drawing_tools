@@ -2,6 +2,7 @@ from PIL import Image
 import aggdraw
 import math
 from typing import Tuple
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 
 def create_parallel_lines(
     width: int = 800,
@@ -9,8 +10,8 @@ def create_parallel_lines(
     spacing: int = 20,
     thickness: float = 2,
     angle: float = 45,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+    color: ColorUnion = (0, 0, 0, 255),
+    bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """
     Create an RGBA image and draw parallel angled lines on it.
@@ -26,14 +27,17 @@ def create_parallel_lines(
         thickness (float): Line stroke width in pixels.
         angle (float): Line orientation in degrees; 0 is horizontal, positive
             values rotate counterclockwise.
-        color (tuple): Stroke color as an RGBA tuple.
-        bg_color (tuple): Background color for the created image as RGBA;
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
+        bg_color (ColorUnion): Background color for the created image as RGBA or HSLuvColor;
             default is fully transparent black `(0, 0, 0, 0)`.
 
     Returns:
         PIL.Image.Image: The generated image containing the angled lines.
     """
-    img = Image.new("RGBA", (width, height), bg_color)
+    color = to_hsluv_color(color)
+    bg_color = to_hsluv_color(bg_color)
+
+    img = Image.new("RGBA", (width, height), bg_color.to_rgba())
     draw = aggdraw.Draw(img)
     draw_parallel_lines(
         draw,
@@ -53,7 +57,7 @@ def draw_parallel_lines(
     spacing: int = 20,
     thickness: float = 2,
     angle: float = 45,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    color: ColorUnion = (0, 0, 0, 255),
 ) -> None:
     """
     Draw a set of equally spaced, parallel lines at a given angle into a context.
@@ -68,13 +72,14 @@ def draw_parallel_lines(
         thickness (float): Line stroke width in pixels.
         angle (float): Line orientation in degrees; 0 is horizontal, positive
             values rotate counterclockwise.
-        color (tuple): Stroke color as an RGBA tuple.
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
 
     Returns:
         None: The drawing is rendered directly into `draw`.
     """
+    color = to_hsluv_color(color)
     width, height = area_size
-    pen = aggdraw.Pen(color, thickness)
+    pen = aggdraw.Pen(color.to_rgba(), thickness)
 
     # Convert angle to radians
     radians = math.radians(angle)

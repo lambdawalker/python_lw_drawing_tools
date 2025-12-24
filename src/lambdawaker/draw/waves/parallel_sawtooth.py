@@ -2,6 +2,7 @@ from PIL import Image
 import math
 import aggdraw
 from typing import Tuple
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 
 def create_angled_sawtooth_waves(
     width: int = 800,
@@ -11,8 +12,8 @@ def create_angled_sawtooth_waves(
     amplitude: float = 25,
     wavelength: float = 80,
     angle: float = 20,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+    color: ColorUnion = (0, 0, 0, 255),
+    bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """
     Create an RGBA image and draw rotated parallel sawtooth waves on it.
@@ -30,14 +31,17 @@ def create_angled_sawtooth_waves(
         wavelength (float): Horizontal length of one full tooth in pixels.
         angle (float): Rotation in degrees; positive values rotate
             counterclockwise around the image center.
-        color (tuple): Stroke color as an RGBA tuple.
-        bg_color (tuple): Background color for the created image as RGBA. Default
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
+        bg_color (ColorUnion): Background color for the created image as RGBA or HSLuvColor. Default
             is fully transparent black `(0, 0, 0, 0)`.
 
     Returns:
         PIL.Image.Image: The generated image containing the angled sawtooth waves.
     """
-    img = Image.new("RGBA", (width, height), bg_color)
+    color = to_hsluv_color(color)
+    bg_color = to_hsluv_color(bg_color)
+
+    img = Image.new("RGBA", (width, height), bg_color.to_rgba())
     draw = aggdraw.Draw(img)
     draw_angled_sawtooth_waves(
         draw=draw,
@@ -61,7 +65,7 @@ def draw_angled_sawtooth_waves(
     amplitude: float = 25,
     wavelength: float = 80,
     angle: float = 0,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    color: ColorUnion = (0, 0, 0, 255),
 ) -> None:
     """
     Draw a set of parallel sawtooth waves at a given rotation into a context.
@@ -79,13 +83,14 @@ def draw_angled_sawtooth_waves(
         wavelength (float): Horizontal length of one full tooth in pixels.
         angle (float): Rotation angle in degrees; positive values rotate
             counterclockwise.
-        color (tuple): Stroke color as an RGBA tuple.
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
 
     Returns:
         None: The drawing is rendered directly into `draw`.
     """
+    color = to_hsluv_color(color)
     width, height = area_size
-    pen = aggdraw.Pen(color, thickness)
+    pen = aggdraw.Pen(color.to_rgba(), thickness)
 
     rad = math.radians(angle)
     cx, cy = width / 2.0, height / 2.0
@@ -114,4 +119,5 @@ def draw_angled_sawtooth_waves(
 
     draw.flush()
 
-create_angled_sawtooth_waves().show()
+if __name__ == "__main__":
+    create_angled_sawtooth_waves().show()

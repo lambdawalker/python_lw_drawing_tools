@@ -2,6 +2,7 @@ from PIL import Image
 import aggdraw
 import math
 from typing import Tuple, Optional
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 
 def create_hexagon_grid(
         width: int = 800,
@@ -9,8 +10,8 @@ def create_hexagon_grid(
         hexagon_size: float = 20,
         thickness: float = 2.0,
         angle: float = 0,
-        color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-        bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0)) -> Image.Image:
+        color: ColorUnion = (0, 0, 0, 255),
+        bg_color: ColorUnion = (0, 0, 0, 0)) -> Image.Image:
     """
     Create an RGBA image and draw a hexagonal grid on it.
 
@@ -25,14 +26,17 @@ def create_hexagon_grid(
         thickness (float): Stroke thickness of hexagon edges in pixels.
         angle (float): Rotation of the entire grid in degrees. Positive values
             rotate counterclockwise around the image center.
-        color (tuple): Stroke color as an RGBA tuple.
-        bg_color (tuple): Background color for the created image as RGBA
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
+        bg_color (ColorUnion): Background color for the created image as RGBA
             (default fully transparent black `(0, 0, 0, 0)`).
 
     Returns:
         PIL.Image.Image: The generated image containing the hexagon grid.
     """
-    img = Image.new("RGBA", (width, height), bg_color)
+    color = to_hsluv_color(color)
+    bg_color = to_hsluv_color(bg_color)
+
+    img = Image.new("RGBA", (width, height), bg_color.to_rgba())
     draw = aggdraw.Draw(img)
     size = img.size
 
@@ -53,7 +57,7 @@ def draw_hexagon_grid(
         hexagon_size: float = 50,
         thickness: float = 2.0,
         angle: float = 0,
-        color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+        color: ColorUnion = (0, 0, 0, 255),
 ) -> None:
     """
     Draw a hexagon tiling across a given area onto an existing `aggdraw` context.
@@ -70,13 +74,14 @@ def draw_hexagon_grid(
         thickness (float): Stroke thickness of hexagon edges in pixels.
         angle (float): Rotation of the entire grid in degrees. Positive values
             rotate counterclockwise around the center of the area.
-        color (tuple): Stroke color as an RGBA tuple.
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
 
     Returns:
         None: The drawing is rendered directly into `draw`.
     """
+    color = to_hsluv_color(color)
     width, height = area_size
-    pen = aggdraw.Pen(color, thickness)
+    pen = aggdraw.Pen(color.to_rgba(), thickness)
 
     cx, cy = width / 2, height / 2
     rad_rotation = math.radians(angle)

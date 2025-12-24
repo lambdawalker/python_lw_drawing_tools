@@ -5,15 +5,15 @@ import aggdraw
 from PIL import Image, ImageFont
 from PIL import ImageDraw
 
-from lambdawaker.draw.color.HSLuvColor import HSLuvColor
+from lambdawaker.draw.color.HSLuvColor import HSLuvColor, ColorUnion, to_hsluv_color
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
 
 
-def display_colors(hsl_colors: List[HSLuvColor], square_size: int = 150, padding: int = 25, font_size: int = 14) -> Image.Image:
+def display_colors(hsl_colors: List[ColorUnion], square_size: int = 150, padding: int = 25, font_size: int = 14) -> Image.Image:
     """Display a list of colors as squares with HSL labels and 'a a' text inside.
 
     Args:
-        hsl_colors (list): List of HSL color tuples, e.g., [(120, 50, 50), (240, 75, 60)].
+        hsl_colors (list): List of HSL color tuples, e.g., [(120, 50, 50), (240, 75, 60)] or HSLuvColor objects.
         square_size (int): Size of each color square in pixels.
         padding (int): Padding between squares in pixels.
         font_size (int): Font size for the HSL label text.
@@ -46,6 +46,7 @@ def display_colors(hsl_colors: List[HSLuvColor], square_size: int = 150, padding
         letter_font = ImageFont.load_default()
 
     for idx, color in enumerate(hsl_colors):
+        color = to_hsluv_color(color)
         row = idx // cols
         col = idx % cols
 
@@ -56,7 +57,7 @@ def display_colors(hsl_colors: List[HSLuvColor], square_size: int = 150, padding
         print(color)
         (h, s, l) = color
         # Convert HSL to RGB
-        r, g, b = color.to_rgb()
+        r, g, b, a = color.to_rgba()
 
         # Draw colored square
         brush = aggdraw.Brush((r, g, b, 255))

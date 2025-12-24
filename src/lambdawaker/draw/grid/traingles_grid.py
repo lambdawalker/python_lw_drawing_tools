@@ -2,6 +2,7 @@ from PIL import Image
 import aggdraw
 import math
 from typing import Tuple
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 
 def create_triangle_grid(
     width: int = 800,
@@ -9,8 +10,8 @@ def create_triangle_grid(
     size: float = 50,
     thickness: float = 2.0,
     angle: float = 0,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
-    bg_color: Tuple[int, int, int, int] = (0, 0, 0, 0),
+    color: ColorUnion = (0, 0, 0, 255),
+    bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """
     Create an RGBA image and draw an equilateral triangle tiling on it.
@@ -25,14 +26,17 @@ def create_triangle_grid(
         thickness (float): Stroke thickness of triangle edges in pixels.
         angle (float): Rotation of the entire grid in degrees; positive values
             rotate counterclockwise around the image center.
-        color (tuple): Stroke color as an RGBA tuple.
-        bg_color (tuple): Background color as an RGBA tuple. Default is fully
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
+        bg_color (ColorUnion): Background color as an RGBA tuple or HSLuvColor. Default is fully
             transparent black `(0, 0, 0, 0)`.
 
     Returns:
         PIL.Image.Image: The generated image containing the triangle grid.
     """
-    img = Image.new("RGBA", (width, height), bg_color)
+    color = to_hsluv_color(color)
+    bg_color = to_hsluv_color(bg_color)
+
+    img = Image.new("RGBA", (width, height), bg_color.to_rgba())
     draw = aggdraw.Draw(img)
     draw_triangle_grid(
         draw=draw,
@@ -52,7 +56,7 @@ def draw_triangle_grid(
     size: float = 50,
     thickness: float = 2.0,
     angle: float = 0,
-    color: Tuple[int, int, int, int] = (0, 0, 0, 255),
+    color: ColorUnion = (0, 0, 0, 255),
 ) -> None:
     """
     Draw a tiling of equilateral triangles across a given area into a context.
@@ -67,13 +71,14 @@ def draw_triangle_grid(
         thickness (float): Stroke thickness of triangle edges in pixels.
         angle (float): Rotation angle in degrees; positive values rotate
             counterclockwise.
-        color (tuple): Stroke color as an RGBA tuple.
+        color (ColorUnion): Stroke color as an RGBA tuple or HSLuvColor.
 
     Returns:
         None: The drawing is rendered directly into `draw`.
     """
+    color = to_hsluv_color(color)
     width, height = area_size
-    pen = aggdraw.Pen(color, thickness)
+    pen = aggdraw.Pen(color.to_rgba(), thickness)
 
     cx, cy = width / 2.0, height / 2.0
     rad = math.radians(angle)

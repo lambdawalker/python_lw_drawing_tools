@@ -62,8 +62,8 @@ class TestHSLuv(unittest.TestCase):
 
     def test_to_rgb(self):
         color = HSLuvColor(100, 50, 50)
-        print(color.to_rgb())
-        self.assertEqual((112, 123, 81), color.to_rgb())
+        print(color.to_rgba())
+        self.assertEqual((112, 123, 81), color.to_rgba())
 
 
 if __name__ == '__main__':
