@@ -3,7 +3,7 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "lambdawaker-draw-pattern"
+name = "lambdawaker.draw.tools"
 version = "0.1.2"
 description = "Drawing utilities for generating geometric patterns and grids using Pillow and aggdraw"
 readme = "README.md"
