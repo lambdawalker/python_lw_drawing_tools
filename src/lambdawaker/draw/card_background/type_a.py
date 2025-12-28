@@ -6,6 +6,7 @@ from lambdawaker.draw import header as header_module
 from lambdawaker.draw import waves as waves_module
 from lambdawaker.draw.color.HSLuvColor import random_alpha
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
+from lambdawaker.draw.header.sin_header.paint import paint_random_sin_header
 from lambdawaker.reflection.query import select_random_function_from_module_and_submodules
 
 
@@ -22,7 +23,7 @@ def generate_card_background_type_a():
     lines_details = select_random_function_from_module_and_submodules(waves_module, "paint_random_.*")
     header = select_random_function_from_module_and_submodules(header_module, "paint_random_.*")
 
-    draw_functions = [background_paint_function, background_details, lines_details, header]
+    draw_functions = [background_paint_function, background_details, lines_details, paint_random_sin_header]
 
     colors = [
         primary_color,
