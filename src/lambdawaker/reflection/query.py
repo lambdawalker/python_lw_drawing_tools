@@ -1,23 +1,25 @@
 import inspect
 import random
 import re
+from types import ModuleType
+from typing import Any, Callable, List, Optional, Pattern
 
 from lambdawaker.reflection.load import load_submodules
 
 
-def select_random_function_from_module(module, name_pattern=None):
+def select_random_function_from_module(module: ModuleType, name_pattern: Optional[str] = None) -> Callable[..., Any]:
     """
-    Given a module, selects a random function from that module.
+    Selects a random function from the given module.
 
     Args:
-        module: A Python module object
-        name_pattern: Optional regexp pattern to filter functions by name
+        module: The module object to search within.
+        name_pattern: An optional regular expression pattern to filter functions by their names.
 
     Returns:
-        A randomly selected function from the module
+        A randomly selected function object from the module that matches the `name_pattern` if provided.
 
     Raises:
-        ValueError: If no functions are found in the module
+        ValueError: If no functions are found in the module, or no functions match the `name_pattern`.
     """
     functions = [obj for name, obj in inspect.getmembers(module) if inspect.isfunction(obj)]
 
@@ -31,49 +33,51 @@ def select_random_function_from_module(module, name_pattern=None):
     return random.choice(functions)
 
 
-def select_random_function_from_module_and_submodules(module, name_pattern=None):
+def select_random_function_from_module_and_submodules(
+    module: ModuleType, name_pattern: Optional[str] = None
+) -> Callable[..., Any]:
     """
-    Given a module, selects a random function from that module or any of its submodules.
+    Selects a random function from the given module or any of its submodules.
+    This function first loads all submodules of the given module.
 
     Args:
-        module: A Python module object
-        name_pattern: Optional regexp pattern to filter functions by name
+        module: The module object to search within, including its submodules.
+        name_pattern: An optional regular expression pattern to filter functions by their names.
 
     Returns:
-        A randomly selected function from the module or its submodules
+        A randomly selected function object from the module or its submodules that matches the `name_pattern` if provided.
 
     Raises:
-        ValueError: If no functions are found in the module or its submodules
+        ValueError: If no functions are found in the module or its submodules, or no functions match the `name_pattern`.
     """
-
     load_submodules(module)
     return _select_random_function_from_module_and_submodules(module, name_pattern)
 
 
-def query_all_functions_from_module(module, pattern):
-    all_functions = []
+def query_all_functions_from_module(module: ModuleType, pattern: Optional[Pattern[str]]) -> List[Callable[..., Any]]:
+    """
+    Recursively queries all functions from a module and its submodules that match a given pattern.
 
-    # Get functions from the current module
-    current_module_functions = [
-        obj for name, obj in inspect.getmembers(module)
-        if inspect.isfunction(obj) and pattern.search(name)
-    ]
+    Args:
+        module: The module object to query.
+        pattern: An optional compiled regular expression pattern to filter function names.
 
-    all_functions.extend(current_module_functions)
+    Returns:
+        A list of function objects that match the pattern.
+    """
+    all_functions: List[Callable[..., Any]] = []
 
-    # Recursively get functions from submodules
+    for name, obj in inspect.getmembers(module):
+        if inspect.isfunction(obj) and (pattern is None or pattern.search(name)):
+            all_functions.append(obj)
+
     for name, obj in inspect.getmembers(module):
         if inspect.ismodule(obj) and obj.__name__.startswith(module.__name__ + '.'):
-            try:
-                all_functions.extend(query_all_functions_from_module(obj, pattern))
-            except ValueError:
-                # No functions in submodule, continue to next
-                pass
-
+            all_functions.extend(query_all_functions_from_module(obj, pattern))
     return all_functions
 
 
-def _select_random_function_from_module_and_submodules(module, name_pattern=None):
+def _select_random_function_from_module_and_submodules(module: ModuleType, name_pattern: Optional[str] = None) -> Callable[..., Any]:
     """
         Given a module, selects a random function from that module or any of its submodules.
 
