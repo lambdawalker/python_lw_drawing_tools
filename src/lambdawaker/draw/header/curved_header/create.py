@@ -1,38 +1,8 @@
-import aggdraw
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
-
-
-def draw_curved_header(draw, height: int = 100, curve_depth: float = 50, color: ColorUnion = (0, 0, 0, 255)) -> None:
-    """
-    Creates a header with a curved bottom edge using aggdraw.path()
-    """
-    color = to_hsluv_color(color)
-    width, _ = draw.size
-    brush = aggdraw.Brush(color.to_rgba())
-
-    # 1. Define the Path coordinates/commands
-    # aggdraw.Path() accepts a list of coordinates or a symbol string,
-    # but we can also use its methods.
-    path = aggdraw.Path()
-    path.moveto(0, 0)
-    path.lineto(width, 0)
-    path.lineto(width, height)
-
-    # Use qcurveto for the 4-parameter quadratic curve
-    # (control_x, control_y, end_x, end_y)
-    # Arguments: (ctrl1_x, ctrl1_y, ctrl2_x, ctrl2_y, end_x, end_y)
-    path.curveto(width * 0.75, height + curve_depth, width * 0.25, height + curve_depth, 0, height)
-    path.close()
-
-    # 2. DRAW the path using the canvas object
-    # The syntax is: canvas.path(path, pen_or_brush)
-    # Or: canvas.path(path_string, pen, brush)
-    draw.path(path, brush)
-
-    # 3. Flush to the PIL image
-    draw.flush()
+from lambdawaker.draw.header.curved_header.paint import draw_curved_header, paint_random_curved_header
+import aggdraw
 
 
 def create_curved_header(
@@ -64,4 +34,23 @@ def create_curved_header(
     draw = aggdraw.Draw(img)
     draw_curved_header(draw=draw, height=header_height, curve_depth=curve_depth, color=color)
     draw.flush()
+    return img
+
+
+def create_random_curved_header(
+        width: int = 800,
+        height: int = 400,
+) -> Image.Image:
+    """
+    Create an RGBA image and draw a random curved header on it.
+
+    Args:
+        width (int): Width of the output image in pixels.
+        height (int): Height of the output image in pixels.
+
+    Returns:
+        PIL.Image.Image: The generated image containing the random curved header.
+    """
+    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    paint_random_curved_header(img)
     return img

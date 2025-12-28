@@ -1,31 +1,8 @@
-import aggdraw
 from PIL import Image
-from typing import Tuple
+
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
-
-def draw_squared_header(draw: aggdraw.Draw, height: int = 100, color: ColorUnion = (0, 0, 0, 255)) -> None:
-    """
-    Fills the top area of the canvas to create a header section.
-
-    :param draw: The aggdraw.Draw object.
-    :param height: The vertical distance from the top to fill.
-    :param color: A tuple (R, G, B) or HSLuvColor.
-    """
-    color = to_hsluv_color(color)
-    # Create a Brush for the fill.
-    # aggdraw uses (opacity, R, G, B) for color arguments in the Brush.
-    brush = aggdraw.Brush(color.to_rgba())
-
-    # Define the coordinates for the header rectangle: (x0, y0, x1, y1)
-    # We get the width from the canvas's internal surface if needed,
-    # but drawing past the edge is safe in aggdraw.
-    width = draw.size[0]
-
-    # Draw the rectangle (no Pen/outline needed for a simple fill)
-    draw.rectangle((0, 0, width, height), brush)
-
-    # Ensure the drawing is flushed to the image buffer
-    draw.flush()
+from lambdawaker.draw.header.square_header.paint import draw_squared_header, paint_random_square_header
+import aggdraw
 
 
 def create_squared_header(
@@ -73,3 +50,22 @@ def create_square_header(
         color=color,
         bg_color=bg_color,
     )
+
+
+def create_random_square_header(
+        width: int = 800,
+        height: int = 400,
+) -> Image.Image:
+    """
+    Create an RGBA image and draw a random square header on it.
+
+    Args:
+        width (int): Width of the output image in pixels.
+        height (int): Height of the output image in pixels.
+
+    Returns:
+        PIL.Image.Image: The generated image containing the random square header.
+    """
+    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+    paint_random_square_header(img)
+    return img

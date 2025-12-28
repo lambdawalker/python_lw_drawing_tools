@@ -60,6 +60,7 @@ def paint_cosine_gradient(
 
 def paint_random_cosine_gradient(
         img: Image.Image,
+        primary_color: Union[ColorUnion, Random] = Random,
         right_corner: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
         start_color: Optional[ColorUnion] = None,
@@ -77,7 +78,7 @@ def paint_random_cosine_gradient(
     })
 
     parameters = generate_random_cosine_gradient_parameters(
-        img, right_corner, size
+        img, primary_color, right_corner, size
     )
 
     parameters = parameters | passed_values

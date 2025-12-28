@@ -65,6 +65,7 @@ def paint_radial_gradient(
 
 def paint_random_radial_gradient(
         img: Image.Image,
+        primary_color: Union[ColorUnion, Random] = Random,
         right_corner: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
         start_color: Optional[ColorUnion] = None,
@@ -81,7 +82,7 @@ def paint_random_radial_gradient(
         "radius": radius,
     })
 
-    parameters = generate_random_radial_gradient_parameters(img, right_corner, size)
+    parameters = generate_random_radial_gradient_parameters(img, primary_color, right_corner, size)
 
     parameters = parameters | passed_values
     paint_radial_gradient(img, **parameters)
