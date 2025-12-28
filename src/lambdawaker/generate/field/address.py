@@ -1,13 +1,13 @@
 import os
 import random
 
+from lambdawaker.file.path.file import path_from_root
 from lambdawaker.random.selection.select_random_word_from_nested_directory import select_random_word_from_nested_directory
 
 
 def generate_road_name():
-    db_path = os.path.abspath(os.path.dirname(__file__))
-    name_db = os.path.join(db_path, "road/name_db") + os.sep
-    type_db = os.path.join(db_path, "road/type_db") + os.sep
+    name_db = path_from_root("assets/text/address/road/name_db") + os.sep
+    type_db = path_from_root("assets/text/address/road/type_db") + os.sep
 
     name, name_source = select_random_word_from_nested_directory(name_db)
     road_type, road_type_source = select_random_word_from_nested_directory(type_db)
@@ -19,9 +19,8 @@ def generate_road_name():
 
 
 def generate_block_name():
-    db_path = os.path.abspath(os.path.dirname(__file__))
-    name_db = os.path.join(db_path, "block/name_db") + os.sep
-    type_db = os.path.join(db_path, "block/type_db") + os.sep
+    name_db = path_from_root("assets/text/address/block/name_db") + os.sep
+    type_db = path_from_root("assets/text/address/block/type_db") + os.sep
 
     name, name_source = select_random_word_from_nested_directory(name_db)
     road_type, road_type_source = select_random_word_from_nested_directory(type_db)
@@ -33,8 +32,7 @@ def generate_block_name():
 
 
 def generate_city_name():
-    db_path = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(db_path, "city") + os.sep
+    db_path = path_from_root("assets/text/address/city") + os.sep
 
     name, name_source = select_random_word_from_nested_directory(db_path)
 
@@ -45,8 +43,7 @@ def generate_city_name():
 
 
 def generate_state_name():
-    db_path = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(db_path, "state") + os.sep
+    db_path = path_from_root("assets/text/address/state") + os.sep
 
     name, name_source = select_random_word_from_nested_directory(db_path)
 
@@ -57,8 +54,7 @@ def generate_state_name():
 
 
 def generate_country_name():
-    db_path = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(db_path, "country") + os.sep
+    db_path = path_from_root("assets/text/address/country") + os.sep
 
     name, name_source = select_random_word_from_nested_directory(db_path)
 
@@ -73,3 +69,16 @@ def generate_address_number():
         "data": str(random.randint(1, 9999)),
         "source": "random/1-9999"
     }
+
+
+def vis():
+    print(generate_road_name())
+    print(generate_block_name())
+    print(generate_city_name())
+    print(generate_state_name())
+    print(generate_country_name())
+    print(generate_address_number())
+
+
+if __name__ == "__main__":
+    vis()

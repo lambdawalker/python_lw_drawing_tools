@@ -23,7 +23,7 @@ def generate_card_background_type_a():
     lines_details = select_random_function_from_module_and_submodules(waves_module, "paint_random_.*")
     header = select_random_function_from_module_and_submodules(header_module, "paint_random_.*")
 
-    draw_functions = [background_paint_function, paint_random_dots_grid, lines_details, header]
+    draw_functions = [background_paint_function, background_details, lines_details, header]
 
     colors = [
         primary_color,

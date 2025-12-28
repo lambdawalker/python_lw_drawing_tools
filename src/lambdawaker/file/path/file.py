@@ -35,19 +35,12 @@ def find_root_path(start_path=None):
     if root_dir:
         return root_dir
 
-    try:
-        import bpy
-        start_path = os.path.dirname(bpy.data.filepath)
-    except:
-        pass
-
     if start_path is None:
-        start_path = os.getcwd()
+        start_path = os.path.dirname(__file__)
 
     current_path = os.path.abspath(start_path)
 
     while current_path != os.path.dirname(current_path):  # Until we reach the root directory
-        print(current_path)
         potential_flag_file = os.path.join(current_path, 'wd')
 
         if os.path.isfile(potential_flag_file):

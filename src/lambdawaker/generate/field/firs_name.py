@@ -1,12 +1,12 @@
 import html
 import os
 
+from lambdawaker.file.path.file import path_from_root
 from lambdawaker.random.selection.select_random_word_from_nested_directory import select_random_word_from_nested_directory
 
 
 def generate_first_name():
-    db_path = os.path.abspath(os.path.dirname(__file__))
-    db_path = os.path.join(db_path, "db") + os.sep
+    db_path = path_from_root("assets/text/first_name") + os.sep
 
     name, source = select_random_word_from_nested_directory(
         db_path
@@ -16,3 +16,11 @@ def generate_first_name():
         "data": html.escape(name),
         "source": source
     }
+
+
+def vis():
+    print(generate_first_name())
+
+
+if __name__ == "__main__":
+    vis()
