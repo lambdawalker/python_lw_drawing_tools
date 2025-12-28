@@ -62,3 +62,12 @@ def create_random_radial_gradient(
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     paint_random_radial_gradient(img, right_corner=(0, 0), size=(width, height))
     return img
+
+
+def vis():
+    img = create_random_radial_gradient()
+    img.show()
+
+
+if __name__ == '__main__':
+    vis()

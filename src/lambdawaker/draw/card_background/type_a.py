@@ -1,7 +1,5 @@
 from PIL import Image
 
-from PIL import Image
-
 from lambdawaker.draw import fill as fill_module
 from lambdawaker.draw import grid as grid_module
 from lambdawaker.draw import header as header_module
@@ -10,7 +8,8 @@ from lambdawaker.draw.color.HSLuvColor import random_alpha
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
 from lambdawaker.reflection.query import select_random_function_from_module_and_submodules
 
-if __name__ == "__main__":
+
+def generate_card_background_type_a():
     primary_color = generate_hsluv_text_contrasting_color()
 
     width = 800
@@ -40,4 +39,13 @@ if __name__ == "__main__":
             primary_color=colors[i],
         )
 
-    img.show()
+    return img
+
+
+def vis():
+    card = generate_card_background_type_a()
+    card.show()
+
+
+if __name__ == "__main__":
+    vis()

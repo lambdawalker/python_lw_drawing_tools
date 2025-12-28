@@ -1,4 +1,4 @@
-from PIL.Image import Image
+from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.grid.concentric_polygons.paint import paint_concentric_polygons, paint_random_concentric_polygons
@@ -45,7 +45,7 @@ def create_concentric_polygons(
         stroke_color=stroke_color,
         thickness=thickness
     )
-    
+
     return img
 
 

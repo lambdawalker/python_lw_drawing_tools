@@ -1,5 +1,3 @@
-from typing import Tuple, Optional
-
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
@@ -65,3 +63,12 @@ def create_random_hexagon_grid(
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     paint_random_hexagon_grid(img, size=(width, height))
     return img
+
+
+def vis():
+    img = create_random_hexagon_grid()
+    img.show()
+
+
+if __name__ == '__main__':
+    vis()

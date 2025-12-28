@@ -64,3 +64,12 @@ def create_random_triangle_grid(
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     paint_random_triangle_grid(img, area_size=(width, height))
     return img
+
+
+def vis():
+    img = create_random_triangle_grid()
+    img.show()
+
+
+if __name__ == '__main__':
+    vis()

@@ -1,18 +1,18 @@
+import aggdraw
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.header.sin_header.paint import draw_sine_header, paint_random_sin_header
-import aggdraw
 
 
 def create_sine_header(
-    width: int = 800,
-    height: int = 400,
-    header_height: int = 100,
-    amplitude: float = 20,
-    frequency: float = 2,
-    color: ColorUnion = (0, 0, 0, 255),
-    bg_color: ColorUnion = (0, 0, 0, 0),
+        width: int = 800,
+        height: int = 400,
+        header_height: int = 100,
+        amplitude: float = 20,
+        frequency: float = 2,
+        color: ColorUnion = (0, 0, 0, 255),
+        bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """
     Create an image and render a sine-wave header on top.
@@ -62,3 +62,12 @@ def create_random_sine_header(
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     paint_random_sin_header(img)
     return img
+
+
+def vis():
+    img = create_random_sine_header()
+    img.show()
+
+
+if __name__ == '__main__':
+    vis()

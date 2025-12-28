@@ -54,3 +54,12 @@ def create_random_curved_header(
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     paint_random_curved_header(img)
     return img
+
+
+def vis():
+    img = create_random_curved_header()
+    img.show()
+
+
+if __name__ == '__main__':
+    vis()

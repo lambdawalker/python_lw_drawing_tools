@@ -65,3 +65,10 @@ def create_random_parallel_lines(
     return img
 
 
+def vis():
+    img = create_random_parallel_lines()
+    img.show()
+
+
+if __name__ == '__main__':
+    vis()

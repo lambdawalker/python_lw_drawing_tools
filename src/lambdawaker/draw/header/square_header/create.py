@@ -69,3 +69,12 @@ def create_random_square_header(
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
     paint_random_square_header(img)
     return img
+
+
+def vis():
+    img = create_random_square_header()
+    img.show()
+
+
+if __name__ == '__main__':
+    vis()
