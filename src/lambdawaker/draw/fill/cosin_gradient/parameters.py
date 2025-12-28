@@ -1,0 +1,30 @@
+import random
+
+from PIL import Image
+
+from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
+from lambdawaker.draw.color.utils import get_random_point_with_margin
+from lambdawaker.random.values import DefaultValue, Default
+
+
+def generate_random_cosine_gradient_parameters(
+        img: Image.Image,
+        right_corner=DefaultValue((0, 0)),
+        size=Default
+):
+    color = generate_hsluv_text_contrasting_color()
+
+    if right_corner is Default:
+        right_corner = DefaultValue((0, 0))
+
+    if size is Default:
+        size = DefaultValue(lambda: img.size)
+
+    return {
+        "right_corner": get_random_point_with_margin(img.size, default=right_corner, margin=0),
+        "size": get_random_point_with_margin(img.size, default=size, margin=0),
+        "angle": random.uniform(0, 360),
+        "wavelength": random.uniform(10, 2000),
+        "start_color": color,
+        "end_color": color.random_shade(),
+    }

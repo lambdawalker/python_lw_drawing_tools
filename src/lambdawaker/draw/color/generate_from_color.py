@@ -43,23 +43,6 @@ def compute_complementary_color(color: 'HSLuvColor') -> 'HSLuvColor':
     return c
 
 
-def compute_triadic_colors(color: 'HSLuvColor', factor: float = 1 / 3) -> Tuple['HSLuvColor', 'HSLuvColor']:
-    """
-    Computes the two triadic colors for the given base color.
-
-    Triadic colors are evenly spaced around the color wheel. By default, they are
-    spaced by 1/3 of the circle (120 degrees).
-
-    Args:
-        color (HSLuvColor): The base color.
-        factor (float): The fraction of the circle to space the colors by (default 1/3).
-
-    Returns:
-        Tuple[HSLuvColor, HSLuvColor]: A tuple containing the two triadic color variants.
-    """
-    return compute_equidistant_variants(color, factor, "TRIADIC")
-
-
 def compute_analogous_colors(color: 'HSLuvColor', factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']:
     """
     Computes two analogous colors for the given base color.
@@ -75,6 +58,23 @@ def compute_analogous_colors(color: 'HSLuvColor', factor: float = 1 / 8) -> Tupl
         Tuple[HSLuvColor, HSLuvColor]: A tuple containing the two analogous color variants.
     """
     return compute_equidistant_variants(color, factor, "ANALOGOUS")
+
+
+def compute_triadic_colors(color: 'HSLuvColor', factor: float = 1 / 3) -> Tuple['HSLuvColor', 'HSLuvColor']:
+    """
+    Computes the two triadic colors for the given base color.
+
+    Triadic colors are evenly spaced around the color wheel. By default, they are
+    spaced by 1/3 of the circle (120 degrees).
+
+    Args:
+        color (HSLuvColor): The base color.
+        factor (float): The fraction of the circle to space the colors by (default 1/3).
+
+    Returns:
+        Tuple[HSLuvColor, HSLuvColor]: A tuple containing the two triadic color variants.
+    """
+    return compute_equidistant_variants(color, factor, "TRIADIC")
 
 
 def compute_equidistant_variants(color: 'HSLuvColor', factor: float, tag_subfix: str = "EV") -> Tuple[
@@ -101,7 +101,7 @@ def compute_equidistant_variants(color: 'HSLuvColor', factor: float, tag_subfix:
     return a, b
 
 
-def compute_harmonious_color(base_color: 'HSLuvColor', hue_offset: int = 90,
+def compute_harmonious_color(base_color: 'HSLuvColor', hue_offset: int = 60,
                              lightness_offset: int = 15, saturation_offset: int = 15) -> 'HSLuvColor':
     """
     Computes a harmonious color by slightly adjusting the hue, saturation, and lightness
@@ -121,3 +121,5 @@ def compute_harmonious_color(base_color: 'HSLuvColor', hue_offset: int = 90,
                       random.randint(-lightness_offset, lightness_offset))
     c.tag = "HARMONIOUS"
     return c
+
+

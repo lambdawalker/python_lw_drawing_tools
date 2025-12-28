@@ -1,10 +1,11 @@
+import random
 from typing import Tuple, Union, Iterator
 
 import hsluv
 
 from lambdawaker.draw.color.generate_from_color import compute_random_shade_color, compute_complementary_color, \
     compute_triadic_colors, compute_analogous_colors, compute_equidistant_variants, compute_harmonious_color
-from lambdawaker.draw.color.utils import clamp_hue, clamp, hsla_string_to_tuple
+from lambdawaker.draw.color.utils import clamp_hue, clamp, hsla_string_to_hsl_tuple, get_from_tuple
 
 
 class HSLuvColor:
@@ -88,11 +89,11 @@ class HSLuvColor:
         corrected = other
         if isinstance(other, str):
             try:
-                corrected = hsla_string_to_tuple(other)
+                corrected = hsla_string_to_hsl_tuple(other)
             except (ValueError, IndexError):
                 raise ValueError(f"Invalid format: {other}. Use format like '50H'.")
 
-        corrected = -corrected[0], -corrected[1], -corrected[2]
+        corrected = -corrected[0], -corrected[1], -corrected[2], - get_from_tuple(corrected, 3, 1)
         return self.__add__(corrected)
 
     def __add__(self, other: Union[
@@ -105,7 +106,7 @@ class HSLuvColor:
         corrected = other
         if isinstance(other, str):
             try:
-                corrected = hsla_string_to_tuple(other)
+                corrected = hsla_string_to_hsl_tuple(other)
             except (ValueError, IndexError):
                 raise ValueError(f"Invalid format: {corrected}. Use format like '50H'.")
 
@@ -121,22 +122,33 @@ class HSLuvColor:
 
         return HSLuvColor(new_h, new_s, new_l, new_a, self.h_range, self.s_range, self.l_range, self.a_range)
 
-    def __getitem__(self, index: int) -> float:
-        """Allows access via color[0], color[1], color[2]"""
-        if index == 0:
-            return self.hue
-        elif index == 1:
-            return self.saturation
-        elif index == 2:
-            return self.lightness
-        else:
-            raise IndexError("HSLuv index out of range. Use 0 (H), 1 (S), or 2 (L).")
+    def __getitem__(self, index: Union[int, slice]) -> Union[float, Tuple[float, ...]]:
+        """Allows access via color[0], color[1], color[2], color[3] or slicing."""
+
+        # Store components in a tuple for easy slicing/indexing
+        components = (self.hue, self.saturation, self.lightness, self.alpha)
+
+        if isinstance(index, slice):
+            # index.indices(len) handles None and negative indices automatically
+            start, stop, step = index.indices(len(components))
+            return tuple(components[i] for i in range(start, stop, step))
+
+        if isinstance(index, int):
+            try:
+                return components[index]
+            except IndexError:
+                raise IndexError(
+                    f"Index {index} out of bounds. Use 0 (H), 1 (S), 2 (L), 3 (a)."
+                ) from None
+
+        raise TypeError(f"Invalid argument type: {type(index).__name__}")
 
     def __iter__(self) -> Iterator[float]:
         """Allows unpacking: h, s, l = color_instance"""
         yield self.hue
         yield self.saturation
         yield self.lightness
+        yield self.alpha
 
     def __len__(self) -> int:
         return 3
@@ -147,6 +159,10 @@ class HSLuvColor:
         """
         r, g, b = hsluv.hsluv_to_rgb((self.hue, self.saturation, self.lightness))
         return int(r * 255), int(g * 255), int(b * 255), int(self.alpha * 255)
+
+    def to_rgb(self):
+        r, g, b = hsluv.hsluv_to_rgb((self.hue, self.saturation, self.lightness))
+        return int(r * 255), int(g * 255), int(b * 255)
 
     def __repr__(self) -> str:
         return f"HSLuv(H={self.hue:.1f}, S={self.saturation:.1f}, L={self.lightness:.1f})"
@@ -168,11 +184,24 @@ class HSLuvColor:
             saturation_offset=saturation_offset
         )
 
+    def close_color(self, hue_offset: int = 30, lightness_offset: int = 10,
+                    saturation_offset: int = 10) -> 'HSLuvColor':
+        return compute_harmonious_color(
+            self,
+            hue_offset=hue_offset,
+            lightness_offset=lightness_offset,
+            saturation_offset=saturation_offset
+        )
+
     def triadic_colors(self, factor: float = 1 / 3) -> Tuple['HSLuvColor', 'HSLuvColor']:
         """Returns the triadic color variants."""
         return compute_triadic_colors(self, factor=factor)
 
     def analogous_colors(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']:
+        """Returns the analogous color variants."""
+        return compute_analogous_colors(self, factor=factor)
+
+    def analogous_color(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']:
         """Returns the analogous color variants."""
         return compute_analogous_colors(self, factor=factor)
 
@@ -198,10 +227,15 @@ def to_hsluv_color(color: ColorUnion) -> HSLuvColor:
     if isinstance(color, HSLuvColor):
         return color
     elif isinstance(color, str):
-        return HSLuvColor(*hsla_string_to_tuple(color))
+        return HSLuvColor(*hsla_string_to_hsl_tuple(color))
     elif isinstance(color, (tuple, list)):
         return HSLuvColor(*color)
     elif color is None:
         return HSLuvColor(0, 0, 0, 0)
     else:
         raise TypeError(f"Unsupported color type: {type(color)}")
+
+
+def random_alpha(low=0, high=1) -> Tuple[float, float, float, float]:
+    """Generates a random alpha value."""
+    return 0, 0, 0, random.uniform(low, high)

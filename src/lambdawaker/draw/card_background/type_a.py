@@ -1,17 +1,17 @@
-import inspect
 import random
-import re
 
 import aggdraw
 from PIL import Image
 
+from lambdawaker.draw import fill as fill_module
 from lambdawaker.draw import header
-from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color, random_alpha
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
-from lambdawaker.draw.fill.linear_gradient import draw_gradient
+from lambdawaker.draw.fill.linear_gradient.paint import paint_random_linear_gradient
 from lambdawaker.draw.grid import simple_shapes
 from lambdawaker.draw.grid.concentric_polygins import draw_concentric_polygons
-from lambdawaker.draw.grid.shapes_grid import create_shapes_grid
+from lambdawaker.draw.grid.shapes_grid import draw_shapes_grid
+from lambdawaker.reflection.query import select_random_function_from_module, select_random_function_from_module_and_submodules
 
 
 def create_type_a_card_background(width=800, height=800, primary_color: ColorUnion = (100, 100, 0, 255)):
@@ -40,32 +40,6 @@ def create_type_a_card_background(width=800, height=800, primary_color: ColorUni
     return img
 
 
-def select_random_function_from_module(module, name_pattern=None):
-    """
-    Given a module, selects a random function from that module.
-
-    Args:
-        module: A Python module object
-        name_pattern: Optional regexp pattern to filter functions by name
-
-    Returns:
-        A randomly selected function from the module
-
-    Raises:
-        ValueError: If no functions are found in the module
-    """
-    functions = [obj for name, obj in inspect.getmembers(module) if inspect.isfunction(obj)]
-
-    if name_pattern is not None:
-        pattern = re.compile(name_pattern)
-        functions = [func for func in functions if pattern.search(func.__name__)]
-
-    if not functions:
-        raise ValueError(f"No functions found in module {module.__name__}")
-
-    return random.choice(functions)
-
-
 if __name__ == "__main__":
     primary_color = generate_hsluv_text_contrasting_color()
     shape = select_random_function_from_module(simple_shapes)
@@ -74,46 +48,42 @@ if __name__ == "__main__":
     height = 600
 
     radius = random.randint(5, 15)
-    separation = random.randint(0, 30)
+    separation = radius * random.uniform(1.3, 1.5)
     angle = random.uniform(0, 360)
     thickness = random.uniform(0.5, 5)
     outline = primary_color.harmonious_color()
 
-    pattern = create_shapes_grid(
-        width=width,
-        height=height,
+    img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
+
+    background_paint_function = select_random_function_from_module_and_submodules(fill_module, "paint_random_.*")
+
+    paint_random_linear_gradient(
+        img
+    )
+
+    draw = aggdraw.Draw(img)
+    draw_shapes_grid(
+        draw,
+        img.size,
         radius=radius,
         draw_function=shape,
         separation=separation,
         angle=angle,
         thickness=thickness,
-        color=primary_color,
-        outline=outline
+        color=primary_color.close_color() - random_alpha(.5, .9),
+        outline=outline - random_alpha(.5, .9)
     )
 
-    draw = aggdraw.Draw(pattern)
-
-    draw_gradient(
-        draw,
-        (width, height),
-        start_color=primary_color,
-        end_color=primary_color.harmonious_color()
-    )
-
-    header_draw_function = select_random_function_from_module(
+    header_draw_function = select_random_function_from_module_and_submodules(
         header,
         name_pattern="draw_.*"
     )
+
     header_draw_function(
         draw,
         150,
-        color= primary_color
-        .analogous_colors()[0]
-        .add_alpha(-.1)
-        .random_shade()
+        color=primary_color.harmonious_color() - random_alpha(0, .7)
     )
-    print(primary_color.to_rgba())
 
-
-    pattern.show()
-    pattern.save("t.png")
+    img.show()
+    img.save("t.png")

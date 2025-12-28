@@ -65,6 +65,9 @@ class TestHSLuv(unittest.TestCase):
         print(color.to_rgba())
         self.assertEqual((112, 123, 81), color.to_rgba())
 
+    def test_slicing(self):
+        tuple = HSLuvColor(100, 50, 50)[:4]
+        print(tuple)
 
 if __name__ == '__main__':
     unittest.main()

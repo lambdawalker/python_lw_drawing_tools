@@ -1,5 +1,8 @@
+import random
 import re
-from typing import Tuple, Dict
+from typing import Tuple, Dict, Union
+
+from lambdawaker.random.values import DefaultValue
 
 
 def clamp_hue(raw_val: float, h_range: Tuple[float, float]) -> float:
@@ -86,7 +89,7 @@ def parse_multi_unit(format_str: str) -> Dict[str, float]:
     # 1. An optional plus or minus [+-]?
     # 2. Digits and an optional decimal \d+\.?\d*
     # 3. The unit label [hsl] (case-insensitive)
-    pattern = r"([+-]?\d+\.?\d*)\s*(\w)"
+    pattern = r"([+-]?(?:\d+\.?\d*|\.\d+))\s*(\w)"
 
     # Find all matches
     matches = re.findall(pattern, format_str.lower())
@@ -121,7 +124,7 @@ def parse_hsla_string(format_str: str) -> Dict[str, float]:
     return default
 
 
-def hsla_string_to_tuple(format_str: str) -> Tuple[float, float, float, float]:
+def hsla_string_to_hsl_tuple(format_str: str) -> Tuple[float, float, float, float]:
     """
     Parses an HSL modification string into a tuple of (h, s, l) offsets.
 
@@ -162,3 +165,21 @@ def is_inside(angle: float, arc: Tuple[float, float]) -> bool:
         # Wrap-around case (e.g., 330 to 10)
         # The angle is inside if it's >= start OR <= end
         return angle >= start or angle <= end
+
+
+def get_from_tuple(t, index, default=None):
+    return t[index] if -len(t) <= index < len(t) else default
+
+
+def get_random_point_with_margin(size: Tuple[int, int], margin: int = 0, default: Union[Tuple, DefaultValue, None] = None) -> Tuple[int, int]:
+    if isinstance(default, DefaultValue):
+        return default.value
+
+    if isinstance(default, tuple):
+        return default
+
+    w, h = size
+    x = random.randint(margin, max(margin, w - margin))
+    y = random.randint(margin, max(margin, h - margin))
+
+    return x, y
