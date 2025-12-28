@@ -158,14 +158,3 @@ def render_template(template_path, output_path=None):
     return layers, meta_data
 
 
-template_path = path_from_root("assets/templates/2016")
-layers, meta_data = render_template(template_path, "./output")
-bg_layer = layers["background_layer"]
-
-canvas = Image.new("RGBA", bg_layer.image.size)
-
-for name in meta_data["order"]:
-    data = layers[name]
-    canvas.paste(data.image, (0, 0), data.image)
-
-canvas.show()
