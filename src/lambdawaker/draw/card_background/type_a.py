@@ -8,7 +8,7 @@ from lambdawaker.draw import header
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color, random_alpha
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
 from lambdawaker.draw.fill.linear_gradient.paint import paint_random_linear_gradient
-from lambdawaker.draw.grid import simple_shapes
+from lambdawaker.draw.shapes import simple_shapes
 from lambdawaker.draw.grid.concentric_polygins import draw_concentric_polygons
 from lambdawaker.draw.grid.shapes_grid import draw_shapes_grid
 from lambdawaker.reflection.query import select_random_function_from_module, select_random_function_from_module_and_submodules

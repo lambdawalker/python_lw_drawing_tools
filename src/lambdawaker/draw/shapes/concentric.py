@@ -1,8 +1,10 @@
-import aggdraw
-from PIL import Image
 import math
 from typing import Tuple
+
+import aggdraw
+
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
+
 
 def rotating_polygons(draw: aggdraw.Draw, center: Tuple[float, float], sides: int = 6, num_polygons: int = 10,
                       spacing: float = 20, rotation_step: float = 10,

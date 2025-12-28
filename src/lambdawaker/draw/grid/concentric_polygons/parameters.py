@@ -3,30 +3,37 @@ from typing import Tuple, Union, Dict, Any
 
 from PIL import Image
 
+from lambdawaker.draw.color.HSLuvColor import ColorUnion
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
 from lambdawaker.draw.color.utils import get_random_point_with_margin
-from lambdawaker.random.values import DefaultValue, Default
+from lambdawaker.random.values import DefaultValue, Default, Random
 
 
 def generate_random_concentric_polygons_parameters(
-        img: Image.Image,  # The image object, used to determine canvas size.
-        size: Union[Tuple[int, int], DefaultValue, Any] = Default  # The size of the canvas. Can be a tuple (width, height), a DefaultValue object, or any other type.
+        img: Image.Image,
+        color: Union[ColorUnion, Default, Random] = Default,
+        size: Union[Tuple[int, int], Default, Random] = Default
 ) -> Dict[str, Any]:
     """
     Generates a dictionary of random parameters for drawing concentric polygons.
 
     Args:
-        img (Image.Image): The image object, used to determine canvas size if 'size' is not explicitly provided.
-        size (Union[Tuple[int, int], DefaultValue, Any], optional): The desired size of the canvas for the polygons.
-                                                                     Can be a tuple (width, height), a DefaultValue object
-                                                                     (which will default to the image size), or any other type.
-                                                                     Defaults to Default, which means it will use the image size.
+        img (Image.Image): The image object, used to determine canvas size.
+        color (Union[ColorUnion, Default, Random], optional): The color for the polygons.
+                                                               If Default, it defaults to (0, 0, 0, 0).
+                                                               If Random, a contrasting HSLuv color is generated.
+                                                               Defaults to Default.
+        size (Union[Tuple[int, int], Default, Random], optional): The desired size of the canvas for the polygons.
+                                                                  If Default, it uses the image size. Defaults to Default.
 
     Returns:
         Dict[str, Any]: A dictionary containing various parameters for drawing concentric polygons,
                         such as canvas size, number of sides, rotation step, spacing, color, thickness, and fill opacity.
     """
-    color = generate_hsluv_text_contrasting_color()
+    if color is Default:
+        color = (0, 0, 0, 0)
+    elif color is Random:
+        color = generate_hsluv_text_contrasting_color()
 
     if size is Default:
         size = DefaultValue(lambda: img.size)

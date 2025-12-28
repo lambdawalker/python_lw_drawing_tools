@@ -5,13 +5,13 @@ from PIL import Image
 
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
 from lambdawaker.draw.color.utils import get_random_point_with_margin
-from lambdawaker.random.values import DefaultValue, Default
+from lambdawaker.random.values import DefaultValue, Default, Random
 
 
 def generate_random_linear_gradient_parameters(
         img: Image.Image,
-        right_corner: Union[Tuple[int, int], DefaultValue] = Default,
-        size: Union[Tuple[int, int], DefaultValue] = Default
+        right_corner: Union[Tuple[int, int], Default, Random] = Default,
+        size: Union[Tuple[int, int], Default, Random] = Default
 ) -> Dict[str, Any]:
     color = generate_hsluv_text_contrasting_color()
 
