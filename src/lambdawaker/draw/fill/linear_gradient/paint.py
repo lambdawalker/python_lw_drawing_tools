@@ -1,4 +1,4 @@
-from typing import Tuple, Union
+from typing import Tuple, Union, Optional
 
 import numpy as np
 from PIL import Image
@@ -11,11 +11,11 @@ from lambdawaker.random.values import Random, Default, clean_passed_parameters
 def paint_linear_gradient(
         image: Image.Image,
         right_corner: Tuple[int, int] = (0, 0),
-        size: Tuple[int, int] = None,
+        size: Optional[Tuple[int, int]] = None,
         start_color: ColorUnion = (0, 0, 0, 255),
         end_color: ColorUnion = (255, 255, 255, 255),
         angle: float = 0,
-):
+) -> None:
     """
     Draws a linear gradient onto an existing PIL image at a specific location.
     Modifies the original image in-place.
@@ -52,10 +52,10 @@ def paint_random_linear_gradient(
         img: Image.Image,
         right_corner: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
-        start_color: ColorUnion = None,
-        end_color: ColorUnion = None,
-        angle: float = None,
-):
+        start_color: Optional[ColorUnion] = None,
+        end_color: Optional[ColorUnion] = None,
+        angle: Optional[float] = None,
+) -> None:
     passed_values = clean_passed_parameters({
         "right_corner": right_corner,
         "size": size,

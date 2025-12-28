@@ -5,18 +5,18 @@ from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.fill.radial_gradient.parameters import generate_random_radial_gradient_parameters
-from lambdawaker.random.values import Random, Default
+from lambdawaker.random.values import Random, Default, clean_passed_parameters
 
 
 def paint_radial_gradient(
         image: Image.Image,
         right_corner: Tuple[int, int] = (0, 0),
-        size: Tuple[int, int] = None,
+        size: Optional[Tuple[int, int]] = None,
         start_color: ColorUnion = (255, 255, 255, 255),
         end_color: ColorUnion = (0, 0, 0, 255),
         center: Optional[Tuple[float, float]] = None,
         radius: Optional[float] = None,
-):
+) -> None:
     """
     Draws a radial gradient onto an existing PIL image at a specific location.
     Modifies the original image in-place.
@@ -67,21 +67,21 @@ def paint_random_radial_gradient(
         img: Image.Image,
         right_corner: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
-        start_color: ColorUnion = None,
-        end_color: ColorUnion = None,
+        start_color: Optional[ColorUnion] = None,
+        end_color: Optional[ColorUnion] = None,
         center: Optional[Tuple[float, float]] = None,
         radius: Optional[float] = None,
-):
-    passed_values = {
+) -> None:
+    passed_values = clean_passed_parameters({
         "right_corner": right_corner,
         "size": size,
         "start_color": start_color,
         "end_color": end_color,
         "center": center,
         "radius": radius,
-    }
+    })
 
     parameters = generate_random_radial_gradient_parameters(img, right_corner, size)
 
-    parameters = parameters | {k: v for k, v in passed_values.items() if v is not None}
+    parameters = parameters | passed_values
     paint_radial_gradient(img, **parameters)

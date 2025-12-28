@@ -1,22 +1,22 @@
-from typing import Tuple, Union
+from typing import Tuple, Union, Optional
 
 import numpy as np
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.fill.cosin_gradient.parameters import generate_random_cosine_gradient_parameters
-from lambdawaker.random.values import Random, Default
+from lambdawaker.random.values import Random, Default, clean_passed_parameters
 
 
 def paint_cosine_gradient(
         image: Image.Image,
         right_corner: Tuple[int, int] = (0, 0),
-        size: Tuple[int, int] = None,
+        size: Optional[Tuple[int, int]] = None,
         start_color: ColorUnion = (0, 0, 0, 255),
         end_color: ColorUnion = (255, 255, 255, 255),
         angle: float = 0,
         wavelength: float = 100.0,
-):
+) -> None:
     """
     Draws a cosine wave gradient onto an existing PIL image at a specific location.
     The gradient oscillates between start_color and end_color.
@@ -62,23 +62,23 @@ def paint_random_cosine_gradient(
         img: Image.Image,
         right_corner: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
-        start_color: ColorUnion = None,
-        end_color: ColorUnion = None,
-        angle: float = None,
-        wavelength: float = None
-):
-    passed_values = {
+        start_color: Optional[ColorUnion] = None,
+        end_color: Optional[ColorUnion] = None,
+        angle: Optional[float] = None,
+        wavelength: Optional[float] = None
+) -> None:
+    passed_values = clean_passed_parameters({
         "right_corner": right_corner,
         "size": size,
         "start_color": start_color,
         "end_color": end_color,
         "angle": angle,
         "wavelength": wavelength,
-    }
+    })
 
     parameters = generate_random_cosine_gradient_parameters(
         img, right_corner, size
     )
 
-    parameters = parameters | {k: v for k, v in passed_values.items() if v is not None or Default or Random}
+    parameters = parameters | passed_values
     paint_cosine_gradient(img, **parameters)

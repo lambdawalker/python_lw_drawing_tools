@@ -1,4 +1,5 @@
 import random
+from typing import Tuple, Union, Dict, Any
 
 from PIL import Image
 
@@ -9,9 +10,9 @@ from lambdawaker.random.values import DefaultValue, Default
 
 def generate_random_radial_gradient_parameters(
         img: Image.Image,
-        right_corner=Default,
-        size=Default
-):
+        right_corner: Union[Tuple[int, int], DefaultValue] = Default,
+        size: Union[Tuple[int, int], DefaultValue] = Default
+) -> Dict[str, Any]:
     color = generate_hsluv_text_contrasting_color()
 
     if right_corner is Default:
