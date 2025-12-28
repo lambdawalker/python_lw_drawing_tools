@@ -1,0 +1,71 @@
+{% with id = gen.random.number(top=701) %}
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>INE Credencial (Simulación)</title>
+        <link rel="stylesheet" href="localhost.disk://templates/2016/style.css">
+        <style>
+            .main-photo, .small-photo {
+                background: {{
+                    gen.random.choice((
+                        "rgba(0,0,0,0)",
+                        gen.color.hsluv((
+                            theme.color.hue,
+                            gen.random.number(top=30),
+                            gen.random.number(top=theme.color.lightness),
+                            gen.random.float()
+                        )).to_css_rgba(),
+                        gen.color.hsluv((
+                            theme.color.hue,
+                            gen.random.number(top=6),
+                            gen.random.number(low=90, top=100),
+                            gen.random.float()
+                        )).to_css_rgba()
+                    ))
+                }};
+
+                border: {{ gen.random.choice((
+                        "rgba(0,0,0,0)",
+                        gen.color.hsluv((
+                            theme.color.hue,
+                            gen.random.number(top=30),
+                            gen.random.number(top=theme.color.lightness),
+                            gen.random.float()
+                        )).to_css_rgba(),
+                        gen.color.hsluv((
+                            theme.color.hue,
+                            gen.random.number(top=6),
+                            gen.random.number(low=90, top=100),
+                            gen.random.float()
+                        )).to_css_rgba()
+                    )) }} solid 1px;
+
+                filter: {{ gen.random.choice((
+                    "grayscale("+tx.str(gen.random.number(70, 95))+"%)", ""
+                )) }} {{ gen.random.choice((
+                    "opacity("+tx.str(gen.random.number(35, 100))+"%)", ""
+                )) }};
+
+                background-blend-mode: {{ gen.random.choice(( "multiply", "")) }};
+            }
+        </style>
+    </head>
+    <script>
+
+    </script>
+    <body>
+    <div id="view-port">
+        <div class="card">
+            <header class="card-header">
+            </header>
+            <main class="card-body">
+                <img class="main-photo" src="localhost.disk://img/id_photo/{{ id }}.png" capture="true" alt="Photo">
+                <img class="small-photo" src="localhost.disk://img/id_photo/{{ id }}.png" capture="true" alt="Photo">
+            </main>
+        </div>
+    </div>
+    </body>
+    </html>
+{% endwith %}

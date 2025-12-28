@@ -1,0 +1,168 @@
+body {
+    padding: 0;
+    margin: 0;
+}
+
+#view-port {
+    display: inline-block;
+    font-size: 8mm;
+}
+
+.card {
+    width: 340mm; /* Approximate ID card width */
+    height: 196mm; /* Approximate ID card height */
+    padding: 4mm;
+    margin: 4mm;
+}
+
+/* Header Styling */
+.card-header {
+    height: 31.76mm;
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10.6mm;
+}
+
+.logo-text p {
+    font-weight: bold;
+    margin: 0;
+    padding-top: 5.28mm;
+}
+
+.title-section {
+    margin-left: 10.6mm;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.title-section h1 {
+    font-weight: 900;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.title-section h2 {
+    font-weight: normal;
+
+    margin: 0;
+    padding-bottom: 2.12mm;
+}
+
+/* Body Layout */
+.card-body {
+    display: flex;
+    position: relative;
+    height: calc(100% - 120px);
+}
+
+.photo-section {
+    width: 100mm;
+}
+
+.data-section {
+    padding-left: 10.6mm;
+
+    line-height: 1.2;
+}
+
+.data-item {
+    margin-bottom: 3.16mm;
+}
+
+.data-item label {
+    font-size: .8em;
+    font-weight: bold;
+    color: #222;
+    display: block;
+    margin-bottom: -1.04mm;
+}
+
+.data-item p {
+    font-weight: bold;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.data-item.name p {
+    line-height: 1.1;
+}
+
+.top-right {
+    float: right;
+}
+
+.top-right .data-item {
+    margin-right: 15.88mm;
+}
+
+/* Key, CURP, Year Layout */
+.data-item.key-voter {
+    margin-top: 5.28mm;
+}
+
+.data-item.key-curp {
+    display: flex;
+    margin-top: 5.28mm;
+}
+
+.key, .curp, .year {
+    margin-right: 5.28mm;
+}
+
+.key label, .curp label, .year label {
+    display: inline-block;
+}
+
+/* Bottom Row Data */
+.data-group.bottom-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 10.6mm;
+}
+
+.bottom-row .data-item {
+    text-align: left;
+    flex: 1 0 33%;
+}
+
+.bottom-row .data-item label {
+
+}
+
+.bottom-row label {
+    display: inline;
+}
+
+label {
+    text-transform: uppercase;
+}
+
+.main-photo {
+    display: block;
+    width: 80mm;
+    height: 110mm;
+    border-radius: 3.16mm;
+    margin: 10mm;
+
+    object-fit: cover;
+    object-position: center;
+
+    /*border: 1.04mm solid #555;*/
+}
+
+.small-photo {
+    display: block;
+    position: absolute;
+    right: 10.6mm;
+    top: 63.52mm;
+    width: 42.32mm;
+    height: 52.92mm;
+    border-radius: 2.12mm;
+    z-index: 1;
+
+    object-fit: cover;
+    object-position: center;
+
+    /*border: 1.04mm solid #aaa;*/
+}

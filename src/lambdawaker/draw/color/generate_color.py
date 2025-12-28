@@ -1,6 +1,6 @@
 import random
 
-from lambdawaker.draw.color.HSLuvColor import HSLuvColor
+from lambdawaker.draw.color.HSLuvColor import HSLuvColor, to_hsluv_color
 
 
 def generate_hsluv_text_contrasting_color() -> HSLuvColor:
@@ -19,3 +19,5 @@ def generate_hsluv_text_contrasting_color() -> HSLuvColor:
     lightness = random.randint(30, 60)
 
     return HSLuvColor(hue, saturation, lightness, tag="CONTRASTING")
+
+

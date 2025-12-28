@@ -8,11 +8,9 @@ from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrastin
 from lambdawaker.reflection.query import select_random_function_from_module_and_submodules
 
 
-def generate_card_background_type_b():
+def generate_card_background_type_b(size=(800, 600)):
+    width, height = size
     primary_color = generate_hsluv_text_contrasting_color()
-
-    width = 800
-    height = 600
 
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
 

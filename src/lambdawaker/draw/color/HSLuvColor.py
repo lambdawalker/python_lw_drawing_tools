@@ -14,7 +14,8 @@ class HSLuvColor:
     """
 
     def __init__(self, hue: float, saturation: float, lightness: float, alpha: float = 1.0,
-                 h_range: Tuple[float, float] = (0, 360), s_range: Tuple[float, float] = (0, 100),
+                 h_range: Tuple[float, float] = (0, 360),
+                 s_range: Tuple[float, float] = (0, 100),
                  l_range: Tuple[float, float] = (0, 100),
                  a_range: Tuple[float, float] = (0, 1), tag: str = "") -> None:
         """
@@ -157,9 +158,28 @@ class HSLuvColor:
         r, g, b = hsluv.hsluv_to_rgb((self.hue, self.saturation, self.lightness))
         return int(r * 255), int(g * 255), int(b * 255), int(self.alpha * 255)
 
+    def to_css_rgba(self) -> str:
+        r, g, b = self.to_rgb()
+        a= self.alpha
+        return f'rgba({r},{g},{b},{a:02f})'
+
     def to_rgb(self):
         r, g, b = hsluv.hsluv_to_rgb((self.hue, self.saturation, self.lightness))
         return int(r * 255), int(g * 255), int(b * 255)
+
+    def to_rgb_hex(self) -> str:
+        """
+        Converts the HSLuv color to an RGBA hexadecimal string (e.g., "#RRGGBBAA").
+        """
+        r, g, b = self.to_rgb()
+        return f'#{r:02x}{g:02x}{b:02x}'
+
+    def to_rgba_hex(self) -> str:
+        """
+        Converts the HSLuv color to an RGBA hexadecimal string (e.g., "#RRGGBBAA").
+        """
+        r, g, b, a = self.to_rgba()
+        return f'#{r:02x}{g:02x}{b:02x}{a:02x}'
 
     def __repr__(self) -> str:
         return f"HSLuv(H={self.hue:.1f}, S={self.saturation:.1f}, L={self.lightness:.1f}, A={self.alpha:.1f})"
