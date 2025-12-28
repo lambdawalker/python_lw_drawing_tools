@@ -70,6 +70,9 @@ def paint_shapes_grid(
 
 def paint_random_shapes_grid(
         img: Image.Image,
+        primary_color: Union[ColorUnion, Random] = Random,
+        color: Optional[ColorUnion] = Default,
+        outline: Optional[ColorUnion] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
         radius: Union[float, Default, Random] = Default,
         draw_function: Union[Callable, Default, Random] = Default,
@@ -77,8 +80,6 @@ def paint_random_shapes_grid(
         separation: Union[float, Default, Random] = Default,
         angle: Union[float, Default, Random] = Default,
         thickness: Union[float, Default, Random] = Default,
-        color: Optional[ColorUnion] = None,
-        outline: Optional[ColorUnion] = None,
 ) -> None:
     passed_values = clean_passed_parameters({
         "size": size,
@@ -92,7 +93,7 @@ def paint_random_shapes_grid(
         "outline": outline,
     })
 
-    parameters = generate_random_shapes_grid_parameters(img, size)
+    parameters = generate_random_shapes_grid_parameters(img, primary_color, color, outline, size)
 
     parameters = parameters | passed_values
     paint_shapes_grid(img, **parameters)

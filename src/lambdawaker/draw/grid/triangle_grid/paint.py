@@ -82,11 +82,12 @@ def paint_triangle_grid(
 
 def paint_random_triangle_grid(
         img: Image.Image,
+        primary_color: Union[ColorUnion, Random] = Random,
+        color: Optional[ColorUnion] = Default,
         area_size: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[float, Default, Random] = Default,
         thickness: Union[float, Default, Random] = Default,
         angle: Union[float, Default, Random] = Default,
-        color: Optional[ColorUnion] = None,
 ) -> None:
     passed_values = clean_passed_parameters({
         "area_size": area_size,
@@ -96,7 +97,7 @@ def paint_random_triangle_grid(
         "color": color,
     })
 
-    parameters = generate_random_triangle_grid_parameters(img, area_size)
+    parameters = generate_random_triangle_grid_parameters(img, primary_color, color, area_size)
 
     parameters = parameters | passed_values
     paint_triangle_grid(img, **parameters)

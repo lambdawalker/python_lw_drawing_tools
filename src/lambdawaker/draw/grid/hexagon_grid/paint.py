@@ -21,10 +21,10 @@ def paint_hexagon_grid(
     Draw a hexagon tiling across a given area onto an existing image.
     """
     color = to_hsluv_color(color)
-    
+
     if area_size is None:
         area_size = image.size
-        
+
     draw = aggdraw.Draw(image)
     width, height = area_size
     pen = aggdraw.Pen(color.to_rgba(), thickness)
@@ -83,11 +83,12 @@ def paint_hexagon_grid(
 
 def paint_random_hexagon_grid(
         img: Image.Image,
+        primary_color: Union[ColorUnion, Random] = Random,
+        color: Optional[ColorUnion] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
         hexagon_size: Union[float, Default, Random] = Default,
         thickness: Union[float, Default, Random] = Default,
         angle: Union[float, Default, Random] = Default,
-        color: Optional[ColorUnion] = None,
 ) -> None:
     passed_values = clean_passed_parameters({
         "area_size": size,
@@ -97,7 +98,7 @@ def paint_random_hexagon_grid(
         "color": color,
     })
 
-    parameters = generate_random_hexagon_grid_parameters(img, size)
+    parameters = generate_random_hexagon_grid_parameters(img, primary_color, color, size)
 
     parameters = parameters | passed_values
     paint_hexagon_grid(img, **parameters)
