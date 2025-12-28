@@ -44,7 +44,7 @@ def generate_random_curved_header_parameters(
         color = generate_hsluv_text_contrasting_color()
 
     return {
-        "height": random.randint(50, 200),
-        "curve_depth": random.randint(20, 100),
+        "height": random.randint(150, 200),
+        "curve_depth": random.randint(10, 50),
         "color": color,
     }
