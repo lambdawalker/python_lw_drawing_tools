@@ -26,18 +26,22 @@ class DefaultValue:
         return self._value
 
 
-def clean_passed_parameters(parameters):
+def clean_passed_parameters(parameters: Dict[str, Any]) -> Dict[str, Any]:
     """
     Cleans a dictionary of parameters by removing entries that are None, Default, or Random.
 
-    Note: The current implementation of filtering `Default` and `Random` is incorrect
-    as it always evaluates to `True` for `not Default` and `not Random`.
-    This function needs correction to properly filter these sentinel objects.
+    This function is used to filter out arguments that were not explicitly provided by the user
+    (i.e., they have their default sentinel values) so that the random parameter generation logic
+    can take over for those missing values.
 
-    :param parameters: A dictionary of parameters to clean.
-    :return: A new dictionary with cleaned parameters.
+    Args:
+        parameters (Dict[str, Any]): A dictionary of parameters to clean.
+
+    Returns:
+        Dict[str, Any]: A new dictionary containing only the parameters that have explicit values
+                        (i.e., not None, Default, or Random).
     """
     return {
         k: v for k, v in parameters.items()
-        if v is not None and not Default and not Random
+        if v is not None and v is not Default and v is not Random
     }

@@ -13,12 +13,33 @@ def generate_random_cosine_gradient_parameters(
         right_corner: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default
 ) -> Dict[str, Any]:
+    """
+    Generates random parameters for a cosine gradient.
+
+    Args:
+        img (Image.Image): The image for which the gradient parameters are being generated.
+        right_corner (Union[Tuple[int, int], Default, Random], optional): The top-left corner of the gradient.
+            If Default, it defaults to (0, 0). If Random, a random point with no margin is chosen.
+            Defaults to Default.
+        size (Union[Tuple[int, int], Default, Random], optional): The size of the gradient.
+            If Default, it defaults to the image size. If Random, a random point with no margin is chosen.
+            Defaults to Default.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the generated gradient parameters, including:
+            - "right_corner": The top-left corner of the gradient.
+            - "size": The size of the gradient.
+            - "angle": The angle of the gradient in degrees (0-360).
+            - "wavelength": The wavelength of the cosine wave.
+            - "start_color": The starting HSLuv color of the gradient.
+            - "end_color": The ending HSLuv color of the gradient, a random shade of the start color.
+    """
     color = generate_hsluv_text_contrasting_color()
 
-    if right_corner is Default:
+    if right_corner == Default:
         right_corner = DefaultValue((0, 0))
 
-    if size is Default:
+    if size == Default:
         size = DefaultValue(lambda: img.size)
 
     return {

@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     paint_random_concentric_polygons(
         img,
-        stroke_color=accent_stroke_color
+        primary_color=primary_color
     )
 
     draw = aggdraw.Draw(img)

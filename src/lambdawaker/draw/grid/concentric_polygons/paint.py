@@ -4,21 +4,21 @@ from typing import Tuple, Union, Optional
 import aggdraw
 from PIL import Image
 
-from lambdawaker.draw.color.HSLuvColor import HSLuvColor
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
+from lambdawaker.draw.color.HSLuvColor import HSLuvColor
 from lambdawaker.draw.grid.concentric_polygons.parameters import generate_random_concentric_polygons_parameters
 from lambdawaker.random.values import Random, Default, clean_passed_parameters
 
 
 def paint_concentric_polygons(
         image: Image.Image,
-        color: ColorUnion = (0, 0, 0, 255), # HSLuv black with 100% alpha
-        stroke_color: Optional[ColorUnion] = None, # Defaults to `color` if None
+        color: ColorUnion = (0, 0, 0, 255),  # HSLuv black with 100% alpha
+        stroke_color: Optional[ColorUnion] = None,  # Defaults to `color` if None
         size: Optional[Tuple[int, int]] = None,
         center: Optional[Tuple[float, float]] = None,
         sides: int = 6,
         rotation_step: float = 5,
-        spacing: float = 15, # Radial distance between polygons
+        spacing: float = 15,  # Radial distance between polygons
         thickness: float = 2,
 ) -> None:
     """
@@ -40,6 +40,7 @@ def paint_concentric_polygons(
     sides : int, optional
         The number of sides for each polygon. Defaults to 6.
     rotation_step : float, optional
+        The angular rotation step in degrees between consecutive polygons. Defaults to 5.
     spacing : float, optional
         The radial distance between consecutive polygons. Defaults to 15.
     thickness : float, optional
@@ -88,6 +89,7 @@ def paint_concentric_polygons(
 
 def paint_random_concentric_polygons(
         img: Image.Image,
+        primary_color: Union[ColorUnion, Default, Random] = Default,
         color: Union[ColorUnion, Default, Random] = Default,
         stroke_color: Union[ColorUnion, Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
@@ -95,8 +97,7 @@ def paint_random_concentric_polygons(
         rotation_step: Union[float, Default, Random] = Random,
         spacing: Union[float, Default, Random] = Random,
         thickness: Union[float, Default, Random] = Random,
-        fill_opacity: Union[int, Default, Random] = Random
-) -> None: # The function modifies the input `img` directly.
+) -> None:
     """
     Generates random parameters for concentric polygons and draws them onto a PIL image. Any parameter
     set to `Random` will be randomly generated. Any parameter set to `Default` will use a sensible
@@ -106,6 +107,10 @@ def paint_random_concentric_polygons(
     ----------
     img : Image.Image
         The PIL Image object to draw on. This image is modified in place.
+    primary_color : Union[ColorUnion, Default, Random], optional
+        The primary color used to derive other colors if they are not specified.
+        If `Random` or `Default`, a random contrasting color is generated.
+        Defaults to `Default`.
     color : Union[ColorUnion, Default, Random], optional
         The base color for polygons. If `Random`, a random color is generated. If `Default`, a sensible default color is used.
         Can also be a specific `ColorUnion` value. Defaults to `Default`.
@@ -136,11 +141,11 @@ def paint_random_concentric_polygons(
         "color": color,
         "stroke_color": stroke_color,
         "thickness": thickness,
-        "fill_opacity": fill_opacity,
     })
 
     parameters = generate_random_concentric_polygons_parameters(
         img,
+        primary_color=primary_color,
         color=color,
         stroke_color=stroke_color,
         size=size

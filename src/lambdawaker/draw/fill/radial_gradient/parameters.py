@@ -13,12 +13,33 @@ def generate_random_radial_gradient_parameters(
         right_corner: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default
 ) -> Dict[str, Any]:
+    """
+    Generates random parameters for a radial gradient.
+
+    Args:
+        img (Image.Image): The image for which the gradient parameters are being generated.
+        right_corner (Union[Tuple[int, int], Default, Random], optional): The top-left corner of the gradient.
+            If Default, it defaults to (0, 0). If Random, a random point with no margin is chosen.
+            Defaults to Default.
+        size (Union[Tuple[int, int], Default, Random], optional): The size of the gradient.
+            If Default, it defaults to the image size. If Random, a random point with no margin is chosen.
+            Defaults to Default.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the generated gradient parameters, including:
+            - "right_corner": The top-left corner of the gradient.
+            - "size": The size of the gradient.
+            - "center": The center point of the radial gradient.
+            - "radius": The radius of the radial gradient.
+            - "start_color": The starting HSLuv color of the gradient.
+            - "end_color": The ending HSLuv color of the gradient, a random shade of the start color.
+    """
     color = generate_hsluv_text_contrasting_color()
 
-    if right_corner is Default:
+    if right_corner == Default:
         right_corner = DefaultValue((0, 0))
 
-    if size is Default:
+    if size == Default:
         size = DefaultValue(lambda: img.size)
 
     return {

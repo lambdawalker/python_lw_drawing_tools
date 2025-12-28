@@ -13,9 +13,30 @@ def generate_random_shapes_grid_parameters(
         img: Image.Image,
         size: Union[Tuple[int, int], Default, Random] = Default
 ) -> Dict[str, Any]:
+    """
+    Generates random parameters for a grid of shapes.
+
+    Args:
+        img (Image.Image): The image for which the grid parameters are being generated.
+        size (Union[Tuple[int, int], Default, Random], optional): The size of the grid area.
+            If Default, it defaults to the image size. If Random, a random point with no margin is chosen.
+            Defaults to Default.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the generated grid parameters, including:
+            - "size": The size of the grid area.
+            - "radius": The base radius for the shapes.
+            - "draw_function": The function used to draw the shapes (e.g., circle, square).
+            - "draw_parameters": Additional parameters for the draw function (e.g., sides, points).
+            - "separation": The spacing between shapes.
+            - "angle": The rotation angle of the grid in degrees (0-360).
+            - "thickness": The thickness of the shape outlines.
+            - "color": The fill color of the shapes (HSLuv).
+            - "outline": The outline color of the shapes (HSLuv).
+    """
     color = generate_hsluv_text_contrasting_color()
 
-    if size is Default:
+    if size == Default:
         size = DefaultValue(lambda: img.size)
 
     draw_function = random.choice([circle, square, triangle, polygon, star])

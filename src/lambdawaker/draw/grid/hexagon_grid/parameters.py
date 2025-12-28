@@ -12,9 +12,26 @@ def generate_random_hexagon_grid_parameters(
         img: Image.Image,
         size: Union[Tuple[int, int], Default, Random] = Default
 ) -> Dict[str, Any]:
+    """
+    Generates random parameters for a hexagonal grid.
+
+    Args:
+        img (Image.Image): The image for which the grid parameters are being generated.
+        size (Union[Tuple[int, int], Default, Random], optional): The size of the grid area.
+            If Default, it defaults to the image size. If Random, a random point with no margin is chosen.
+            Defaults to Default.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the generated grid parameters, including:
+            - "area_size": The size of the grid area.
+            - "hexagon_size": The size of each hexagon (circumradius).
+            - "thickness": The thickness of the hexagon edges.
+            - "angle": The rotation angle of the grid in degrees (0-360).
+            - "color": The color of the hexagon edges (HSLuv).
+    """
     color = generate_hsluv_text_contrasting_color()
 
-    if size is Default:
+    if size == Default:
         size = DefaultValue(lambda: img.size)
 
     return {
