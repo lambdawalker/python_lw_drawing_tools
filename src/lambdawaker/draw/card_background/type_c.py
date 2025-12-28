@@ -4,13 +4,12 @@ from lambdawaker.draw import fill as fill_module
 from lambdawaker.draw import grid as grid_module
 from lambdawaker.draw import header as header_module
 from lambdawaker.draw import waves as waves_module
-from lambdawaker.draw.shapes.draw_random_country_blured_contour import draw_random_country_blured_contour
 from lambdawaker.draw.color.HSLuvColor import random_alpha
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
 from lambdawaker.reflection.query import select_random_function_from_module_and_submodules
 
 
-def generate_card_background_type_a():
+def generate_card_background_type_c():
     primary_color = generate_hsluv_text_contrasting_color()
 
     width = 800
@@ -26,7 +25,6 @@ def generate_card_background_type_a():
     draw_functions = [
         background_paint_function,
         background_details,
-        draw_random_country_blured_contour,
         lines_details,
         header
     ]
@@ -34,7 +32,6 @@ def generate_card_background_type_a():
     colors = [
         primary_color,
         primary_color.close_color() - random_alpha(.2, .4),
-        primary_color.close_color(),
         primary_color.close_color() - random_alpha(.4, .8),
         primary_color.close_color() - random_alpha(.1, .3),
     ]
@@ -51,7 +48,7 @@ def generate_card_background_type_a():
 
 
 def vis():
-    card = generate_card_background_type_a()
+    card = generate_card_background_type_c()
     card.show()
 
 

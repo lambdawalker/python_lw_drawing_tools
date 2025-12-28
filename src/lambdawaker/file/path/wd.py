@@ -1,31 +1,4 @@
 import os
-import random
-
-
-def ensure_output_directory(output_path):
-    if output_path is not None:
-        output_dir = os.path.dirname(output_path)
-        if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-
-def get_random_file(path=None, extension_filter=None):
-    extension_filter = extension_filter if extension_filter is not None else []
-    options = [os.path.join(path, f) for f in os.listdir(path)]
-
-    if len(extension_filter):
-        options = [
-            f for f in options
-            if os.path.splitext(f) in extension_filter or os.path.isdir(f)
-        ]
-
-    option = random.choice(options)
-
-    if os.path.isfile(option):
-        return option
-
-    return get_random_file(path=option)
-
 
 root_dir = None
 

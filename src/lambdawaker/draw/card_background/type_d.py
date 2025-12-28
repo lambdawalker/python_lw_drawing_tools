@@ -10,7 +10,7 @@ from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrastin
 from lambdawaker.reflection.query import select_random_function_from_module_and_submodules
 
 
-def generate_card_background_type_a():
+def generate_card_background_type_d():
     primary_color = generate_hsluv_text_contrasting_color()
 
     width = 800
@@ -21,14 +21,12 @@ def generate_card_background_type_a():
     background_paint_function = select_random_function_from_module_and_submodules(fill_module, "paint_random_.*")
     background_details = select_random_function_from_module_and_submodules(grid_module, "paint_random_.*")
     lines_details = select_random_function_from_module_and_submodules(waves_module, "paint_random_.*")
-    header = select_random_function_from_module_and_submodules(header_module, "paint_random_.*")
 
     draw_functions = [
         background_paint_function,
         background_details,
         draw_random_country_blured_contour,
         lines_details,
-        header
     ]
 
     colors = [
@@ -36,7 +34,6 @@ def generate_card_background_type_a():
         primary_color.close_color() - random_alpha(.2, .4),
         primary_color.close_color(),
         primary_color.close_color() - random_alpha(.4, .8),
-        primary_color.close_color() - random_alpha(.1, .3),
     ]
 
     for i, func in enumerate(draw_functions):
@@ -51,7 +48,7 @@ def generate_card_background_type_a():
 
 
 def vis():
-    card = generate_card_background_type_a()
+    card = generate_card_background_type_d()
     card.show()
 
 

@@ -46,12 +46,14 @@ def generate_random_sin_header_parameters(
     elif color == Random:
         color = generate_hsluv_text_contrasting_color()
 
+    frequency, amplitude = random.choice((
+        (random.uniform(.1, 2), random.randint(10, 30)),
+        (random.uniform(5, 20), random.randint(5, 10))
+    ))
+
     return {
         "height": random.randint(150, 200),
-        "amplitude": random.randint(10, 30),
-        "frequency": random.choice((
-            random.uniform(.1, 2),
-            random.uniform(5, 20))
-        ),
+        "amplitude": amplitude,
+        "frequency": frequency,
         "color": color,
     }

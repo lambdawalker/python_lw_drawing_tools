@@ -1,7 +1,7 @@
 import html
 import os
 
-from lambdawaker.file.path.file import path_from_root
+from lambdawaker.file.path.wd import path_from_root
 from lambdawaker.random.selection.select_random_word_from_nested_directory import select_random_word_from_nested_directory
 
 
