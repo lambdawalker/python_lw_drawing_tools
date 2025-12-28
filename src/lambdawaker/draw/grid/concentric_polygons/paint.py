@@ -1,53 +1,73 @@
 import math
-from typing import Tuple, Union, Optional, Dict, Any
+from typing import Tuple, Union, Optional
 
 import aggdraw
 from PIL import Image
 
+from lambdawaker.draw.color.HSLuvColor import HSLuvColor
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.grid.concentric_polygons.parameters import generate_random_concentric_polygons_parameters
 from lambdawaker.random.values import Random, Default, clean_passed_parameters
 
 
 def paint_concentric_polygons(
-    image: Image.Image,
-    canvas_size: Optional[Tuple[int, int]] = None,
-    sides: int = 6,
-    rotation_step: float = 5,
-    spacing: float = 15,
-    color: ColorUnion = (0, 0, 0, 255),
-    thickness: float = 2,
-    fill_opacity: int = 0
+        image: Image.Image,
+        color: ColorUnion = (0, 0, 0, 255), # HSLuv black with 100% alpha
+        stroke_color: Optional[ColorUnion] = None, # Defaults to `color` if None
+        size: Optional[Tuple[int, int]] = None,
+        center: Optional[Tuple[float, float]] = None,
+        sides: int = 6,
+        rotation_step: float = 5,
+        spacing: float = 15, # Radial distance between polygons
+        thickness: float = 2,
 ) -> None:
     """
     Draws concentric polygons onto an existing PIL image using aggdraw.
 
-    Args:
-        image (Image.Image): The PIL Image object to draw on.
-        canvas_size (Optional[Tuple[int, int]]): The size of the canvas (width, height).
-                                                  If None, uses the image's size.
-        sides (int): The number of sides for each polygon.
-        rotation_step (float): The angular rotation step in degrees between consecutive polygons.
-        spacing (float): The radial distance between consecutive polygons.
-        color (ColorUnion): The color of the polygon outlines. Can be an HSLuvColor object,
-                            a tuple (h, s, l, a) for HSLuv, or (r, g, b, a) for RGBA.
-        thickness (float): The thickness of the polygon outlines.
-        fill_opacity (int): The opacity (0-255) of the polygon fill. If 0, polygons are not filled.
+    Parameters
+    ----------
+    image : Image.Image
+        The PIL Image object to draw on. This image is modified in place.
+    color : ColorUnion, optional
+        The fill color of the polygons. Can be an HSLuvColor object, a tuple (h, s, l, a) for HSLuv, or (r, g, b, a) for RGBA.
+        Defaults to HSLuv black (0, 0, 0, 255).
+    stroke_color : Optional[ColorUnion], optional
+        The stroke color of the polygon outlines. If `None`, the `color` parameter is used for the stroke. Defaults to `None`.
+    size : Optional[Tuple[int, int]], optional
+        The size of the canvas (width, height). If `None`, the `image`'s size is used. Defaults to `None`.
+    center : Optional[Tuple[float, float]], optional
+        The center coordinates (x, y) for the concentric polygons. If `None`, the center of the `image` is used. Defaults to `None`.
+    sides : int, optional
+        The number of sides for each polygon. Defaults to 6.
+    rotation_step : float, optional
+    spacing : float, optional
+        The radial distance between consecutive polygons. Defaults to 15.
+    thickness : float, optional
+        The thickness of the polygon outlines. Defaults to 2.
 
-    Returns:
-        None: The drawing is performed directly on the provided `image` object.
+    Returns
+    -------
+    None:
+        The function modifies the input `image` directly; it does not return a new image.
     """
-    color = to_hsluv_color(color)
-    
-    if canvas_size is None:
-        canvas_size = image.size
+    color: HSLuvColor = to_hsluv_color(color)
+    stroke_color = to_hsluv_color(stroke_color)
+
+    if size is None:
+        size = image.size
 
     draw = aggdraw.Draw(image)
-    cx, cy = canvas_size[0] // 2, canvas_size[1] // 2
 
-    # Calculate the distance to the furthest corner to ensure full coverage
-    max_radius = math.sqrt(cx ** 2 + cy ** 2)
+    if center is None:
+        center = size[0] // 2, size[1] // 2
+
+    (cx, cy) = center
+
+    max_radius = max(*size)
     num_polygons = int(1.5 * max_radius / spacing)
+
+    brush: aggdraw.Brush = aggdraw.Brush(color.to_rgba())
+    pen: aggdraw.Pen = aggdraw.Pen(stroke_color.to_rgba(), thickness)
 
     for i in range(num_polygons, 0, -1):  # Draw from outside in for better layering
         radius = i * spacing
@@ -61,62 +81,69 @@ def paint_concentric_polygons(
             points.append(x)
             points.append(y)
 
-        # Optional: Add a subtle fill to create depth
-        # Use the input color's RGB with custom alpha for fill
-        rgba = color.to_rgba()
-        fill_color = (rgba[0], rgba[1], rgba[2], fill_opacity)
-        brush = aggdraw.Brush(fill_color)
-        pen = aggdraw.Pen(rgba, thickness)
-
         draw.polygon(points, pen, brush)
 
     draw.flush()
 
 
 def paint_random_concentric_polygons(
-    img: Image.Image,
-    size: Union[Tuple[int, int], Default, Random] = Default,
-    sides: Union[int, Default, Random] = Default,
-    rotation_step: Union[float, Default, Random] = Default,
-    spacing: Union[float, Default, Random] = Default,
-    color: Optional[ColorUnion] = None,
-    thickness: Union[float, Default, Random] = Default,
-    fill_opacity: Union[int, Default, Random] = Default
-) -> None:
+        img: Image.Image,
+        color: Union[ColorUnion, Default, Random] = Default,
+        stroke_color: Union[ColorUnion, Default, Random] = Default,
+        size: Union[Tuple[int, int], Default, Random] = Default,
+        sides: Union[int, Default, Random] = Random,
+        rotation_step: Union[float, Default, Random] = Random,
+        spacing: Union[float, Default, Random] = Random,
+        thickness: Union[float, Default, Random] = Random,
+        fill_opacity: Union[int, Default, Random] = Random
+) -> None: # The function modifies the input `img` directly.
     """
-    Generates random parameters for concentric polygons and draws them onto a PIL image.
+    Generates random parameters for concentric polygons and draws them onto a PIL image. Any parameter
+    set to `Random` will be randomly generated. Any parameter set to `Default` will use a sensible
+    default value.
 
-    Args:
-        img (Image.Image): The PIL Image object to draw on.
-        size (Union[Tuple[int, int], Default, Random]): The canvas size (width, height).
-                                                        Can be a specific tuple, Default to use
-                                                        image size, or Random to generate randomly.
-        sides (Union[int, Default, Random]): The number of sides for polygons.
-                                             Can be a specific int, Default, or Random.
-        rotation_step (Union[float, Default, Random]): The rotation step in degrees.
-                                                       Can be a specific float, Default, or Random.
-        spacing (Union[float, Default, Random]): The radial spacing between polygons.
-                                                 Can be a specific float, Default, or Random.
-        color (Optional[ColorUnion]): The base color for polygons. If None, a random color is generated.
-        thickness (Union[float, Default, Random]): The thickness of polygon outlines.
-                                                   Can be a specific float, Default, or Random.
-        fill_opacity (Union[int, Default, Random]): The opacity (0-255) of the polygon fill.
-                                                    Can be a specific int, Default, or Random.
-
-    Returns:
-        None: The drawing is performed directly on the provided `img` object.
+    Parameters
+    ----------
+    img : Image.Image
+        The PIL Image object to draw on. This image is modified in place.
+    color : Union[ColorUnion, Default, Random], optional
+        The base color for polygons. If `Random`, a random color is generated. If `Default`, a sensible default color is used.
+        Can also be a specific `ColorUnion` value. Defaults to `Default`.
+    stroke_color : Union[ColorUnion, Default, Random], optional
+        The stroke color for polygons. If `Random`, a random color is generated. If `Default`, a sensible default color is used.
+        Can also be a specific `ColorUnion` value. Defaults to `Default`.
+    size : Union[Tuple[int, int], Default, Random], optional
+        The canvas size (width, height). If `Default`, the image's size is used. If `Random`, a random size is generated.
+        Can also be a specific `Tuple[int, int]`. Defaults to `Default`.
+    sides : Union[int, Default, Random], optional
+        The number of sides for polygons. If `Random`, a random number of sides is generated. If `Default`, a sensible default is used.
+        Can also be a specific `int`. Defaults to `Random`.
+    rotation_step : Union[float, Default, Random], optional
+        The rotation step in degrees. If `Random`, a random step is generated. If `Default`, a sensible default is used.
+        Can also be a specific `float`. Defaults to `Random`.
+    spacing : Union[float, Default, Random], optional
+        The radial spacing between polygons. If `Random`, a random spacing is generated. If `Default`, a sensible default is used.
+        Can also be a specific `float`. Defaults to `Random`.
+    thickness : Union[float, Default, Random], optional
+        The thickness of polygon outlines. If `Random`, a random thickness is generated. If `Default`, a sensible default is used.
+        Can also be a specific `float`. Defaults to `Random`.
     """
     passed_values = clean_passed_parameters({
-        "canvas_size": size,
+        "size": size,
         "sides": sides,
         "rotation_step": rotation_step,
         "spacing": spacing,
         "color": color,
+        "stroke_color": stroke_color,
         "thickness": thickness,
         "fill_opacity": fill_opacity,
     })
 
-    parameters = generate_random_concentric_polygons_parameters(img, size)
-
+    parameters = generate_random_concentric_polygons_parameters(
+        img,
+        color=color,
+        stroke_color=stroke_color,
+        size=size
+    )
     parameters = parameters | passed_values
     paint_concentric_polygons(img, **parameters)

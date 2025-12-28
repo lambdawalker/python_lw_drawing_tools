@@ -1,4 +1,4 @@
-from PIL import Image
+from PIL.Image import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.grid.concentric_polygons.paint import paint_concentric_polygons, paint_random_concentric_polygons
@@ -11,9 +11,9 @@ def create_concentric_polygons(
         rotation_step: float = 5,
         spacing: float = 15,
         color: ColorUnion = (0, 0, 0, 255),
+        stroke_color: ColorUnion = None,
         thickness: float = 2,
-        fill_opacity: int = 0,
-        bg_color: ColorUnion = (0, 0, 0, 0)) -> Image.Image:
+        bg_color: ColorUnion = (0, 0, 0, 0)) -> Image:
     """
     Create an RGBA image and draw concentric polygons on it.
 
@@ -22,10 +22,10 @@ def create_concentric_polygons(
         height (int): Height of the output image in pixels.
         sides (int): Number of sides for the polygons (e.g., 6 for hexagons).
         rotation_step (float): Degrees of rotation added per nested layer.
-        spacing (float): Pixel distance between each consecutive polygon.
+        spacing (float): Pixel distance between consecutive polygons.
         color (ColorUnion): RGBA tuple for the outline color or HSLuvColor.
+        stroke_color (ColorUnion): RGBA tuple for the outline color or HSLuvColor.
         thickness (float): Stroke thickness of polygon edges in pixels.
-        fill_opacity (int): Alpha value for subtle fill (0-255; 0 is transparent).
         bg_color (ColorUnion): Background color for the created image (RGBA; default transparent).
 
     Returns:
@@ -37,21 +37,22 @@ def create_concentric_polygons(
 
     paint_concentric_polygons(
         image=img,
-        canvas_size=(width, height),
+        size=(width, height),
         sides=sides,
         rotation_step=rotation_step,
         spacing=spacing,
         color=color,
-        thickness=thickness,
-        fill_opacity=fill_opacity,
+        stroke_color=stroke_color,
+        thickness=thickness
     )
+    
     return img
 
 
 def create_random_concentric_polygons(
         width: int = 800,
         height: int = 800,
-) -> Image.Image:
+) -> Image:
     """
     Create an RGBA image and draw random concentric polygons on it.
 

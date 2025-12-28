@@ -19,9 +19,24 @@ def paint_linear_gradient(
     """
     Draws a linear gradient onto an existing PIL image at a specific location.
     Modifies the original image in-place.
+
+    Args:
+        image (Image.Image): The PIL image to draw on.
+        right_corner (Tuple[int, int]): The top-left corner (x, y) of the gradient area.
+                                        Defaults to (0, 0).
+        size (Optional[Tuple[int, int]]): The width and height of the gradient area.
+                                          If None, the entire image size is used.
+        start_color (ColorUnion): The starting color of the gradient.
+                                  Can be an RGBA tuple, HSLuv tuple, or a Color object.
+                                  Defaults to black (0, 0, 0, 255).
+        end_color (ColorUnion): The ending color of the gradient.
+                                Can be an RGBA tuple, HSLuv tuple, or a Color object.
+                                Defaults to white (255, 255, 255, 255).
+        angle (float): The angle of the gradient in degrees. 0 degrees is horizontal.
     """
     start_rgba = to_hsluv_color(start_color).to_rgba()
     end_rgba = to_hsluv_color(end_color).to_rgba()
+    print(start_rgba, end_rgba)
 
     width, height = size if size is not None else image.size
     mode = image.mode
@@ -50,12 +65,31 @@ def paint_linear_gradient(
 
 def paint_random_linear_gradient(
         img: Image.Image,
+        primary_color: Union[ColorUnion, Random] = Random,
         right_corner: Union[Tuple[int, int], Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default,
-        start_color: Optional[ColorUnion] = None,
-        end_color: Optional[ColorUnion] = None,
-        angle: Optional[float] = None,
+        start_color: Optional[ColorUnion] = Default,
+        end_color: Optional[ColorUnion] = Default,
+        angle: Optional[float] = Random,
 ) -> None:
+    """
+    Draws a random linear gradient onto an existing PIL image.
+    Modifies the original image in-place.
+
+    Args:
+        img (Image.Image): The PIL image to draw on.
+        primary_color (Union[ColorUnion, Random]): The primary color for generating random colors.
+                                                   Can be a specific color or `Random`.
+        right_corner (Union[Tuple[int, int], Default, Random]): The top-left corner (x, y) of the gradient area.
+                                                                Can be a specific tuple, `Default`, or `Random`.
+        size (Union[Tuple[int, int], Default, Random]): The width and height of the gradient area.
+                                                        Can be a specific tuple, `Default`, or `Random`.
+        start_color (Optional[ColorUnion]): The starting color of the gradient. Can be a specific color or `Default`.
+        end_color (Optional[ColorUnion]): The ending color of the gradient. Can be a specific color or `Default`.
+        angle (Optional[float]): The angle of the gradient in degrees. Can be a specific float or `Random`.
+    """
+    primary_color = to_hsluv_color(primary_color)
+
     passed_values = clean_passed_parameters({
         "right_corner": right_corner,
         "size": size,
@@ -64,7 +98,12 @@ def paint_random_linear_gradient(
         "angle": angle,
     })
 
-    random_parameters = generate_random_linear_gradient_parameters(img, right_corner, size)
+    random_parameters = generate_random_linear_gradient_parameters(
+        img,
+        primary_color,
+        right_corner,
+        size
+    )
 
     parameters = random_parameters | passed_values
     paint_linear_gradient(img, **parameters)

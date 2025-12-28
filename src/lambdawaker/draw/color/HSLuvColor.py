@@ -1,6 +1,6 @@
 import random
 from typing import Tuple, Union, Iterator
-
+from typing import List
 import hsluv
 
 from lambdawaker.draw.color.generate_from_color import compute_random_shade_color, compute_complementary_color, \
@@ -16,14 +16,14 @@ class HSLuvColor:
     def __init__(self, hue: float, saturation: float, lightness: float, alpha: float = 1.0,
                  h_range: Tuple[float, float] = (0, 360), s_range: Tuple[float, float] = (0, 100),
                  l_range: Tuple[float, float] = (0, 100),
-                 a_range: Tuple[float, float] = (0, 1), tag: str = ""):
+                 a_range: Tuple[float, float] = (0, 1), tag: str = "") -> None:
         """
         Initialize HSLuv with value constraints.
 
         Args:
             hue (float): The hue value (0-360).
             saturation (float): The saturation value (0-100).
-            lightness (float): The lightness value (0-100).
+            lightness (float): The lightness value (0-100). If the value is outside the range, it will be clamped.
             h_range (tuple): Min and max allowed values for hue.
             s_range (tuple): Min and max allowed values for saturation.
             l_range (tuple): Min and max allowed values for lightness.
@@ -165,24 +165,44 @@ class HSLuvColor:
         return int(r * 255), int(g * 255), int(b * 255)
 
     def __repr__(self) -> str:
-        return f"HSLuv(H={self.hue:.1f}, S={self.saturation:.1f}, L={self.lightness:.1f})"
+        return f"HSLuv(H={self.hue:.1f}, S={self.saturation:.1f}, L={self.lightness:.1f}, A={self.alpha:.1f})"
 
     def random_shade(self, lightness_limit: int = 30, min_distance: int = 10) -> 'HSLuvColor':
         """Generates a random shade of this color."""
         return compute_random_shade_color(self, lightness_limit=lightness_limit, min_distance=min_distance)
 
-    def complementary_color(self) -> 'HSLuvColor':
-        """Returns the complementary color."""
+    def complementary_color(self) -> 'HSLuvColor': # type: ignore
+        """
+        Returns the complementary color.
+
+        The complementary color is found by rotating the hue by 180 degrees.
+        """
         return compute_complementary_color(self)
 
     def harmonious_color(self, hue_offset: int = 90, lightness_offset: int = 15,
-                         saturation_offset: int = 15) -> 'HSLuvColor':
+                         saturation_offset: int = 15) -> 'HSLuvColor': # type: ignore
+        """
+        Generates a harmonious color based on the current color.
+
+        Args:
+            hue_offset (int): The maximum offset for the hue component.
+            lightness_offset (int): The maximum offset for the lightness component.
+            saturation_offset (int): The maximum offset for the saturation component.
+
+        Returns:
+            HSLuvColor: A new HSLuvColor object representing the harmonious color.
+        """
         return compute_harmonious_color(
             self,
             hue_offset=hue_offset,
             lightness_offset=lightness_offset,
             saturation_offset=saturation_offset
         )
+
+    def split_complementary_colors(self, angle: float = 30.0) -> Tuple['HSLuvColor', 'HSLuvColor']:
+        """
+        Returns a tuple of two HSLuvColor objects representing the split complementary colors.
+        """
 
     def close_color(self, hue_offset: int = 30, lightness_offset: int = 10,
                     saturation_offset: int = 10) -> 'HSLuvColor':
@@ -193,20 +213,42 @@ class HSLuvColor:
             saturation_offset=saturation_offset
         )
 
-    def triadic_colors(self, factor: float = 1 / 3) -> Tuple['HSLuvColor', 'HSLuvColor']:
-        """Returns the triadic color variants."""
+    def triadic_colors(self, factor: float = 1 / 3) -> Tuple['HSLuvColor', 'HSLuvColor']: # type: ignore
+        """
+        Returns a tuple of two HSLuvColor objects representing the triadic color variants.
+
+        Triadic colors are three colors evenly spaced around the color wheel.
+        """
         return compute_triadic_colors(self, factor=factor)
 
-    def analogous_colors(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']:
-        """Returns the analogous color variants."""
+    def analogous_colors(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']: # type: ignore
+        """
+        Returns a tuple of two HSLuvColor objects representing the analogous color variants.
+
+        Analogous colors are groups of three colors that are next to each other on the color wheel,
+        and a tertiary.
+        """
         return compute_analogous_colors(self, factor=factor)
 
-    def analogous_color(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']:
-        """Returns the analogous color variants."""
+    def analogous_color(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']: # type: ignore
+        """
+        Returns a tuple of two HSLuvColor objects representing the analogous color variants.
+
+        Analogous colors are groups of three colors that are next to each other on the color wheel,
+        and a tertiary.
+        """
         return compute_analogous_colors(self, factor=factor)
 
-    def equidistant_variants(self, factor: float) -> Tuple['HSLuvColor', 'HSLuvColor']:
-        """Returns two color variants equidistant from this color's hue."""
+    def equidistant_variants(self, factor: float) -> Tuple['HSLuvColor', 'HSLuvColor']: # type: ignore
+        """
+        Returns two color variants equidistant from this color's hue.
+
+        Args:
+            factor (float): The factor by which to offset the hue in both directions.
+
+        Returns:
+            Tuple['HSLuvColor', 'HSLuvColor']: A tuple containing two HSLuvColor objects.
+        """
         return compute_equidistant_variants(self, factor=factor)
 
 
@@ -236,6 +278,6 @@ def to_hsluv_color(color: ColorUnion) -> HSLuvColor:
         raise TypeError(f"Unsupported color type: {type(color)}")
 
 
-def random_alpha(low=0, high=1) -> Tuple[float, float, float, float]:
+def random_alpha(low: float = 0, high: float = 1) -> Tuple[float, float, float, float]:
     """Generates a random alpha value."""
     return 0, 0, 0, random.uniform(low, high)
