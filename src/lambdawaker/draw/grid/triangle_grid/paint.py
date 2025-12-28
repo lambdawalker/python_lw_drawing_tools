@@ -21,10 +21,10 @@ def paint_triangle_grid(
     Draw a tiling of equilateral triangles across a given area into an existing image.
     """
     color = to_hsluv_color(color)
-    
+
     if area_size is None:
         area_size = image.size
-        
+
     draw = aggdraw.Draw(image)
     width, height = area_size
     pen = aggdraw.Pen(color.to_rgba(), thickness)
@@ -32,12 +32,10 @@ def paint_triangle_grid(
     cx, cy = width / 2.0, height / 2.0
     rad = math.radians(angle)
 
-    # Equilateral triangle geometry
     tri_height = (math.sqrt(3.0) / 2.0) * size
     horiz_dist = size / 2.0
     vert_dist = tri_height
 
-    # Coverage for rotation
     diagonal = int(math.sqrt(width ** 2 + height ** 2))
 
     def rot(px: float, py: float):
@@ -53,7 +51,6 @@ def paint_triangle_grid(
             x_base = col * horiz_dist
             y_base = row * vert_dist
 
-            # Alternate up and down triangles
             is_up = ((row + col) % 2) == 0
 
             if is_up:
@@ -69,7 +66,7 @@ def paint_triangle_grid(
                     (x_base + size / 2.0, y_base),
                 ]
 
-            verts.append(verts[0])  # close path
+            verts.append(verts[0])
 
             path = []
             for px, py in verts:

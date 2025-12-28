@@ -1,7 +1,8 @@
-import aggdraw
 import math
-from PIL import Image
 from typing import Union, Optional
+
+import aggdraw
+from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.header.sin_header.parameters import generate_random_sin_header_parameters
@@ -17,28 +18,21 @@ def draw_sine_header(draw: aggdraw.Draw, height: int = 100, amplitude: float = 2
     brush = aggdraw.Brush(color.to_rgba())
     path = aggdraw.Path()
 
-    # 1. Start at top-left and go to top-right
     path.moveto(0, 0)
     path.lineto(width, 0)
 
-    # 2. Draw the right-side vertical edge down to the start of the wave
-    # We calculate the Y for the sine wave at the far right edge
     end_y = height + amplitude * math.sin(2 * math.pi * frequency)
     path.lineto(width, end_y)
 
-    # 3. Trace the Sine wave from right to left (back to x=0)
-    # The more steps, the smoother the curve appears.
     steps = 100
     for i in range(steps, -1, -1):
         x = (i / steps) * width
-        # Sine formula: y = baseline + amplitude * sin(2 * PI * freq * (x/width))
+
         y = height + amplitude * math.sin(2 * math.pi * frequency * (i / steps))
         path.lineto(x, y)
 
-    # 4. Close the path (returns to 0,0)
     path.close()
 
-    # 5. Render onto canvas
     draw.path(path, brush)
     draw.flush()
 
@@ -61,6 +55,6 @@ def paint_random_sin_header(
     parameters = generate_random_sin_header_parameters(img, primary_color, color)
 
     parameters = parameters | passed_values
-    
+
     draw = aggdraw.Draw(img)
     draw_sine_header(draw, **parameters)

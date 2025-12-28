@@ -27,13 +27,11 @@ def paint_radial_gradient(
     width, height = size if size is not None else image.size
     mode = image.mode
 
-    # Default center to the middle of the area
     if center is None:
         cx, cy = width / 2.0, height / 2.0
     else:
         cx, cy = center
 
-    # Default radius to cover the farthest corner
     if radius is None:
         corners = np.array([(0, 0), (width, 0), (width, height), (0, height)])
         distances = np.sqrt(((corners - np.array([cx, cy])) ** 2).sum(axis=1))
@@ -44,7 +42,6 @@ def paint_radial_gradient(
     y, x = np.ogrid[:height, :width]
     dist_from_center = np.sqrt((x - cx) ** 2 + (y - cy) ** 2)
 
-    # Normalize distance to [0, 1] based on radius
     mask = dist_from_center / max_radius
     mask = np.clip(mask, 0, 1)
     mask = mask[..., np.newaxis]
@@ -53,13 +50,10 @@ def paint_radial_gradient(
     start_c = np.array(start_rgba[:channels])
     end_c = np.array(end_rgba[:channels])
 
-    # Interpolate: start_color at center (mask=0), end_color at radius (mask=1)
     gradient_array = (start_c + mask * (end_c - start_c)).astype(np.uint8)
 
     gradient_patch = Image.fromarray(gradient_array, mode=mode)
 
-    # Use the patch itself as a mask if it has alpha,
-    # ensuring it respects transparency during the paste
     image.paste(gradient_patch, right_corner, mask=gradient_patch if mode == "RGBA" else None)
 
 

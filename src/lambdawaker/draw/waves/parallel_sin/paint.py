@@ -23,10 +23,10 @@ def paint_sine_waves(
     Draw a set of parallel sine waves at a given rotation into a context.
     """
     color = to_hsluv_color(color)
-    
+
     if area_size is None:
         area_size = image.size
-        
+
     draw = aggdraw.Draw(image)
     width, height = area_size
     pen = aggdraw.Pen(color.to_rgba(), thickness)
@@ -34,17 +34,14 @@ def paint_sine_waves(
     rad = math.radians(angle)
     cx, cy = width / 2.0, height / 2.0
 
-    # Ensure coverage of corners after rotation
     diagonal = int(math.sqrt(width ** 2 + height ** 2))
 
-    # Iterate baseline offsets for each parallel sine wave
     for d in range(-diagonal, diagonal + int(spacing), int(spacing)):
         pts = []
-        # Sample the sine wave along a virtual x-axis spanning beyond the diagonal
+
         for x_virtual in range(-diagonal, diagonal + 1, 2):
             y_virtual = amplitude * math.sin(frequency * x_virtual) + d
 
-            # Rotate the point around center
             nx = x_virtual * math.cos(rad) - y_virtual * math.sin(rad) + cx
             ny = x_virtual * math.sin(rad) + y_virtual * math.cos(rad) + cy
 

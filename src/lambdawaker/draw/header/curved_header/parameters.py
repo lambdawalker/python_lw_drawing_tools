@@ -1,18 +1,16 @@
 import random
-from typing import Tuple, Union, Dict, Any
+from typing import Union, Dict, Any
 
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
-from lambdawaker.random.values import DefaultValue, Default, Random
+from lambdawaker.random.values import Default, Random
 
 
 def generate_random_curved_header_parameters(
-        img: Image.Image,
         primary_color: Union[ColorUnion, Random] = Random,
         color: Union[ColorUnion, Default, Random] = Default,
-        size: Union[Tuple[int, int], Default, Random] = Default
 ) -> Dict[str, Any]:
     """
     Generates random parameters for a curved header.
@@ -44,9 +42,6 @@ def generate_random_curved_header_parameters(
         color = primary_color.close_color()
     elif color == Random:
         color = generate_hsluv_text_contrasting_color()
-
-    if size == Default:
-        size = DefaultValue(lambda: img.size)
 
     return {
         "height": random.randint(50, 200),

@@ -22,7 +22,6 @@ def clamp_hue(raw_val: float, h_range: Tuple[float, float]) -> float:
     val = raw_val % 360
     h_min, h_max = h_range
 
-    # If the range is the full circle, just return the wrapped value
     if (h_min % 360) == (h_max % 360):
         return val
 
@@ -91,7 +90,6 @@ def parse_multi_unit(format_str: str) -> Dict[str, float]:
     # 3. The unit label [hsl] (case-insensitive)
     pattern = r"([+-]?(?:\d+\.?\d*|\.\d+))\s*(\w)"
 
-    # Find all matches
     matches = re.findall(pattern, format_str.lower())
 
     if not matches:
@@ -153,17 +151,15 @@ def is_inside(angle: float, arc: Tuple[float, float]) -> bool:
     """
     start, end = arc
 
-    # Normalize all inputs to [0, 360)
     angle %= 360
     start %= 360
     end %= 360
 
     if start <= end:
-        # Standard case (e.g., 10 to 50)
+
         return start <= angle <= end
     else:
-        # Wrap-around case (e.g., 330 to 10)
-        # The angle is inside if it's >= start OR <= end
+
         return angle >= start or angle <= end
 
 

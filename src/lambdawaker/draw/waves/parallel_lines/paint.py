@@ -21,23 +21,19 @@ def paint_parallel_lines(
     Draw a set of equally spaced, parallel lines at a given angle into an existing image.
     """
     color = to_hsluv_color(color)
-    
+
     if area_size is None:
         area_size = image.size
-        
+
     draw = aggdraw.Draw(image)
     width, height = area_size
     pen = aggdraw.Pen(color.to_rgba(), thickness)
 
-    # Convert angle to radians
     radians = math.radians(angle)
 
-    # Calculate the diagonal of the canvas to ensure full coverage
     diagonal = int(math.sqrt(width ** 2 + height ** 2))
 
-    # Draw lines large enough to cover the rotated viewport
     for d in range(-diagonal, diagonal * 2, int(spacing)):
-        # Start and end far outside the canvas boundaries
         x0 = d * math.cos(radians + math.pi / 2) - diagonal * math.cos(radians)
         y0 = d * math.sin(radians + math.pi / 2) - diagonal * math.sin(radians)
         x1 = d * math.cos(radians + math.pi / 2) + diagonal * math.cos(radians)

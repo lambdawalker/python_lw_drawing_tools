@@ -4,7 +4,7 @@ from typing import Callable, Dict, Optional, Tuple, Union
 import aggdraw
 from PIL import Image
 
-from lambdawaker.draw.color.HSLuvColor import HSLuvColor, ColorUnion, to_hsluv_color
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.grid.shapes_grid.parameters import generate_random_shapes_grid_parameters
 from lambdawaker.draw.shapes.simple_shapes import circle
 from lambdawaker.random.values import Random, Default, clean_passed_parameters
@@ -28,10 +28,10 @@ def paint_shapes_grid(
 
     draw_function = draw_function if draw_function is not None else circle
     draw_parameters = draw_parameters if draw_parameters is not None else {}
-    
+
     if size is None:
         size = image.size
-        
+
     width, height = size
 
     draw = aggdraw.Draw(image)
@@ -46,7 +46,6 @@ def paint_shapes_grid(
     cos_a, sin_a = math.cos(rad), math.sin(rad)
     cx, cy = width / 2, height / 2
 
-    # Coverage margin (increased to account for rotation clipping)
     limit = int(max(width, height) / radius) + 10
 
     for row in range(-limit, limit):
@@ -59,10 +58,8 @@ def paint_shapes_grid(
             rot_x = grid_x * cos_a - grid_y * sin_a + cx
             rot_y = grid_x * sin_a + grid_y * cos_a + cy
 
-            # Bounds check with a buffer for rotated shapes
             buffer = radius * 2
             if -buffer < rot_x < width + buffer and -buffer < rot_y < height + buffer:
-                # Now passing 'angle' to the proxy!
                 draw_function(draw, (rot_x, rot_y), radius, angle, pen, brush, **draw_parameters)
 
     draw.flush()

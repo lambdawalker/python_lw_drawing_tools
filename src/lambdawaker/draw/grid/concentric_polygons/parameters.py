@@ -1,5 +1,5 @@
 import random
-from typing import Tuple, Union, Dict, Any, Optional
+from typing import Tuple, Union, Dict, Any
 
 from PIL import Image
 
@@ -12,10 +12,10 @@ from lambdawaker.random.values import DefaultValue, Default, Random
 def generate_random_concentric_polygons_parameters(
         img: Image.Image,
         primary_color: Union[ColorUnion, Random] = Random,
-        color: Union[ColorUnion, Default, Random] = Default,  # type: ignore
-        stroke_color: Union[ColorUnion, Default, Random] = Default,  # type: ignore
-        size: Union[Tuple[int, int], Default, Random] = Default,  # type: ignore
-        center: Union[Tuple[int, int], Default, Random] = Random,  # type: ignore
+        color: Union[ColorUnion, Default, Random] = Default,
+        stroke_color: Union[ColorUnion, Default, Random] = Default,
+        size: Union[Tuple[int, int], Default, Random] = Default,
+        center: Union[Tuple[int, int], Default, Random] = Random,
 ) -> Dict[str, Any]:
     """
     Generates a dictionary of random parameters for drawing concentric polygons.

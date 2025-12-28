@@ -32,47 +32,37 @@ def paint_hexagon_grid(
     cx, cy = width / 2, height / 2
     rad_rotation = math.radians(angle)
 
-    # Hexagon Math: Width and Height of a single hexagon
     hex_width = 2 * hexagon_size
     hex_height = math.sqrt(3) * hexagon_size
 
-    # Horizontal and Vertical spacing for tiling
     horiz_dist = hex_width * 3 / 4
     vert_dist = hex_height
 
-    # Calculate diagonal to ensure full coverage during rotation
     diagonal = int(math.sqrt(width ** 2 + height ** 2))
 
-    # helper for rotation
     def rotate_point(px, py):
-        # Translate to origin, rotate, translate back
+
         tx, ty = px - cx, py - cy
         rx = tx * math.cos(rad_rotation) - ty * math.sin(rad_rotation) + cx
         ry = tx * math.sin(rad_rotation) + ty * math.cos(rad_rotation) + cy
         return rx, ry
 
-    # Iterate through a grid large enough to cover the diagonal
     for col in range(-diagonal // int(horiz_dist) - 2, diagonal // int(horiz_dist) + 2):
         for row in range(-diagonal // int(vert_dist) - 2, diagonal // int(vert_dist) + 2):
 
-            # Calculate center of current hexagon
-            # Offset every other column
             x_offset = col * horiz_dist
             y_offset = row * vert_dist
             if col % 2 != 0:
                 y_offset += vert_dist / 2
 
-            # Draw the 6 sides
             points = []
-            for i in range(7):  # 7 points to close the loop
-                # Calculate vertex relative to grid origin (0,0) before rotation
+            for i in range(7):
                 angle_deg = 60 * i
                 angle_rad = math.radians(angle_deg)
 
                 px = x_offset + hexagon_size * math.cos(angle_rad)
                 py = y_offset + hexagon_size * math.sin(angle_rad)
 
-                # Apply global grid rotation
                 rx, ry = rotate_point(px, py)
                 points.extend([rx, ry])
 

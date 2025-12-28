@@ -23,10 +23,10 @@ def paint_angled_square_waves(
     Draw a set of parallel square waves at a given rotation into a context.
     """
     color = to_hsluv_color(color)
-    
+
     if area_size is None:
         area_size = image.size
-        
+
     draw = aggdraw.Draw(image)
     width, height = area_size
     pen = aggdraw.Pen(color.to_rgba(), thickness)
@@ -34,10 +34,8 @@ def paint_angled_square_waves(
     rad = math.radians(angle)
     cx, cy = width / 2.0, height / 2.0
 
-    # Ensure coverage of corners after rotation
     diagonal = int(math.sqrt(width ** 2 + height ** 2))
 
-    # Half wavelength is the length of each flat section
     step = max(1, int(round(wavelength / 2.0)))
 
     def rotate_point(px: float, py: float):
@@ -49,25 +47,21 @@ def paint_angled_square_waves(
         y_high = d + amplitude
         y_low = d - amplitude
 
-        # Build polyline: start at far left, alternate horizontal and vertical
         x = -diagonal - step
         pts = []
 
-        # Initialize starting level so that segments align deterministically
         is_high = True
-        # Move start to -diagonal
+
         x = -diagonal
         pts.extend(rotate_point(x, y_high if is_high else y_low))
 
-        # Generate until far right
         while x <= diagonal + step:
             next_x = x + step
             y_curr = y_high if is_high else y_low
             y_next = y_low if is_high else y_high
 
-            # Horizontal segment to next_x at current level
             pts.extend(rotate_point(next_x, y_curr))
-            # Vertical transition at next_x to the other level
+
             pts.extend(rotate_point(next_x, y_next))
 
             x = next_x

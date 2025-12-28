@@ -12,13 +12,13 @@ from lambdawaker.random.values import Random, Default, clean_passed_parameters
 
 def paint_concentric_polygons(
         image: Image.Image,
-        color: ColorUnion = (0, 0, 0, 255),  # HSLuv black with 100% alpha
-        stroke_color: Optional[ColorUnion] = None,  # Defaults to `color` if None
+        color: ColorUnion = (0, 0, 0, 255),
+        stroke_color: Optional[ColorUnion] = None,
         size: Optional[Tuple[int, int]] = None,
         center: Optional[Tuple[float, float]] = None,
         sides: int = 6,
         rotation_step: float = 5,
-        spacing: float = 15,  # Radial distance between polygons
+        spacing: float = 15,
         thickness: float = 2,
 ) -> None:
     """
@@ -70,7 +70,7 @@ def paint_concentric_polygons(
     brush: aggdraw.Brush = aggdraw.Brush(color.to_rgba())
     pen: aggdraw.Pen = aggdraw.Pen(stroke_color.to_rgba(), thickness)
 
-    for i in range(num_polygons, 0, -1):  # Draw from outside in for better layering
+    for i in range(num_polygons, 0, -1):
         radius = i * spacing
         angle_offset = math.radians(i * rotation_step)
 

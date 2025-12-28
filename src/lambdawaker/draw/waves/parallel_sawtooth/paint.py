@@ -23,10 +23,10 @@ def paint_angled_sawtooth_waves(
     Draw a set of parallel sawtooth waves at a given rotation into a context.
     """
     color = to_hsluv_color(color)
-    
+
     if area_size is None:
         area_size = image.size
-        
+
     draw = aggdraw.Draw(image)
     width, height = area_size
     pen = aggdraw.Pen(color.to_rgba(), thickness)
@@ -34,20 +34,17 @@ def paint_angled_sawtooth_waves(
     rad = math.radians(angle)
     cx, cy = width / 2.0, height / 2.0
 
-    # Ensure coverage of corners after rotation
     diagonal = int(math.sqrt(width ** 2 + height ** 2))
 
-    # Step for alternating peak/trough points along the x-axis
     step = max(1, int(round(wavelength / 2.0)))
 
     for d in range(-diagonal, diagonal + int(spacing), int(spacing)):
         pts = []
-        # Build a zigzag path far beyond the diagonal for full coverage
+
         for x_virtual in range(-diagonal - step, diagonal + step + 1, step):
             is_peak = ((x_virtual // step) % 2) == 0
             y_virtual = d + (amplitude if is_peak else -amplitude)
 
-            # Rotate around center
             nx = x_virtual * math.cos(rad) - y_virtual * math.sin(rad) + cx
             ny = x_virtual * math.sin(rad) + y_virtual * math.cos(rad) + cy
 

@@ -23,18 +23,15 @@ def rotating_polygons(draw: aggdraw.Draw, center: Tuple[float, float], sides: in
     """
     color = to_hsluv_color(color)
 
-    # Define the pen for drawing
     pen = aggdraw.Pen(color.to_rgba(), thickness)
     cx, cy = center
 
     for i in range(1, num_polygons + 1):
-        # Calculate the radius for this specific layer
+
         radius = i * spacing
 
-        # Calculate the rotation for this specific layer (in radians)
         angle_offset = math.radians(i * rotation_step)
 
-        # Generate coordinates for the polygon vertices
         points = []
         for s in range(sides):
             angle = (2 * math.pi * s / sides) + angle_offset
@@ -43,6 +40,4 @@ def rotating_polygons(draw: aggdraw.Draw, center: Tuple[float, float], sides: in
             points.append(x)
             points.append(y)
 
-        # Create a path string for aggdraw or use draw.polygon
-        # Note: aggdraw's polygon takes a list/sequence of coordinates
         draw.polygon(points, pen)

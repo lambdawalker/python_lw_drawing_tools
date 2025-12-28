@@ -1,6 +1,6 @@
 import random
 from typing import Tuple, Union, Iterator
-from typing import List
+
 import hsluv
 
 from lambdawaker.draw.color.generate_from_color import compute_random_shade_color, compute_complementary_color, \
@@ -35,7 +35,6 @@ class HSLuvColor:
         self.l_range = l_range
         self.a_range = a_range
 
-        # Initialize and clamp values to range
         self.hue = clamp_hue(hue, self.h_range)
         self.saturation = clamp(saturation, s_range)
         self.lightness = clamp(lightness, l_range)
@@ -46,7 +45,7 @@ class HSLuvColor:
         """
         Returns a new HSLuvColor with the hue adjusted by the given amount.
         """
-        # We calculate the new position and then apply the circular constraint
+
         hue = clamp_hue(self.hue + amount, self.h_range)
         return HSLuvColor(hue, saturation=self.saturation, lightness=self.lightness,
                           alpha=self.alpha, h_range=self.h_range, s_range=self.s_range,
@@ -125,11 +124,9 @@ class HSLuvColor:
     def __getitem__(self, index: Union[int, slice]) -> Union[float, Tuple[float, ...]]:
         """Allows access via color[0], color[1], color[2], color[3] or slicing."""
 
-        # Store components in a tuple for easy slicing/indexing
         components = (self.hue, self.saturation, self.lightness, self.alpha)
 
         if isinstance(index, slice):
-            # index.indices(len) handles None and negative indices automatically
             start, stop, step = index.indices(len(components))
             return tuple(components[i] for i in range(start, stop, step))
 
@@ -171,7 +168,7 @@ class HSLuvColor:
         """Generates a random shade of this color."""
         return compute_random_shade_color(self, lightness_limit=lightness_limit, min_distance=min_distance)
 
-    def complementary_color(self) -> 'HSLuvColor': # type: ignore
+    def complementary_color(self) -> 'HSLuvColor':
         """
         Returns the complementary color.
 
@@ -180,7 +177,7 @@ class HSLuvColor:
         return compute_complementary_color(self)
 
     def harmonious_color(self, hue_offset: int = 90, lightness_offset: int = 15,
-                         saturation_offset: int = 15) -> 'HSLuvColor': # type: ignore
+                         saturation_offset: int = 15) -> 'HSLuvColor':
         """
         Generates a harmonious color based on the current color.
 
@@ -213,7 +210,7 @@ class HSLuvColor:
             saturation_offset=saturation_offset
         )
 
-    def triadic_colors(self, factor: float = 1 / 3) -> Tuple['HSLuvColor', 'HSLuvColor']: # type: ignore
+    def triadic_colors(self, factor: float = 1 / 3) -> Tuple['HSLuvColor', 'HSLuvColor']:
         """
         Returns a tuple of two HSLuvColor objects representing the triadic color variants.
 
@@ -221,7 +218,7 @@ class HSLuvColor:
         """
         return compute_triadic_colors(self, factor=factor)
 
-    def analogous_colors(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']: # type: ignore
+    def analogous_colors(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']:
         """
         Returns a tuple of two HSLuvColor objects representing the analogous color variants.
 
@@ -230,7 +227,7 @@ class HSLuvColor:
         """
         return compute_analogous_colors(self, factor=factor)
 
-    def analogous_color(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']: # type: ignore
+    def analogous_color(self, factor: float = 1 / 8) -> Tuple['HSLuvColor', 'HSLuvColor']:
         """
         Returns a tuple of two HSLuvColor objects representing the analogous color variants.
 
@@ -239,7 +236,7 @@ class HSLuvColor:
         """
         return compute_analogous_colors(self, factor=factor)
 
-    def equidistant_variants(self, factor: float) -> Tuple['HSLuvColor', 'HSLuvColor']: # type: ignore
+    def equidistant_variants(self, factor: float) -> Tuple['HSLuvColor', 'HSLuvColor']:
         """
         Returns two color variants equidistant from this color's hue.
 

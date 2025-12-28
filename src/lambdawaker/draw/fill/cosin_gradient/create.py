@@ -26,10 +26,9 @@ def create_cosine_gradient(
     Returns:
         PIL.Image.Image: A new image containing the cosine gradient.
     """
-    # 1. Create a transparent canvas
+
     img = Image.new("RGBA", (width, height), (0, 0, 0, 0))
 
-    # 2. Use the painting function to fill the entire area
     paint_cosine_gradient(
         image=img,
         right_corner=(0, 0),
