@@ -121,5 +121,3 @@ def compute_harmonious_color(base_color: 'HSLuvColor', hue_offset: int = 60,
                       random.randint(-lightness_offset, lightness_offset))
     c.tag = "HARMONIOUS"
     return c
-
-

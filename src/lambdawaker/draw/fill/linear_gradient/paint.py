@@ -36,7 +36,6 @@ def paint_linear_gradient(
     """
     start_rgba = to_hsluv_color(start_color).to_rgba()
     end_rgba = to_hsluv_color(end_color).to_rgba()
-    print(start_rgba, end_rgba)
 
     width, height = size if size is not None else image.size
     mode = image.mode

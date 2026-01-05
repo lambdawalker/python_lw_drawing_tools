@@ -1,7 +1,7 @@
 from PIL import Image
 
-from lambdawaker.draw.shapes.draw_blured_image_contour import draw_contour
 from lambdawaker.draw.color.HSLuvColor import HSLuvColor, random_alpha
+from lambdawaker.draw.shapes.draw_blured_image_contour import draw_contour
 from lambdawaker.draw.svg.svg_to_png import svg_to_png
 from lambdawaker.file.path.wd import path_from_root
 from lambdawaker.random.selection.select_random_file import select_random_file
@@ -12,13 +12,12 @@ def draw_random_country_blured_contour(img: Image.Image, primary_color: HSLuvCol
     svg_path = select_random_file(source)
 
     width, height = img.size
-    print(width, height)
     size = (int(width / 3.2), height)
 
     country = svg_to_png(svg_path, size)
     silhouette = draw_contour(
         country, primary_color.close_color() - random_alpha(.3, .6),
-        primary_color.close_color() - random_alpha(.3, .6)
+                 primary_color.close_color() - random_alpha(.3, .6)
     )
 
     _, silhouette_height = silhouette.size

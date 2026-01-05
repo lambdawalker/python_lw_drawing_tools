@@ -53,7 +53,7 @@ def generate_random_sawtooth_wave_parameters(
     if size == Default:
         size = DefaultValue(lambda: img.size)
 
-    thickness = random.uniform(1,5)
+    thickness = random.uniform(1, 3)
 
     return {
         "area_size": get_random_point_with_margin(img.size, default=size, margin=0),

@@ -160,7 +160,7 @@ class HSLuvColor:
 
     def to_css_rgba(self) -> str:
         r, g, b = self.to_rgb()
-        a= self.alpha
+        a = self.alpha
         return f'rgba({r},{g},{b},{a:02f})'
 
     def to_rgb(self):
@@ -221,8 +221,8 @@ class HSLuvColor:
         Returns a tuple of two HSLuvColor objects representing the split complementary colors.
         """
 
-    def close_color(self, hue_offset: int = 30, lightness_offset: int = 10,
-                    saturation_offset: int = 10) -> 'HSLuvColor':
+    def close_color(self, hue_offset: int = 25, lightness_offset: int = 8,
+                    saturation_offset: int = 5) -> 'HSLuvColor':
         return compute_harmonious_color(
             self,
             hue_offset=hue_offset,

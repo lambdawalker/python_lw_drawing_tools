@@ -12,7 +12,6 @@ def draw_contour(pil_image, color: ColorUnion, stroke_color: ColorUnion):
     margin = 12
     width, height = pil_image.size
     bg_color = color - "1a"
-    print(bg_color.to_rgba())
 
     padded_image = Image.new("RGBA", (width + 2 * margin, height + 2 * margin), bg_color.to_rgba())
     padded_image.paste(pil_image, (margin, margin))

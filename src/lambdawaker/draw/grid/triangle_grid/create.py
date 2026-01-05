@@ -1,5 +1,3 @@
-from typing import Tuple, Optional
-
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color

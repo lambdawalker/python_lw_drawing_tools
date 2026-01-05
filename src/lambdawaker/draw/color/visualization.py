@@ -49,7 +49,6 @@ def display_colors(hsl_colors: List[ColorUnion], square_size: int = 150, padding
         x = col * (square_size + padding) + padding
         y = row * (total_square_height + font_size * 1.3) + font_size * 1.3
 
-        print(color)
         (h, s, l) = color
 
         r, g, b, a = color.to_rgba()

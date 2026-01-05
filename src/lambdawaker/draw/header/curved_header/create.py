@@ -1,8 +1,8 @@
+import aggdraw
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.header.curved_header.paint import draw_curved_header, paint_random_curved_header
-import aggdraw
 
 
 def create_curved_header(

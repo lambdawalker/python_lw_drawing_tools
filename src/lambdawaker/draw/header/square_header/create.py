@@ -1,16 +1,16 @@
+import aggdraw
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.header.square_header.paint import draw_squared_header, paint_random_square_header
-import aggdraw
 
 
 def create_squared_header(
-    width: int = 800,
-    height: int = 400,
-    header_height: int = 100,
-    color: ColorUnion = (0, 0, 0, 255),
-    bg_color: ColorUnion = (0, 0, 0, 0),
+        width: int = 800,
+        height: int = 400,
+        header_height: int = 100,
+        color: ColorUnion = (0, 0, 0, 255),
+        bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """
     Create an image and render a rectangular header on top.
@@ -36,11 +36,11 @@ def create_squared_header(
 
 
 def create_square_header(
-    width: int = 800,
-    height: int = 400,
-    header_height: int = 100,
-    color: ColorUnion = (0, 0, 0, 255),
-    bg_color: ColorUnion = (0, 0, 0, 0),
+        width: int = 800,
+        height: int = 400,
+        header_height: int = 100,
+        color: ColorUnion = (0, 0, 0, 255),
+        bg_color: ColorUnion = (0, 0, 0, 0),
 ) -> Image.Image:
     """Alias for create_squared_header for convenience."""
     return create_squared_header(
