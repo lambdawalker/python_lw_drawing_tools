@@ -34,7 +34,7 @@ def select_random_function_from_module(module: ModuleType, name_pattern: Optiona
 
 
 def select_random_function_from_module_and_submodules(
-    module: ModuleType, name_pattern: Optional[str] = None
+        module: ModuleType, name_pattern: Optional[str] = None
 ) -> Callable[..., Any]:
     """
     Selects a random function from the given module or any of its submodules.
@@ -54,17 +54,24 @@ def select_random_function_from_module_and_submodules(
     return _select_random_function_from_module_and_submodules(module, name_pattern)
 
 
-def query_all_functions_from_module(module: ModuleType, pattern: Optional[Pattern[str]]) -> List[Callable[..., Any]]:
+cache = {}
+
+
+def query_all_functions_from_module(module: ModuleType, pattern: Optional[Pattern[str]], ignore_cache=False) -> List[Callable[..., Any]]:
     """
     Recursively queries all functions from a module and its submodules that match a given pattern.
 
     Args:
         module: The module object to query.
         pattern: An optional compiled regular expression pattern to filter function names.
+        ignore_cache: If True, the function will not use the cache and will query the module again.
 
     Returns:
         A list of function objects that match the pattern.
     """
+    if module in cache and not ignore_cache:
+        return cache[module]
+
     all_functions: List[Callable[..., Any]] = []
 
     for name, obj in inspect.getmembers(module):
@@ -74,6 +81,8 @@ def query_all_functions_from_module(module: ModuleType, pattern: Optional[Patter
     for name, obj in inspect.getmembers(module):
         if inspect.ismodule(obj) and obj.__name__.startswith(module.__name__ + '.'):
             all_functions.extend(query_all_functions_from_module(obj, pattern))
+
+    cache[module] = all_functions
     return all_functions
 
 
