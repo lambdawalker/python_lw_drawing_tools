@@ -3,14 +3,14 @@ import os
 from lambdawaker.file.path.wd import find_root_path
 
 
-class LocalResourceHandler:
-    match_pattern = "localhost.disk://**"
+class DiskResourceHandler:
+    match_pattern = "lw.disk://**"
 
     def __init__(self):
         self.root_path = find_root_path()
 
     def __call__(self, route, request):
-        cleaned_url = request.url.replace("localhost.disk://", "")
+        cleaned_url = request.url.replace("lw.disk://", "")
         cleaned_url = os.path.join(self.root_path, "assets", cleaned_url)
 
         if os.path.exists(cleaned_url):
