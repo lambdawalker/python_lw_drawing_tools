@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lambdawaker.draw.tools"
-version = "0.1.31"
+version = "0.1.32"
 description = "Drawing utilities for generating geometric patterns and grids using Pillow and aggdraw"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -37,4 +37,5 @@ Issues = "https://github.com/lambdawalker/python_lw_drawing_tools/issues"
 where = ["src"]
 include = ["lambdawaker.*"]
 
-
+[tool.setuptools.package-data]
+"mypackage" = ["assets"]
