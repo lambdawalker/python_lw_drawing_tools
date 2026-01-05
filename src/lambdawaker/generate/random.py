@@ -62,8 +62,6 @@ def generate_int(low=None, top=None):
     return random.randint(low, top)
 
 
-
-
 def generate_float(low=0, top=1):
     low = low if low is not None else 0
     top = top if top is not None else 1000000

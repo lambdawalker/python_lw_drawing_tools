@@ -1,8 +1,9 @@
 import time
+from functools import wraps
 
 
 class Profiler:
-    def __init__(self, verbose=True):
+    def __init__(self, verbose=False):
         self.timers = {}
         self.verbose = verbose
 
@@ -27,3 +28,27 @@ class Profiler:
         if verbose:
             print(f"{label}: {elapsed:.3f}s")
         return elapsed
+
+
+
+
+
+def log_time(func):
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        # Record the start time
+        start_time = time.perf_counter()
+
+        # Execute the actual function
+        result = func(*args, **kwargs)
+
+        # Record the end time
+        end_time = time.perf_counter()
+
+        # Calculate and print duration
+        duration = end_time - start_time
+        print(f"Function '{func.__name__}' executed in {duration:.4f} seconds")
+
+        return result
+
+    return wrapper
