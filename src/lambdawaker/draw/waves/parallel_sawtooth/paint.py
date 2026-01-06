@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, Union, Optional
+from typing import Tuple, Union, Optional, Any
 
 import aggdraw
 from PIL import Image
@@ -66,7 +66,7 @@ def paint_random_sawtooth_waves(
         amplitude: Union[float, Default, Random] = Default,
         wavelength: Union[float, Default, Random] = Default,
         angle: Union[float, Default, Random] = Default,
-) -> None:
+) -> dict[str, Any]:
     passed_values = clean_passed_parameters({
         "area_size": area_size,
         "spacing": spacing,
@@ -81,3 +81,4 @@ def paint_random_sawtooth_waves(
 
     parameters = parameters | passed_values
     paint_angled_sawtooth_waves(img, **parameters)
+    return parameters

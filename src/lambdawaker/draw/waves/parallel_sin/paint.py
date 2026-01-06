@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, Union, Optional
+from typing import Tuple, Union, Optional, Any
 
 import aggdraw
 from PIL import Image
@@ -63,7 +63,7 @@ def paint_random_sine_waves(
         amplitude: Union[float, Default, Random] = Default,
         frequency: Union[float, Default, Random] = Default,
         angle: Union[float, Default, Random] = Default,
-) -> None:
+) -> dict[str, Any]:
     passed_values = clean_passed_parameters({
         "area_size": area_size,
         "spacing": spacing,
@@ -78,3 +78,4 @@ def paint_random_sine_waves(
 
     parameters = parameters | passed_values
     paint_sine_waves(img, **parameters)
+    return parameters

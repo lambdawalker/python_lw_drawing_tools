@@ -181,6 +181,9 @@ class HSLuvColor:
         r, g, b, a = self.to_rgba()
         return f'#{r:02x}{g:02x}{b:02x}{a:02x}'
 
+    def to_tuple(self) -> Tuple[float, float, float, float]:
+        return self.hue, self.saturation, self.lightness, self.alpha
+
     def __repr__(self) -> str:
         return f"HSLuv(H={self.hue:.1f}, S={self.saturation:.1f}, L={self.lightness:.1f}, A={self.alpha:.1f})"
 
@@ -267,6 +270,21 @@ class HSLuvColor:
             Tuple['HSLuvColor', 'HSLuvColor']: A tuple containing two HSLuvColor objects.
         """
         return compute_equidistant_variants(self, factor=factor)
+
+    def __dict__(self):
+        return {
+            "h": self.hue,
+            "s": self.saturation,
+            "l": self.lightness,
+            "a": self.alpha
+        }
+
+    def __json__(self):
+        return {
+            "hexa": self.to_rgba_hex(),
+            "hslua": self.to_tuple(),
+            "__type__": "HSLuvColor"
+        }
 
 
 ColorUnion = Union[str, Tuple[float, float, float], Tuple[float, float, float, float], HSLuvColor, None]

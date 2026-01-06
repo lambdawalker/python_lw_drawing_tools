@@ -1,5 +1,5 @@
 import math
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, Any
 
 import aggdraw
 from PIL import Image
@@ -65,7 +65,7 @@ def paint_random_dots_grid(
         radius: Union[float, Default, Random] = Default,
         separation: Union[float, Default, Random] = Default,
         angle: Union[float, Default, Random] = Default,
-) -> None:
+) -> dict[str, Any]:
     passed_values = clean_passed_parameters({
         "size": size,
         "radius": radius,
@@ -78,3 +78,4 @@ def paint_random_dots_grid(
 
     parameters = parameters | passed_values
     paint_dots_grid(img, **parameters)
+    return parameters

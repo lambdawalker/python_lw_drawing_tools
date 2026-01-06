@@ -1,5 +1,5 @@
 import math
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
 import aggdraw
 from PIL import Image
@@ -44,7 +44,7 @@ def paint_random_sin_header(
         height: Union[int, Default, Random] = Default,
         amplitude: Union[float, Default, Random] = Default,
         frequency: Union[float, Default, Random] = Default,
-) -> None:
+) -> dict[str, Any]:
     passed_values = clean_passed_parameters({
         "height": height,
         "amplitude": amplitude,
@@ -58,3 +58,4 @@ def paint_random_sin_header(
 
     draw = aggdraw.Draw(img)
     draw_sine_header(draw, **parameters)
+    return parameters

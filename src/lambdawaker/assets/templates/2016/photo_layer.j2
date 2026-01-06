@@ -45,10 +45,18 @@
                 filter: {{ gen.random.choice((
                     "grayscale("+tx.str(gen.random.number(70, 95))+"%)", ""
                 )) }} {{ gen.random.choice((
-                    "opacity("+tx.str(gen.random.number(35, 100))+"%)", ""
+                    "opacity("+tx.str(gen.random.number(60, 100))+"%)", ""
                 )) }};
 
                 background-blend-mode: {{ gen.random.choice(( "multiply", "")) }};
+            }
+
+            .small-photo {
+                filter: {{ gen.random.choice((
+                    "grayscale("+tx.str(gen.random.number(70, 95))+"%)", ""
+                )) }} {{ gen.random.choice((
+                    "opacity("+tx.str(gen.random.number(35, 100))+"%)", ""
+                )) }};
             }
         </style>
     </head>

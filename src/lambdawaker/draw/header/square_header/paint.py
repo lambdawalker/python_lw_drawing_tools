@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
 import aggdraw
 from PIL import Image
@@ -28,7 +28,7 @@ def paint_random_square_header(
         primary_color: Union[ColorUnion, Random] = Random,
         color: Optional[ColorUnion] = Default,
         height: Union[int, Default, Random] = Default,
-) -> None:
+) -> dict[str, Any]:
     passed_values = clean_passed_parameters({
         "height": height,
         "color": color,
@@ -40,3 +40,4 @@ def paint_random_square_header(
 
     draw = aggdraw.Draw(img)
     draw_squared_header(draw, **parameters)
+    return parameters

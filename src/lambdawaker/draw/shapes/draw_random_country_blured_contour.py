@@ -15,9 +15,14 @@ def draw_random_country_blured_contour(img: Image.Image, primary_color: HSLuvCol
     size = (int(width / 3.2), height)
 
     country = svg_to_png(svg_path, size)
+
+    color = primary_color.close_color() - random_alpha(.3, .6)
+    stroke_color = primary_color.close_color() - random_alpha(.3, .6)
+
     silhouette = draw_contour(
-        country, primary_color.close_color() - random_alpha(.3, .6),
-                 primary_color.close_color() - random_alpha(.3, .6)
+        country,
+        color,
+        stroke_color
     )
 
     _, silhouette_height = silhouette.size
@@ -26,3 +31,8 @@ def draw_random_country_blured_contour(img: Image.Image, primary_color: HSLuvCol
     y = int(height // 2 - silhouette_height // 2)
 
     img.paste(silhouette, (x, y), silhouette)
+
+    return {
+        "color": color,
+        "stroke_color": stroke_color
+    }

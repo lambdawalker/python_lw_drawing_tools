@@ -1,5 +1,5 @@
 import math
-from typing import Callable, Dict, Optional, Tuple, Union
+from typing import Callable, Dict, Optional, Tuple, Union, Any
 
 import aggdraw
 from PIL import Image
@@ -77,7 +77,7 @@ def paint_random_shapes_grid(
         separation: Union[float, Default, Random] = Default,
         angle: Union[float, Default, Random] = Default,
         thickness: Union[float, Default, Random] = Default,
-) -> None:
+) -> dict[str, Any]:
     passed_values = clean_passed_parameters({
         "size": size,
         "radius": radius,
@@ -94,3 +94,4 @@ def paint_random_shapes_grid(
 
     parameters = parameters | passed_values
     paint_shapes_grid(img, **parameters)
+    return parameters

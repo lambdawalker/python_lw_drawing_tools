@@ -1,5 +1,5 @@
 import math
-from typing import Tuple, Union, Optional
+from typing import Tuple, Union, Optional, Any
 
 import aggdraw
 from PIL import Image
@@ -97,7 +97,7 @@ def paint_random_concentric_polygons(
         rotation_step: Union[float, Default, Random] = Random,
         spacing: Union[float, Default, Random] = Random,
         thickness: Union[float, Default, Random] = Random,
-) -> None:
+) -> dict[str, Any]:
     """
     Generates random parameters for concentric polygons and draws them onto a PIL image. Any parameter
     set to `Random` will be randomly generated. Any parameter set to `Default` will use a sensible
@@ -152,3 +152,4 @@ def paint_random_concentric_polygons(
     )
     parameters = parameters | passed_values
     paint_concentric_polygons(img, **parameters)
+    return parameters

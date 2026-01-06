@@ -1,4 +1,4 @@
-from typing import Tuple, Union, Optional
+from typing import Tuple, Union, Optional, Any
 
 import numpy as np
 from PIL import Image
@@ -70,7 +70,7 @@ def paint_random_linear_gradient(
         start_color: Optional[ColorUnion] = Default,
         end_color: Optional[ColorUnion] = Default,
         angle: Optional[float] = Random,
-) -> None:
+) -> dict[str, Any]:
     """
     Draws a random linear gradient onto an existing PIL image.
     Modifies the original image in-place.
@@ -106,3 +106,4 @@ def paint_random_linear_gradient(
 
     parameters = random_parameters | passed_values
     paint_linear_gradient(img, **parameters)
+    return parameters

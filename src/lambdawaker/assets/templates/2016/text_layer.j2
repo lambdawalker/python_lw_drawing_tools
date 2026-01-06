@@ -6,8 +6,11 @@
     <title>INE Credencial (Simulación)</title>
     <link rel="stylesheet" href="lw.disk://templates/2016/style.css">
     <style>
+        {% set fonts = ['Arial', 'Verdana', 'Georgia', 'Courier New', 'Brush Script MT'] %}
+
         body {
             color: {{  env.theme.text_color.to_rgb_hex() }};
+            font-family: {{ fonts | random }};
         }
     </style>
     <style>
@@ -30,8 +33,8 @@
     <div class="card">
         <header class="card-header">
             <div class="title-section">
+                <h1>{{ gen.institution.voting().data }}</h1>
                 {% if gen.random.boolean() %}
-                    <h1>{{ gen.institution.voting().data }}</h1>
                     <h2>{{ template_data.id.type }}</h2>
                 {% endif %}
             </div>
@@ -43,23 +46,23 @@
             <div class="data-section">
                 <div class="data-group top-right">
                     <div class="data-item date">
-                        <label>{{ template_data.labels.birth_date }}</label>
+                        <label>{{ template_data.labels.birth_date | e }}</label>
                         <p>{{ gen.time.date().data }}</p>
                     </div>
                     <div class="data-item sex">
-                        <label>{{ template_data.labels.sex }}</label>
+                        <label>{{ template_data.labels.sex | e }}</label>
                         <p>{{ data.record.meta.identification.gender[0] }}</p>
                     </div>
                 </div>
 
                 <div class="data-item name">
-                    <label>{{ template_data.labels.name }}</label>
+                    <label>{{ template_data.labels.name | e }}</label>
                     <p>{{ data.record.meta.identification.last_name }}</p>
                     <p>{{ data.record.meta.identification.first_name }}</p>
                 </div>
 
                 <div class="data-item address">
-                    <label>{{ template_data.labels.address }}</label>
+                    <label>{{ template_data.labels.address | e }}</label>
                     <p>{{ gen.address.road().data }} #{{ gen.address.number().data }}</p>
                     <p>{{ gen.address.block().data }}. {{ gen.address.number().data }} </p>
                     <p>{{ gen.address.city().data }}, {{ gen.address.state().data }}</p>
@@ -67,45 +70,45 @@
 
                 <div class="data-item key-voter">
                     <div class="key">
-                        <label>{{ template_data.labels.voter_key }}</label>
+                        <label>{{ template_data.labels.voter_key | e }}</label>
                         <span>{{ gen.random.hex(18) }}</span>
                     </div>
                 </div>
 
                 <div class="data-item key-curp">
                     <div class="curp">
-                        <label>{{ template_data.labels.curp }}</label>
+                        <label>{{ template_data.labels.curp | e }}</label>
                         <span>{{ gen.random.hex(18) }}</span>
                     </div>
                     <div class="year">
-                        <label>{{ template_data.labels.registration_year }}</label>
+                        <label>{{ template_data.labels.registration_year | e }}</label>
                         <span>{{ gen.time.year_as_number().data }}</span>
                     </div>
                 </div>
 
                 <div class="data-group bottom-row">
                     <div class="data-item state">
-                        <label>{{ template_data.labels.state }}</label>
+                        <label>{{ template_data.labels.state | e }}</label>
                         <span>{{ gen.random.lf_number(1,99) }}</span>
                     </div>
                     <div class="data-item municipio">
-                        <label>{{ template_data.labels.municipality }}</label>
+                        <label>{{ template_data.labels.municipality | e }}</label>
                         <span>{{ gen.random.lf_number(1,99) }}</span>
                     </div>
                     <div class="data-item seccion">
-                        <label>{{ template_data.labels.section }}</label>
+                        <label>{{ template_data.labels.section | e }}</label>
                         <span>{{ gen.random.lf_number(1,99) }}</span>
                     </div>
                     <div class="data-item localidad">
-                        <label>{{ template_data.labels.locality }}</label>
+                        <label>{{ template_data.labels.locality | e }}</label>
                         <span>{{ gen.random.lf_number(1,99) }}</span>
                     </div>
                     <div class="data-item emision">
-                        <label>{{ template_data.labels.issued }}</label>
+                        <label>{{ template_data.labels.issued | e }}</label>
                         <span>{{ gen.time.year_as_number().data }}</span>
                     </div>
                     <div class="data-item vigencia">
-                        <label>{{ template_data.labels.valid_until }}</label>
+                        <label>{{ template_data.labels.valid_until | e }}</label>
                         <span>{{ gen.time.year_as_number().data }}</span>
                     </div>
                 </div>

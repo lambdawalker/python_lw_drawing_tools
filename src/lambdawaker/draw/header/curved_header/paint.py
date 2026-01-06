@@ -1,4 +1,4 @@
-from typing import Union, Optional
+from typing import Union, Optional, Any
 
 import aggdraw
 from PIL import Image
@@ -35,7 +35,7 @@ def paint_random_curved_header(
         color: Optional[ColorUnion] = Default,
         height: Union[int, Default, Random] = Default,
         curve_depth: Union[float, Default, Random] = Default,
-) -> None:
+) -> dict[str, Any]:
     passed_values = clean_passed_parameters({
         "height": height,
         "curve_depth": curve_depth,
@@ -48,3 +48,5 @@ def paint_random_curved_header(
 
     draw = aggdraw.Draw(img)
     draw_curved_header(draw, **parameters)
+
+    return parameters

@@ -1,4 +1,4 @@
-from typing import Tuple, Union, Optional
+from typing import Tuple, Union, Optional, Any
 
 import numpy as np
 from PIL import Image
@@ -66,7 +66,7 @@ def paint_random_radial_gradient(
         end_color: Optional[ColorUnion] = None,
         center: Optional[Tuple[float, float]] = None,
         radius: Optional[float] = None,
-) -> None:
+) -> dict[str, Any]:
     passed_values = clean_passed_parameters({
         "right_corner": right_corner,
         "size": size,
@@ -80,3 +80,5 @@ def paint_random_radial_gradient(
 
     parameters = parameters | passed_values
     paint_radial_gradient(img, **parameters)
+
+    return parameters

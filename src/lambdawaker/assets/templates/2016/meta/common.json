@@ -6,12 +6,12 @@
     "address": "Domicilio",
     "voter_key": "Clave de elector",
     "curp": "CURP",
-    "registration_year": "Año de registro",
+    "registration_year": "Ano de registro",
     "state": "Estado",
     "municipality": "Municipio",
-    "section": "Sección",
+    "section": "Seccion",
     "locality": "Localidad",
-    "issued": "Emisión",
+    "issued": "Emision",
     "valid_until": "Vigencia"
   },
   "id": {

@@ -8,15 +8,15 @@ from jinja2 import Template
 
 from lambdawaker.dataset.DiskDataset import DiskDataset
 from lambdawaker.draw import card_background as card_background_module
-from lambdawaker.draw.color.HSLuvColor import to_hsluv_color
+from lambdawaker.draw.color.HSLuvColor import to_hsluv_color, HSLuvColor
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
 from lambdawaker.file.path.ensure_directory import ensure_directory
 from lambdawaker.file.path.wd import path_from_root
 from lambdawaker.log.Profiler import Profiler
+from lambdawaker.process.process_in_parrallel import process_parallel
 from lambdawaker.reflection.query import select_random_function_from_module_and_submodules
 from lambdawaker.templete.PlaywrightRenderer import PlaywrightRenderer
 from lambdawaker.templete.fields import field_generators
-from lambdawaker.process.process_in_parrallel import process_parallel
 
 
 def render_layer(page, html_content: str):
@@ -64,18 +64,22 @@ def render_layers(
         env=None,
         data=None
 ):
+    profiler = Profiler(verbose=False)
     valid_extensions = ['.html', '.j2']
+    layers_log = []
     layers = {}
 
-    for template in os.listdir(template_path):
-        file_ext = os.path.splitext(template)[1]
+    profiler.start("render_layers")
+    for template_file in os.listdir(template_path):
+        layer_name = os.path.splitext(template_file)[0]
+        profiler.start(f"rendering template: {layer_name}")
+
+        file_ext = os.path.splitext(template_file)[1]
         if file_ext not in valid_extensions:
             continue
 
-        with open(os.path.join(template_path, template), 'r') as f:
+        with open(os.path.join(template_path, template_file), 'r') as f:
             html_template = f.read()
-
-        layer_name = os.path.splitext(template)[0]
 
         template = Template(html_template)
 
@@ -103,7 +107,21 @@ def render_layers(
             image=pil_image
         )
 
-    return layers
+        layer_render_time = profiler.finalize(f"rendering template: {layer_name}")
+
+        layers_log.append({
+            "layer_name": layer_name,
+            "layer_render_time": layer_render_time
+        })
+
+    render_time_layers_time = profiler.finalize("render_layers")
+
+    log = {
+        "render_time_layers_time": render_time_layers_time,
+        "layers": layers_log
+    }
+
+    return log, layers
 
 
 def render_template(template_path, renderer, env=None, data=None, cache=None):
@@ -128,13 +146,15 @@ def render_template(template_path, renderer, env=None, data=None, cache=None):
     profiler.finalize("load_template_data")
 
     profiler.start("render_layers")
-    layers = render_layers(
+
+    layers_log, layers = render_layers(
         template_path,
         renderer=renderer,
         template_data=template_data,
         data=data,
         env=env
     )
+
     profiler.finalize("render_layers")
 
     profiler.start("add_background_layer")
@@ -143,14 +163,16 @@ def render_template(template_path, renderer, env=None, data=None, cache=None):
 
     profiler.start("select_background_paint_function")
     background_paint_function = select_random_function_from_module_and_submodules(card_background_module, "generate_card_background_.*")
-    profiler.finalize("select_background_paint_function")
+    select_background_function_time = profiler.finalize("select_background_paint_function")
 
     paint_function_label = f"background_paint_function {background_paint_function.__name__}"
     profiler.start(paint_function_label)
-    card_background = background_paint_function(
+
+    background_log, card_background = background_paint_function(
         first_layer.image.size,
         env["theme"]["primary_color"]
     )
+
     profiler.finalize(paint_function_label)
 
     layers["background_layer"] = SimpleNamespace(
@@ -159,8 +181,17 @@ def render_template(template_path, renderer, env=None, data=None, cache=None):
         image=card_background
     )
     profiler.finalize("add_background_layer")
-    profiler.finalize("render_template")
-    return layers, meta_data
+
+    render_template_time = profiler.finalize("render_template")
+
+    log = {
+        "render_template_time": render_template_time,
+        "select_background_function_time": select_background_function_time,
+        "layers_log": layers_log,
+        "background_log": background_log,
+    }
+
+    return log, layers, meta_data
 
 
 def render_record(renderer, record, record_id, cache=None):
@@ -176,7 +207,7 @@ def render_record(renderer, record, record_id, cache=None):
         }
     }
 
-    layers, meta_data = render_template(
+    log, layers, meta_data = render_template(
         template_path,
         env=default_env,
         data={
@@ -195,8 +226,18 @@ def render_record(renderer, record, record_id, cache=None):
         data = layers[name]
         canvas.paste(data.image, (0, 0), data.image)
 
-    ensure_directory("./output/")
-    canvas.save(f"./output/{record_id}.png")
+    ensure_directory("./output/img/")
+    canvas.save(f"./output/img/{record_id}.png")
+
+    ensure_directory("./output/log/")
+
+    with open(f"./output/log/{record_id}.json", 'w') as f:
+        json.dump(
+            log,
+            f,
+            default=lambda o: o.to_rgba_hex() if isinstance(o, HSLuvColor) else o.__dict__,
+            indent=2
+        )
 
 
 process_env = {}
@@ -216,10 +257,12 @@ def proces_initializer():
     }
 
 
-def render_worker(record_id, skip_existing=True):
-    person_ds = process_env["person_ds"]
-    renderer = process_env["renderer"]
-    cache = process_env["cache"]
+def render_worker(record_id, skip_existing=True, env=None):
+    env = env if env is not None else process_env
+
+    person_ds = env["person_ds"]
+    renderer = env["renderer"]
+    cache = env["cache"]
 
     if not (skip_existing and os.path.exists(f"./output/{record_id}.png")):
         record = person_ds[record_id]
@@ -229,6 +272,21 @@ def render_worker(record_id, skip_existing=True):
             renderer=renderer,
             cache=cache
         )
+
+
+def render_single_record(record_id=0):
+    person_ds = DiskDataset("lambdaWalker/ds.photo_id")
+    person_ds.load("@DS/lw_person_V0.0.0")
+    renderer = PlaywrightRenderer([person_ds])
+    cache = {}
+
+    env = {
+        "person_ds": person_ds,
+        "renderer": renderer,
+        "cache": cache
+    }
+
+    render_worker(record_id, False, env)
 
 
 def render_records_parallel(num_processes=None, skip_existing=True):
@@ -247,4 +305,5 @@ def render_records_parallel(num_processes=None, skip_existing=True):
 
 
 if __name__ == "__main__":
+    # render_single_record()
     render_records_parallel(skip_existing=False)
