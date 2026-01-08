@@ -1,0 +1,29 @@
+{% with id = gen.random.number(top=ds["lambdaWalker/ds.photo_id/body/len"]) %}
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>INE Credencial (Simulación)</title>
+        <link rel="stylesheet" href="lw.disk://templates/A/common/style.css">
+        <style>
+            {% include "common/photo.css.j2" %}
+        </style>
+    </head>
+    <script>
+
+    </script>
+    <body>
+    <div id="view-port">
+        <div class="card">
+            <header class="card-header">
+            </header>
+            <main class="card-body">
+                <img class="main-photo" src="lw.ds://lambdaWalker/ds.photo_id/body/{{ data.id }}/image" data-capture="true" alt="Photo">
+                <img class="small-photo" src="lw.ds://lambdaWalker/ds.photo_id/body/{{ data.id }}/image" data-capture="true" alt="Photo">
+            </main>
+        </div>
+    </div>
+    </body>
+    </html>
+{% endwith %}

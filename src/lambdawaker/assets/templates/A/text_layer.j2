@@ -4,28 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>INE Credencial (Simulación)</title>
-    <link rel="stylesheet" href="lw.disk://templates/2016/style.css">
+    <link rel="stylesheet" href="lw.disk://templates/A/common/style.css">
     <style>
-        {% set fonts = ['Arial', 'Verdana', 'Georgia', 'Courier New', 'Brush Script MT'] %}
 
-        body {
-            color: {{  env.theme.text_color.to_rgb_hex() }};
-            font-family: {{ fonts | random }};
-        }
-    </style>
-    <style>
-        .card {
-            border-radius: 3.18mm;
-            border: {{ gen.random.choice((
-                        "rgba(0,0,0,0)",
-                        gen.color.hsluv((
-                            env.theme.primary_color.hue,
-                            gen.random.number(top=30),
-                            gen.random.number(top=env.theme.primary_color.lightness // 2),
-                            gen.random.float()
-                        )).to_css_rgba(),
-                    )) }} solid 2px;
-        }
+        {% include "common/card.css.j2" %}
     </style>
 </head>
 <body>

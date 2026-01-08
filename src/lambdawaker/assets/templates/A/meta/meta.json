@@ -2,7 +2,6 @@
   "order": [
     "background_layer",
     "photo_layer",
-    "text_layer",
-    "hologram_layer"
+    "text_layer"
   ]
 }

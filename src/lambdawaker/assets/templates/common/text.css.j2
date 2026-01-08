@@ -1,0 +1,6 @@
+{% set fonts = ['Arial', 'Verdana', 'Georgia', 'Courier New', 'Brush Script MT'] %}
+
+body {
+    color: {{  env.theme.text_color.to_rgb_hex() }};
+    font-family: {{ fonts | random }};
+}
