@@ -1,5 +1,6 @@
 import time
 from functools import wraps
+from tabnanny import verbose
 
 
 class Profiler:
@@ -7,8 +8,13 @@ class Profiler:
         self.timers = {}
         self.verbose = verbose
 
-    def start(self, label):
+    def start(self, label, verbose=None):
         """Start the timer for a given label."""
+
+        verbose = verbose if verbose is not None else self.verbose
+
+        if verbose:
+            print(f"Starting timer '{label}'")
         self.timers[label] = time.time()
 
     def measure(self, label):
@@ -28,9 +34,6 @@ class Profiler:
         if verbose:
             print(f"{label}: {elapsed:.3f}s")
         return elapsed
-
-
-
 
 
 def log_time(func):

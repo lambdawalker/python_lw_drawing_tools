@@ -4,12 +4,12 @@ from io import BytesIO
 from types import SimpleNamespace
 
 from PIL import Image
-from jinja2 import Template
+from jinja2 import Template, Environment, FileSystemLoader, StrictUndefined
 
 from lambdawaker.dataset.DiskDataset import DiskDataset
 from lambdawaker.draw import card_background as card_background_module
 from lambdawaker.draw.color.HSLuvColor import to_hsluv_color, HSLuvColor
-from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
+from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
 from lambdawaker.file.path.ensure_directory import ensure_directory
 from lambdawaker.file.path.wd import path_from_root
 from lambdawaker.log.Profiler import Profiler
@@ -58,7 +58,8 @@ def render_layer(page, html_content: str):
 
 
 def render_layers(
-        template_path,
+        jinja_root,
+        template_name,
         renderer,
         template_data=None,
         env=None,
@@ -69,8 +70,24 @@ def render_layers(
     layers_log = []
     layers = {}
 
+    template_path = os.path.join(jinja_root, template_name)
+
     profiler.start("render_layers")
+
+    jinja_env = Environment(
+        loader=FileSystemLoader(str(jinja_root)),
+        autoescape=False,
+        undefined=StrictUndefined,  # fail loudly on missing vars
+        trim_blocks=True,
+        lstrip_blocks=True,
+    )
+
     for template_file in os.listdir(template_path):
+        file_ext = os.path.splitext(template_file)[1]
+
+        if file_ext not in valid_extensions:
+            continue
+
         layer_name = os.path.splitext(template_file)[0]
         profiler.start(f"rendering template: {layer_name}")
 
@@ -78,12 +95,11 @@ def render_layers(
         if file_ext not in valid_extensions:
             continue
 
-        with open(os.path.join(template_path, template_file), 'r') as f:
-            html_template = f.read()
+        component_path = os.path.join(template_name, template_file).replace('\\', '/')
+        template = jinja_env.get_template(str(component_path))
 
-        template = Template(html_template)
-
-        rendered_html = template.render(
+        # render the templete text with Jinja2
+        rendered_html_text = template.render(
             template_data=template_data,
             gen=field_generators,
             ds=renderer.data_source_handler,
@@ -95,8 +111,9 @@ def render_layers(
             data=data
         )
 
+        # Then use headless Playwright to render the HTML to a PNG image
         image_bytes, captured_elements_data = render_layer(
-            renderer.page, rendered_html
+            renderer.page, rendered_html_text
         )
 
         pil_image = Image.open(BytesIO(image_bytes))
@@ -124,7 +141,7 @@ def render_layers(
     return log, layers
 
 
-def render_template(template_path, renderer, env=None, data=None, cache=None):
+def render_template(jinja_root, template, renderer, env=None, data=None, cache=None):
     profiler = Profiler(verbose=False)
 
     cache = cache if cache is not None else {}
@@ -132,23 +149,27 @@ def render_template(template_path, renderer, env=None, data=None, cache=None):
     profiler.start("render_template")
     profiler.start("load_template_data")
 
+    template_path = os.path.join(jinja_root, template)
     common_data_path = os.path.join(template_path, "meta/common.json")
+
     if common_data_path not in cache:
         with open(common_data_path, 'r') as f:
             cache[common_data_path] = json.load(f)
     template_data = cache[common_data_path]
 
-    meta_data_path = os.path.abspath(f"{template_path}/meta/meta.json")
+    meta_data_path = os.path.join(template_path, "meta/meta.json")
     if meta_data_path not in cache:
         with open(meta_data_path, 'r') as f:
             cache[meta_data_path] = json.load(f)
+
     meta_data = cache[meta_data_path]
     profiler.finalize("load_template_data")
 
     profiler.start("render_layers")
 
     layers_log, layers = render_layers(
-        template_path,
+        jinja_root,
+        template,
         renderer=renderer,
         template_data=template_data,
         data=data,
@@ -195,9 +216,10 @@ def render_template(template_path, renderer, env=None, data=None, cache=None):
 
 
 def render_record(renderer, record, record_id, cache=None):
-    template_path = path_from_root("assets/templates/2016")
+    templates_root_path = path_from_root("assets/templates/")
+    template = "A"
 
-    primary_color = generate_hsluv_text_contrasting_color()
+    primary_color = generate_hsluv_black_text_contrasting_color()
     text_color_hex = to_hsluv_color((0, 0, 0, 1))
 
     default_env = {
@@ -208,7 +230,8 @@ def render_record(renderer, record, record_id, cache=None):
     }
 
     log, layers, meta_data = render_template(
-        template_path,
+        templates_root_path,
+        template,
         env=default_env,
         data={
             "id": record_id,
@@ -280,13 +303,7 @@ def render_single_record(record_id=0):
     renderer = PlaywrightRenderer([person_ds])
     cache = {}
 
-    env = {
-        "person_ds": person_ds,
-        "renderer": renderer,
-        "cache": cache
-    }
-
-    render_worker(record_id, False, env)
+    render_record(renderer, person_ds[record_id], record_id, cache=cache)
 
 
 def render_records_parallel(num_processes=None, skip_existing=True):
@@ -294,6 +311,7 @@ def render_records_parallel(num_processes=None, skip_existing=True):
     temp_ds.load("@DS/lw_person_V0.0.0")
     limit = len(temp_ds)
     del temp_ds
+    # limit = 50
 
     process_parallel(
         list(range(limit)),
@@ -305,5 +323,5 @@ def render_records_parallel(num_processes=None, skip_existing=True):
 
 
 if __name__ == "__main__":
-    # render_single_record()
-    render_records_parallel(skip_existing=False)
+    render_single_record()
+    # render_records_parallel(skip_existing=False)
