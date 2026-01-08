@@ -9,34 +9,29 @@ from lambdawaker.draw.color.utils import get_random_point_with_margin
 from lambdawaker.random.values import DefaultValue, Default, Random
 
 
-def generate_random_triangle_grid_parameters(
+def generate_random_wavy_parameters(
         img: Image.Image,
         primary_color: Union[ColorUnion, Random] = Random,
         color: Union[ColorUnion, Default, Random] = Default,
         size: Union[Tuple[int, int], Default, Random] = Default
 ) -> Dict[str, Any]:
     """
-    Generates random parameters for a triangle grid.
+    Generates random parameters for wavy lines.
 
     Args:
-        img (Image.Image): The image for which the grid parameters are being generated.
+        img (Image.Image): The image for which the parameters are being generated.
         primary_color (Union[ColorUnion, Random], optional): The primary color used to derive other colors if they are not specified.
             If `Random`, a random contrasting color is generated. Defaults to `Random`.
-        color (Union[ColorUnion, Default, Random], optional): The color of the triangle edges.
+        color (Union[ColorUnion, Default, Random], optional): The color of the lines.
             If `Default`, a color derived from `primary_color` is used.
             If `Random`, a random contrasting color is generated.
             Defaults to `Default`.
-        size (Union[Tuple[int, int], Default, Random], optional): The size of the grid area.
+        size (Union[Tuple[int, int], Default, Random], optional): The size of the area.
             If Default, it defaults to the image size. If Random, a random point with no margin is chosen.
             Defaults to Default.
 
     Returns:
-        Dict[str, Any]: A dictionary containing the generated grid parameters, including:
-            - "area_size": The size of the grid area.
-            - "size": The side length of the triangles.
-            - "thickness": The thickness of the triangle edges.
-            - "angle": The rotation angle of the grid in degrees (0-360).
-            - "color": The color of the triangle edges (HSLuv).
+        Dict[str, Any]: A dictionary containing the generated parameters.
     """
     if primary_color == Random:
         primary_color = generate_hsluv_black_text_contrasting_color()
@@ -51,10 +46,21 @@ def generate_random_triangle_grid_parameters(
     if size == Default:
         size = DefaultValue(lambda: img.size)
 
+    rng = random.SystemRandom()
+
     return {
         "area_size": get_random_point_with_margin(img.size, default=size, margin=0),
-        "size": random.uniform(10, 100),
-        "thickness": random.uniform(1, 5),
+        "num_lines": random.randint(150, 250),
+        "margin": 0.2,
         "angle": random.uniform(0, 360),
+        "step": 15,
+        "amp": rng.randint(25, 30),
+        "scale": 0.003,
+        "noise_x_offset": rng.uniform(-200, 200),
+        "noise_y_offset": rng.uniform(-200, 200),
+        "phase": rng.uniform(0, 100),
+        "mod": rng.uniform(50, 500),
+        "wobble_dir": rng.choice((-1, 1)),
+        "thickness": 2,
         "color": color,
     }

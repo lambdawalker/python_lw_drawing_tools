@@ -116,8 +116,58 @@ def compute_harmonious_color(base_color: 'HSLuvColor', hue_offset: int = 60,
     Returns:
         HSLuvColor: A new HSLuvColor instance representing the harmonious color, tagged "HARMONIOUS".
     """
-    c = base_color + (random.randint(-hue_offset, hue_offset),
-                      random.randint(-saturation_offset, saturation_offset),
-                      random.randint(-lightness_offset, lightness_offset))
+    offset = (
+        random.choice((-1, 1)) * max((random.randint(0, hue_offset), hue_offset / 4)),
+        compute_offset(base_color.saturation, saturation_offset, 20, 0),
+        compute_offset(base_color.lightness, lightness_offset, 20, 0)
+    )
+
+    c = base_color + tuple(offset)
+
     c.tag = "HARMONIOUS"
     return c
+
+
+def compute_harmonious_noticeable_color(base_color: 'HSLuvColor', hue_offset: int = 60,
+                                        lightness_offset: int = 15, saturation_offset: int = 15) -> 'HSLuvColor':
+    """
+    Computes a harmonious color by slightly adjusting the hue, saturation, and lightness
+    of the base color. This aims to create a color that "plays nice" with the original.
+
+    Args:
+        base_color (HSLuvColor): The starting color.
+        hue_offset (int): The maximum absolute amount to change the hue by (in degrees).
+        lightness_offset (int): The maximum absolute amount to change the lightness by.
+        saturation_offset (int): The maximum absolute amount to change the saturation by.
+
+    Returns:
+        HSLuvColor: A new HSLuvColor instance representing the harmonious color, tagged "HARMONIOUS".
+    """
+    offset = (
+        random.choice((-1, 1)) * max((random.randint(0, hue_offset), hue_offset / 4)),
+        compute_offset(base_color.saturation, saturation_offset, 20, 0),
+        compute_offset(base_color.lightness, lightness_offset, 20, 0)
+    )
+
+    c = base_color + tuple(offset)
+
+    if base_color.lightness > 70:
+        c.lightness = random.randint(60, 65)
+
+    if base_color.saturation < 50:
+        c.saturation = random.randint(60, 65)
+
+    c.tag = "HARMONIOUS"
+    return c
+
+
+def compute_offset(subject, variation, margin, min_limit):
+    offset = max((random.randint(0, variation), min_limit))
+
+    direction = random.choice((-1, 1))
+    if subject > 100 - margin:
+        direction = -1
+    if subject < margin:
+        direction = 1
+
+    return direction * offset

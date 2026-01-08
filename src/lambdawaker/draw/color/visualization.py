@@ -6,7 +6,7 @@ from PIL import Image, ImageFont
 from PIL import ImageDraw
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
-from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
+from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
 
 
 def display_colors(hsl_colors: List[ColorUnion], square_size: int = 150, padding: int = 25, font_size: int = 14) -> Image.Image:
@@ -85,7 +85,7 @@ def display_colors(hsl_colors: List[ColorUnion], square_size: int = 150, padding
 
 
 if __name__ == "__main__":
-    color = generate_hsluv_text_contrasting_color()
+    color = generate_hsluv_black_text_contrasting_color()
 
     test_colors = [
                       color,

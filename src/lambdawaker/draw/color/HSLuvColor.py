@@ -1,10 +1,10 @@
 import random
-from typing import Tuple, Union, Iterator
+from typing import Tuple, Union, Iterator, List
 
 import hsluv
 
 from lambdawaker.draw.color.generate_from_color import compute_random_shade_color, compute_complementary_color, \
-    compute_triadic_colors, compute_analogous_colors, compute_equidistant_variants, compute_harmonious_color
+    compute_triadic_colors, compute_analogous_colors, compute_equidistant_variants, compute_harmonious_color, compute_harmonious_noticeable_color
 from lambdawaker.draw.color.utils import clamp_hue, clamp, hsla_string_to_hsl_tuple, get_from_tuple
 
 
@@ -79,8 +79,7 @@ class HSLuvColor:
                           h_range=self.h_range, s_range=self.s_range, l_range=self.l_range, a_range=self.a_range,
                           tag=tag)
 
-    def __sub__(self, other: Union[
-        str, Tuple[float, float, float], Tuple[float, float, float, float], 'HSLuvColor']) -> 'HSLuvColor':
+    def __sub__(self, other: Union[str, Tuple, List, 'HSLuvColor']) -> 'HSLuvColor':
         """
         Allows hsluv - "50H" syntax.
         Returns a new instance to keep with Python's immutable __sub__ convention,
@@ -96,8 +95,7 @@ class HSLuvColor:
         corrected = -corrected[0], -corrected[1], -corrected[2], - get_from_tuple(corrected, 3, 1)
         return self.__add__(corrected)
 
-    def __add__(self, other: Union[
-        str, Tuple[float, float, float], Tuple[float, float, float, float], 'HSLuvColor']) -> 'HSLuvColor':
+    def __add__(self, other: Union[str, Tuple, List, 'HSLuvColor']) -> 'HSLuvColor':
         """Allows hsluv + "50H" syntax.
         Returns a new instance to keep with Python's immutable __add__ convention, or modifies self if you prefer
         in-place.
@@ -185,7 +183,7 @@ class HSLuvColor:
         return self.hue, self.saturation, self.lightness, self.alpha
 
     def __repr__(self) -> str:
-        return f"HSLuv(H={self.hue:.1f}, S={self.saturation:.1f}, L={self.lightness:.1f}, A={self.alpha:.1f})"
+        return f"HSLuvColor(hue={self.hue:.1f}, saturation={self.saturation:.1f}, lightness={self.lightness:.1f}, alpha={self.alpha:.1f})"
 
     def random_shade(self, lightness_limit: int = 30, min_distance: int = 10) -> 'HSLuvColor':
         """Generates a random shade of this color."""
@@ -213,6 +211,26 @@ class HSLuvColor:
             HSLuvColor: A new HSLuvColor object representing the harmonious color.
         """
         return compute_harmonious_color(
+            self,
+            hue_offset=hue_offset,
+            lightness_offset=lightness_offset,
+            saturation_offset=saturation_offset
+        )
+
+    def harmonious_noticeable_color(self, hue_offset: int = 90, lightness_offset: int = 15,
+                                    saturation_offset: int = 15) -> 'HSLuvColor':
+        """
+        Generates a harmonious color based on the current color.
+
+        Args:
+            hue_offset (int): The maximum offset for the hue component.
+            lightness_offset (int): The maximum offset for the lightness component.
+            saturation_offset (int): The maximum offset for the saturation component.
+
+        Returns:
+            HSLuvColor: A new HSLuvColor object representing the harmonious color.
+        """
+        return compute_harmonious_noticeable_color(
             self,
             hue_offset=hue_offset,
             lightness_offset=lightness_offset,
@@ -286,6 +304,18 @@ class HSLuvColor:
             "__type__": "HSLuvColor"
         }
 
+    def copy(self):
+        return HSLuvColor(
+            self.hue,
+            self.saturation,
+            self.lightness,
+            self.alpha,
+            self.h_range,
+            self.s_range,
+            self.l_range,
+            self.a_range
+        )
+
 
 ColorUnion = Union[str, Tuple[float, float, float], Tuple[float, float, float, float], HSLuvColor, None]
 
@@ -302,7 +332,7 @@ def to_hsluv_color(color: ColorUnion) -> HSLuvColor:
         HSLuvColor: The converted HSLuvColor object.
     """
     if isinstance(color, HSLuvColor):
-        return color
+        return color.copy()
     elif isinstance(color, str):
         return HSLuvColor(*hsla_string_to_hsl_tuple(color))
     elif isinstance(color, (tuple, list)):

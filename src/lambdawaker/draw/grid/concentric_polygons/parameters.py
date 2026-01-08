@@ -4,7 +4,7 @@ from typing import Tuple, Union, Dict, Any
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
-from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
+from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
 from lambdawaker.draw.color.utils import get_random_point_with_margin
 from lambdawaker.random.values import DefaultValue, Default, Random
 
@@ -51,7 +51,7 @@ def generate_random_concentric_polygons_parameters(
                         such as canvas size, number of sides, rotation step, spacing, color, thickness, and fill opacity.
     """
     if primary_color == Random or primary_color == Default:
-        primary_color = generate_hsluv_text_contrasting_color()
+        primary_color = generate_hsluv_black_text_contrasting_color()
     else:
         primary_color = to_hsluv_color(primary_color)
 

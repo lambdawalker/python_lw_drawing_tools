@@ -3,7 +3,7 @@ import random
 from lambdawaker.draw.color.HSLuvColor import HSLuvColor
 
 
-def generate_hsluv_text_contrasting_color() -> HSLuvColor:
+def generate_hsluv_black_text_contrasting_color() -> HSLuvColor:
     """
     Generates a random HSLuv color that is likely to have good contrast with text.
 
@@ -16,6 +16,14 @@ def generate_hsluv_text_contrasting_color() -> HSLuvColor:
     """
     hue = random.randint(0, 360)
     saturation = random.randint(30, 60)
+    lightness = random.randint(30, 80)
+
+    return HSLuvColor(hue, saturation, lightness, tag="CONTRASTING")
+
+
+def generate_hsluv_text_contrasting_color() -> HSLuvColor:
+    hue = random.randint(0, 360)
+    saturation = random.randint(30, 55)
     lightness = random.randint(30, 60)
 
     return HSLuvColor(hue, saturation, lightness, tag="CONTRASTING")

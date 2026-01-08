@@ -1,0 +1,27 @@
+from lambdawaker.draw.gradient.voronoid.create import create_voronoid, create_random_voronoid
+from lambdawaker.draw.gradient.voronoid.paint import paint_voronoid, paint_random_voronoid
+from lambdawaker.draw.gradient.voronoid.parameters import generate_random_voronoid_parameters
+https://www.shadertoy.com/view/4dKXDK
+https://www.shadertoy.com/view/ldjBDm
+https://www.shadertoy.com/view/4st3DS
+https://www.shadertoy.com/view/XlGXWW
+https://www.shadertoy.com/view/cldGDf
+https://www.shadertoy.com/view/tljBDV
+https://www.shadertoy.com/view/dsfXDn
+
+https://www.shadertoy.com/view/ltVcWy
+https://www.shadertoy.com/view/lsKSz1
+https://www.shadertoy.com/view/dsVfWy
+https://www.shadertoy.com/view/X3sGDr
+
+https://www.shadertoy.com/view/ssGXWV
+
+patterns:
+    https://www.shadertoy.com/view/tfGBWd
+    https://www.shadertoy.com/view/WfVBW3
+    https://www.shadertoy.com/view/ddBcRW
+    https://www.shadertoy.com/view/7dSfDh
+    https://www.shadertoy.com/view/tcKfWG
+
+https://www.shadertoy.com/view/lc3Gz2
+https://www.shadertoy.com/view/tsSSDc

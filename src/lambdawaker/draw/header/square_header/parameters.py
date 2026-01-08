@@ -4,7 +4,7 @@ from typing import Tuple, Union, Dict, Any
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
-from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
+from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
 from lambdawaker.random.values import Default, Random
 
 
@@ -35,14 +35,14 @@ def generate_random_square_header_parameters(
             - "color": The color of the header (HSLuv).
     """
     if primary_color == Random:
-        primary_color = generate_hsluv_text_contrasting_color()
+        primary_color = generate_hsluv_black_text_contrasting_color()
     else:
         primary_color = to_hsluv_color(primary_color)
 
     if color == Default:
         color = primary_color.close_color()
     elif color == Random:
-        color = generate_hsluv_text_contrasting_color()
+        color = generate_hsluv_black_text_contrasting_color()
 
     return {
         "height": random.randint(150, 200),
