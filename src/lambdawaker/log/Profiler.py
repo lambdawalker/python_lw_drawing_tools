@@ -14,7 +14,7 @@ class Profiler:
         verbose = verbose if verbose is not None else self.verbose
 
         if verbose:
-            print(f"Starting timer '{label}'")
+            print(f"P> {label}: started")
         self.timers[label] = time.time()
 
     def measure(self, label):
@@ -32,7 +32,7 @@ class Profiler:
         elapsed = time.time() - self.timers[label]
         del self.timers[label]
         if verbose:
-            print(f"{label}: {elapsed:.3f}s")
+            print(f"P> {label}: {elapsed:.3f}s")
         return elapsed
 
 
