@@ -1,0 +1,61 @@
+
+
+{%- set fonts = ['Arial', 'Verdana', 'Georgia', 'Courier New', 'Brush Script MT'] %}
+
+body {
+    color: {{  env.theme.text_color.to_rgb_hex() }};
+    font-family: {{ fonts | random }};
+}
+
+label, p {
+    line-height: {{ range(11,15) | random / 10 }}em;
+}
+
+label {
+    text-transform: {{ ["unset", "lowercase", "uppercase"] | random}};
+    font-weight: {{ ["bold", "normal"] | random }};
+}
+
+.title-section h1, .title-section h2, .title-section h3,
+.title-section h4 {
+    margin: 0;
+    text-transform: {{ ["unset", "lowercase", "uppercase"] | random}};
+}
+
+.title-section h1, .title-section h3,
+.title-section h4 {
+    font-weight: 900;
+}
+
+.title-section h2 {
+    font-weight: normal;
+    padding-bottom: 2.12mm;
+}
+
+.data-item {
+    margin-bottom: 3.16mm;
+}
+
+.data-item label {
+    font-size: .8em;
+    font-weight: bold;
+    color: #222;
+    display: block;
+    margin-bottom: -1.04mm;
+}
+
+.data-item p {
+    font-weight: bold;
+    margin: 0;
+    text-transform: uppercase;
+}
+
+.data-item.name p {
+    line-height: 1.1;
+}
+
+.logo-text p {
+    font-weight: bold;
+    margin: 0;
+    padding-top: 5.28mm;
+}

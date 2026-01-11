@@ -1,0 +1,104 @@
+{#-------------------------
+  Helpers / building blocks
+  -------------------------#}
+
+{%- set accent_a = gen.color.hsluv((
+    env.theme.primary_color.hue,
+    gen.random.number(top=30),
+    gen.random.number(top=env.theme.primary_color.lightness),
+    gen.random.float()
+)).to_css_rgba() -%}
+
+{%- set accent_b = gen.color.hsluv((
+    env.theme.primary_color.hue,
+    gen.random.number(top=6),
+    gen.random.number(low=90, top=100),
+    gen.random.float()
+)).to_css_rgba() -%}
+
+{%- set maybe_color = (
+    "rgba(0,0,0,0)",
+    accent_a,
+    accent_b
+) | random -%}
+
+{%- set border_color = maybe_color -%}
+
+{%- set main_gray = (
+    "grayscale(" ~ gen.random.number(70, 95) | string ~ "%)",
+    ""
+) | random -%}
+
+{%- set main_op = (
+    "opacity(" ~ gen.random.number(60, 100) | string ~ "%)",
+    ""
+) | random -%}
+
+{%- set small_gray = (
+    "grayscale(" ~ gen.random.number(70, 95) | string ~ "%)",
+    ""
+) | random -%}
+
+{%- set small_op = (
+    "opacity(" ~ gen.random.number(35, 100) | string ~ "%)",
+    ""
+) | random -%}
+
+{%- set blend_mode = ("multiply", "normal") | random -%}
+{%- set main_photo_radius = (
+        (range(0, 3500) | random) / 10,
+        (range(0, 100) | random) / 10,
+        0
+    ) | random
+-%}
+
+{#-------------------------
+  CSS
+  -------------------------#}
+
+.photo-section {
+    width: 100mm;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: {{ ['center', 'flex-start'] | random }};
+    align-items: center;
+}
+
+.main-photo {
+    height: {{ gen.random.number(60, 95) }}%;
+    width: {{ gen.random.number(80, 100) }}%;
+    border-radius: {{ main_photo_radius }}mm;
+    object-fit: cover;
+    object-position: center;
+}
+
+.main-photo,
+.small-photo {
+    background: {{- maybe_color -}};
+    border: {{- border_color -}} solid 1px;
+
+    filter: {{- main_gray -}} {{- main_op -}};
+    background-blend-mode: {{- blend_mode -}};
+}
+
+.small-photo-container {
+    position: relative;
+}
+
+.small-photo {
+    filter: {{- small_gray -}} {{- small_op -}};
+    border-radius: {{ (range(0, 550) | random) / 10 }}mm;
+
+    display: block;
+    position: absolute;
+    right: {{ (range(5, 50) | random) }}mm;
+    top: {{ (range(40, 60) | random) }}mm;
+
+    width: {{ (range(35, 50) | random) }}mm;
+    height: {{ (range(40, 60) | random) }}mm;
+    z-index: -1;
+
+    object-fit: cover;
+    object-position: center;
+}
