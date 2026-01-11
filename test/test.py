@@ -1,6 +1,6 @@
 from PIL import Image
 
-from lambdawaker.draw.grid.shapes_grid import create_shapes_grid
+from lambdawaker.draw.grid.shapes_grid.create import create_shapes_grid
 from lambdawaker.draw.shapes.simple_shapes import circle
 
 
