@@ -3,28 +3,6 @@ import string
 import random
 
 
-def choice(items):
-    """
-    Selects and returns a random item from either a list or string.
-
-    Args:
-        items: Either a list/array or string to choose from
-
-    Returns:
-        A random element from the input
-
-    Raises:
-        ValueError: If items is empty
-        TypeError: If items is not a list or string
-    """
-    if not isinstance(items, (list, str, tuple)):
-        raise TypeError("Input must be a list or string")
-
-    if len(items) == 0:
-        raise ValueError("Input cannot be empty")
-
-    return random.choice(items)
-
 
 def generate_hex_string(length, upper_case=True):
     """

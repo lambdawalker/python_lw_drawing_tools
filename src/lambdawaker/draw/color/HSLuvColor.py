@@ -179,7 +179,7 @@ class HSLuvColor:
         r, g, b, a = self.to_rgba()
         return f'#{r:02x}{g:02x}{b:02x}{a:02x}'
 
-    def to_tuple(self) -> Tuple[float, float, float, float]:
+    def to_hsl_tuple(self) -> Tuple[float, float, float, float]:
         return self.hue, self.saturation, self.lightness, self.alpha
 
     def __repr__(self) -> str:
@@ -300,7 +300,7 @@ class HSLuvColor:
     def __json__(self):
         return {
             "hexa": self.to_rgba_hex(),
-            "hslua": self.to_tuple(),
+            "hslua": self.to_hsl_tuple(),
             "__type__": "HSLuvColor"
         }
 
