@@ -25,8 +25,11 @@ class DiskDataset(Dataset):
         Initializes the dataset.
 
         Args:
+            dataset_id (str): A string identifier for the dataset from a collection of datasets.
+                The format should be "owner/dataset" (e.g., "lambdaWalker/ds.photo_id").
             provider (Optional[DataProvider], optional): A data provider instance.
                 If no provider is given, it defaults to a DiskProvider.
+            read_only (bool, optional): If True, the dataset cannot be modified. Defaults to False.
         """
         self.provider = provider if provider is not None else DiskProvider()
         self.manifest = None
@@ -107,7 +110,7 @@ class DiskDataset(Dataset):
             result[name] = FieldCaster.cast(raw_data, field['type'])
         return Record(result)
 
-    def random(self) -> Dict[str, Any]:
+    def random(self) -> Record:
         """
         Retrieves a random record from the dataset.
 

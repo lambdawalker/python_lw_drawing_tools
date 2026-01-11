@@ -1,10 +1,11 @@
+from typing import Optional
+
 from lambdawaker.templete.process_data_payload import process_data_payload
 
 
-class DataSetResourceHandler:
-    match_pattern = "lw.ds://**"
-
-    def __init__(self, dataset_sources: list):
+class DataSetsHandler:
+    def __init__(self, dataset_sources: Optional[list] = None):
+        dataset_sources = dataset_sources or []
         self.data_sources_dict = {
             data_sources.id.lower(): data_sources for data_sources in dataset_sources
         }
