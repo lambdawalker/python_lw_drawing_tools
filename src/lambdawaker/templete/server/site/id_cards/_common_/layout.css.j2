@@ -1,0 +1,72 @@
+/* Header Styling */
+.card-header {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 5mm;
+    padding: 3mm;
+}
+
+.title-section {
+    margin-left: 10.6mm;
+    flex-grow: 1;
+    text-align: center;
+}
+
+/* Body Layout */
+.card-body {
+    flex-grow: 1;
+    display: flex;
+    position: relative;
+    height: calc(100% - 120px);
+    flex-direction: row;
+}
+
+.data-section {
+    padding-left: 10.6mm;
+    line-height: 1.2;
+    flex-grow: 1;
+}
+
+.top-right {
+    float: right;
+}
+
+.top-right .data-item {
+    margin-right: 15.88mm;
+}
+
+/* Key, CURP, Year Layout */
+.data-item.key-voter {
+    margin-top: 5.28mm;
+}
+
+.data-item.key-curp {
+    display: flex;
+    margin-top: 5.28mm;
+}
+
+.key, .curp, .year {
+    margin-right: 5.28mm;
+}
+
+.key label, .curp label, .year label {
+    display: inline-block;
+}
+
+/* Bottom Row Data */
+.data-group.bottom-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-top: 10.6mm;
+}
+
+.bottom-row .data-item {
+    text-align: left;
+    flex: 1 0 33%;
+}
+
+.bottom-row label {
+    display: inline;
+}
+
