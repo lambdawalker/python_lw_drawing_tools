@@ -1,6 +1,6 @@
 from typing import Optional
 
-from lambdawaker.templete.process_data_payload import process_data_payload
+from lambdawaker.dataset.hadlers.process_data_payload import process_data_payload
 
 
 class DataSetsHandler:
