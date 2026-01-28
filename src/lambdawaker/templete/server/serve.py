@@ -11,19 +11,19 @@ from starlette.responses import Response, FileResponse
 from starlette.staticfiles import StaticFiles
 
 from lambdawaker.dataset.DiskDataset import DiskDataset
+from lambdawaker.dataset.hadlers.DatasetSourceHandler import DataSetsHandler
+from lambdawaker.dataset.hadlers.process_data_payload import process_data_payload
 from lambdawaker.draw.color.HSLuvColor import to_hsluv_color
 from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
-from lambdawaker.templete.DatasetSourceHandler import DataSetsHandler
 from lambdawaker.templete.fields import field_generators
-from lambdawaker.templete.process_data_payload import process_data_payload
 from lambdawaker.templete.server.FileMetadataHandler import FileMetadataHandler
-from lambdawaker.templete.server.RelativeLoader import RelEnvironment
+from lambdawaker.templete.server.RelativeLoader import RelativeEnvironment
 
 app = FastAPI()
 
 SITE_ROOT = Path("./site").resolve()
 
-env = RelEnvironment(
+env = RelativeEnvironment(
     loader=FileSystemLoader(str(SITE_ROOT)),
     autoescape=select_autoescape(["html", "xml", "svg"]),
 )

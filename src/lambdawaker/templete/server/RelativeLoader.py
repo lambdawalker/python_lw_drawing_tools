@@ -19,7 +19,7 @@ class RelativeLoader(FileSystemLoader):
         return str(parent_path / template)
 
 
-class RelEnvironment(jinja2.Environment):
+class RelativeEnvironment(jinja2.Environment):
     """Override join_path() to enable relative template paths."""
 
     def join_path(self, template, parent):
