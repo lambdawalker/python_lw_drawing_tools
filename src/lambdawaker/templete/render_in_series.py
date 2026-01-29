@@ -24,73 +24,89 @@ def fetch_available_templates(base_url: str) -> Tuple[str, ...]:
     ))
 
 
-async def render_single_card(
-        renderer: AsyncPlaywrightRenderer,
-        base_url: str,
-        record_id: int,
-        template_name: str,
-        outdir: str,
-):
-    primary_color = generate_hsluv_black_text_contrasting_color()
+class CardRenderer:
+    def __init__(self, base_url: str, outdir: str = "./output/img/", headless: bool = True):
+        self.base_url = base_url
+        self.outdir = outdir
+        self.headless = headless
+        self.renderer = AsyncPlaywrightRenderer()
+        self._available_templates = None
 
-    url = (
-        f"{base_url}/render/id_cards/{template_name}/{record_id}"
-        f"?primary_color={primary_color.to_hsl_tuple()}"
-    )
+    async def start(self):
+        await self.renderer.start(headless=self.headless)
 
-    await renderer.page.goto(url)
+    async def close(self):
+        await self.renderer.close()
 
-    card = await renderer.page.wait_for_selector("#view-port")
-    image_bytes = await card.screenshot(omit_background=True)
+    async def get_available_templates(self) -> Tuple[str, ...]:
+        if self._available_templates is None:
+            self._available_templates = fetch_available_templates(self.base_url)
+        return self._available_templates
 
-    background_paint_function = select_random_function_from_module_and_submodules(
-        card_background_module,
-        "generate_card_background_.*",
-    )
+    async def render_record(self, record_id: int):
+        templates = await self.get_available_templates()
+        for template_name in templates:
+            await self.render_single_card(record_id, template_name)
 
-    first_layer_image = Image.open(BytesIO(image_bytes))
+    async def render_single_card(self, record_id: int, template_name: str):
+        primary_color = generate_hsluv_black_text_contrasting_color()
 
-    _, card_background_image = background_paint_function(
-        first_layer_image.size,
-        primary_color,
-    )
+        url = (
+            f"{self.base_url}/render/id_cards/{template_name}/{record_id}"
+            f"?primary_color={primary_color.to_hsl_tuple()}"
+        )
 
-    canvas = Image.new("RGBA", first_layer_image.size)
-    for image in [card_background_image, first_layer_image]:
-        canvas.paste(image, (0, 0), image)
+        await self.renderer.page.goto(url)
 
-    ensure_directory(outdir)
-    canvas.save(f"{outdir.rstrip('/')}/{record_id}_{template_name}.png")
+        card = await self.renderer.page.wait_for_selector("#view-port")
+        image_bytes = await card.screenshot(omit_background=True)
+
+        background_paint_function = select_random_function_from_module_and_submodules(
+            card_background_module,
+            "generate_card_background_.*",
+        )
+
+        first_layer_image = Image.open(BytesIO(image_bytes))
+
+        _, card_background_image = background_paint_function(
+            first_layer_image.size,
+            primary_color,
+        )
+
+        canvas = Image.new("RGBA", first_layer_image.size)
+        for image in [card_background_image, first_layer_image]:
+            canvas.paste(image, (0, 0), image)
+
+        ensure_directory(self.outdir)
+        canvas.save(f"{self.outdir.rstrip('/')}/{record_id}_{template_name}.png")
 
 
 async def render(
         ds_range: Tuple[int, int] = (0, 5),
         *,
-        base_url: str = "http://127.0.0.1:8001",
+        base_url: str,
         headless: bool = True,
         outdir: str = "./output/img/",
 ):
     print("STATUS: RUNNING")
-    renderer = AsyncPlaywrightRenderer()
-
-    await renderer.start(headless=headless)
+    card_renderer = CardRenderer(base_url=base_url, outdir=outdir, headless=headless)
+    await card_renderer.start()
 
     start, end = ds_range
 
     try:
-        available_templates = fetch_available_templates(base_url)
+        await card_renderer.get_available_templates()
     except Exception as e:
         print(f"MESSAGE: Failed to fetch templates: {e}")
         print("STATUS: FAILED")
-        await renderer.close()
+        await card_renderer.close()
         return
 
     try:
         local_count = 0
         for record_id in range(start, end):
             print(f"MESSAGE: Processing record {record_id}")
-            for template_name in available_templates:
-                await render_single_card(renderer, base_url, record_id, template_name, outdir)
+            await card_renderer.render_record(record_id)
 
             local_count += 1
             print(f"PROGRESS: {local_count}")
@@ -100,7 +116,7 @@ async def render(
         print(f"MESSAGE: Error during rendering: {e}")
         print("STATUS: FAILED")
     finally:
-        await renderer.close()
+        await card_renderer.close()
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -112,8 +128,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--end", default=5, type=int, help="End record id (exclusive)")
 
     p.add_argument(
-        "--base-url",
-        default="http://127.0.0.1:8001",
+        "--base-url", required=True,
         help="Base server URL (default: %(default)s)",
     )
     p.add_argument(
