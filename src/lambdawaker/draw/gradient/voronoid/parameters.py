@@ -2,10 +2,9 @@ import random
 from typing import Tuple, Union, Dict, Any
 
 from PIL.Image import Image
+
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.color.generate_color import generate_hsluv_text_contrasting_color
-
-from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color, HSLuvColor
-
 from lambdawaker.draw.color.utils import get_random_point_with_margin
 from lambdawaker.random.values import DefaultValue, Default, Random
 

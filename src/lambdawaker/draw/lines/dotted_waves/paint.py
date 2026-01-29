@@ -103,10 +103,10 @@ def paint_dotted_waves(
 
             # wobble sideways (perpendicular to travel)
             wobble = (
-                last_variation
-                * amp
-                * math.sin((current_x + current_y) / mod)
-                * wobble_dir
+                    last_variation
+                    * amp
+                    * math.sin((current_x + current_y) / mod)
+                    * wobble_dir
             )
             current_x += px * wobble
             current_y += py * wobble

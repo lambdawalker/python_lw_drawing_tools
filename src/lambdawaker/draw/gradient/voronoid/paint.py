@@ -4,7 +4,7 @@ import moderngl
 import numpy as np
 from PIL import Image
 
-from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color, HSLuvColor
+from lambdawaker.draw.color.HSLuvColor import ColorUnion, to_hsluv_color
 from lambdawaker.draw.gradient.voronoid.parameters import generate_random_voronoid_parameters
 from lambdawaker.random.values import Random, Default, clean_passed_parameters
 

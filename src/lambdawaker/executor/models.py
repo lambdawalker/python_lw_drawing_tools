@@ -1,7 +1,9 @@
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import Optional, List, Dict, Any
+from enum import Enum
+from typing import Optional, Dict, Any
+
 from rich.progress import Progress
+
 
 class TaskStatus(Enum):
     PENDING = "Pending"
@@ -11,6 +13,7 @@ class TaskStatus(Enum):
     CRASHED = "Crashed"
     RETRYING = "Retrying"
     FINISHED = "Finished"
+
 
 @dataclass
 class WorkerState:
@@ -22,10 +25,11 @@ class WorkerState:
     message: str = ""
     attempts: int = 0
     extra_data: Dict[str, Any] = field(default_factory=dict)
-    
+
     # UI related
     progress_obj: Optional[Progress] = None
     task_id: Optional[int] = None
+
 
 @dataclass
 class TaskConfig:

@@ -1,6 +1,5 @@
 import time
 from functools import wraps
-from tabnanny import verbose
 
 
 class Profiler:

@@ -1,6 +1,5 @@
-import pathlib
 import datetime
-import fnmatch
+import pathlib
 from typing import List, Dict, Union, Any
 
 from lambdawaker.file.path.PathResolver import resolve

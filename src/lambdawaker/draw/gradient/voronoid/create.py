@@ -1,5 +1,4 @@
 from PIL import Image
-from typing import Optional
 
 from lambdawaker.draw.color.HSLuvColor import ColorUnion
 from lambdawaker.draw.gradient.voronoid.paint import paint_voronoid, paint_random_voronoid
