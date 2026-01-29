@@ -6,8 +6,8 @@ from lambdawaker.random.selection.select_random_word_from_nested_directory impor
 
 
 def generate_road_name():
-    name_db = str(resources.files("lambdawaker").joinpath("assets/text/address/road/name_db")) + os.sep
-    type_db = str(resources.files("lambdawaker").joinpath("assets/text/address/road/type_db")) + os.sep
+    name_db = resources.files("lambdawaker").joinpath("assets/text/address/road/name_db")
+    type_db = resources.files("lambdawaker").joinpath("assets/text/address/road/type_db")
 
     name, name_source = select_random_word_from_nested_directory(name_db)
     road_type, road_type_source = select_random_word_from_nested_directory(type_db)
@@ -19,8 +19,8 @@ def generate_road_name():
 
 
 def generate_block_name():
-    name_db = str(resources.files("lambdawaker").joinpath("assets/text/address/block/name_db")) + os.sep
-    type_db = str(resources.files("lambdawaker").joinpath("assets/text/address/block/type_db")) + os.sep
+    name_db = resources.files("lambdawaker").joinpath("assets/text/address/block/name_db")
+    type_db = resources.files("lambdawaker").joinpath("assets/text/address/block/type_db")
 
     name, name_source = select_random_word_from_nested_directory(name_db)
     road_type, road_type_source = select_random_word_from_nested_directory(type_db)
@@ -32,7 +32,7 @@ def generate_block_name():
 
 
 def generate_city_name():
-    db_path = str(resources.files("lambdawaker").joinpath("assets/text/address/city")) + os.sep
+    db_path = resources.files("lambdawaker").joinpath("assets/text/address/city")
 
     name, name_source = select_random_word_from_nested_directory(db_path)
 
@@ -43,7 +43,7 @@ def generate_city_name():
 
 
 def generate_state_name():
-    db_path = str(resources.files("lambdawaker").joinpath("assets/text/address/state")) + os.sep
+    db_path = resources.files("lambdawaker").joinpath("assets/text/address/state")
 
     name, name_source = select_random_word_from_nested_directory(db_path)
 
@@ -54,7 +54,7 @@ def generate_state_name():
 
 
 def generate_country_name():
-    db_path = str(resources.files("lambdawaker").joinpath("assets/text/address/country")) + os.sep
+    db_path = resources.files("lambdawaker").joinpath("assets/text/address/country")
 
     name, name_source = select_random_word_from_nested_directory(db_path)
 

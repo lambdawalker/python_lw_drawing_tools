@@ -1,8 +1,18 @@
 import os
 import random
+from importlib.resources.readers import MultiplexedPath
+from pathlib import Path
 
 
 def select_random_file(path=None, extension_filter=None):
+    if isinstance(path, str):
+        path = Path(path)
+    elif isinstance(path, MultiplexedPath):
+        for candidate in path._paths:
+            if candidate.is_dir():
+                path = candidate
+                break
+
     extension_filter = extension_filter if extension_filter is not None else []
     options = [os.path.join(path, f) for f in os.listdir(path)]
 

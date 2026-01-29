@@ -1,5 +1,6 @@
 import os
 import random
+from importlib.resources.readers import MultiplexedPath
 from pathlib import Path
 
 
@@ -19,7 +20,13 @@ def select_random_word_from_nested_directory(directory):
         ValueError: If directory is empty or contains no readable files
         FileNotFoundError: If directory does not exist
     """
-    directory = Path(directory)
+    if isinstance(directory, str):
+        directory = Path(directory)
+    elif isinstance(directory, MultiplexedPath):
+        for candidate in directory._paths:
+            if candidate.is_dir():
+                directory = candidate
+                break
 
     if not directory.exists():
         raise FileNotFoundError(f"Directory not found: {directory}")

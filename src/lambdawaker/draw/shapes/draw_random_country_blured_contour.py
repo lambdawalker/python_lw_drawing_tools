@@ -8,7 +8,7 @@ from lambdawaker.random.selection.select_random_file import select_random_file
 
 
 def draw_random_country_blured_contour(img: Image.Image, primary_color: HSLuvColor):
-    source = str(resources.files("lambdawaker").joinpath("assets/img/country_shapes"))
+    source = resources.files("lambdawaker").joinpath("assets/img/country_shapes")
     svg_path = select_random_file(source)
 
     width, height = img.size
