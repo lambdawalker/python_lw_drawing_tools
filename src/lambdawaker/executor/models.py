@@ -38,3 +38,4 @@ class TaskConfig:
     max_retries: int = 3
     refresh_hz: float = 10.0
     grid_cols: int = 4
+    log_file = None

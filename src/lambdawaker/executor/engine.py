@@ -6,13 +6,14 @@ from abc import ABC, abstractmethod
 from typing import List, Callable, Optional
 
 from .models import WorkerState, TaskStatus, TaskConfig
+from ..file.path.ensure_directory import ensure_directory
 
 
 class ProtocolHandler:
     """Handles the communication protocol between worker processes and the executor."""
 
     @staticmethod
-    def parse_line(line: str, state: WorkerState) -> bool:
+    def parse_line(line: str, state: WorkerState, log_file) -> bool:
         """
         Parses a line from the worker output.
         Expected formats:
@@ -21,6 +22,8 @@ class ProtocolHandler:
         MESSAGE: <str>
         """
         line = line.strip()
+        if not line:
+            return True
         if line.startswith("PROGRESS:"):
             try:
                 val = int(float(line.split(":", 1)[1]))
@@ -42,6 +45,13 @@ class ProtocolHandler:
                 return True
             except IndexError:
                 pass
+
+        if log_file:
+            try:
+                log_file.write(line + "\n")
+            except Exception:
+                pass
+
         return False
 
 
@@ -91,6 +101,9 @@ class SubprocessExecutor(BaseExecutor):
 
             cmd = self.get_command_func(state)
 
+            ensure_directory("./logs")
+            output_log = open(f"./logs/worker_{state.worker_id}.log", "w")
+
             try:
                 proc = subprocess.Popen(
                     cmd,
@@ -105,7 +118,7 @@ class SubprocessExecutor(BaseExecutor):
                     if self._stop_event.is_set():
                         proc.terminate()
                         break
-                    ProtocolHandler.parse_line(line, state)
+                    ProtocolHandler.parse_line(line, state, log_file=output_log)
 
                 proc.wait()
                 if proc.returncode == 0:
@@ -118,6 +131,8 @@ class SubprocessExecutor(BaseExecutor):
             except Exception as e:
                 state.status = TaskStatus.CRASHED
                 state.message = str(e)
+            finally:
+                output.close()
 
             if state.attempts < self.config.max_retries and not self._stop_event.is_set():
                 state.status = TaskStatus.RETRYING

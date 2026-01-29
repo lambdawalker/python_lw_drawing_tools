@@ -21,7 +21,7 @@ def run_dispatcher(dataset_size, config):
     cpu_count = os.cpu_count() or 1
     worker_count = max(4, round(cpu_count * (config.worker_load_percent / 100.0)))
 
-    config = TaskConfig(
+    taskConfig = TaskConfig(
         total_items=total,
         num_workers=worker_count,
         max_retries=config.max_retries,
@@ -45,7 +45,7 @@ def run_dispatcher(dataset_size, config):
             cmd.append("--no-headless")
         return cmd
 
-    executor = SubprocessExecutor(config, get_command)
+    executor = SubprocessExecutor(taskConfig, get_command)
     reporter = RichReporter(title=f"Parallel Rendering ({worker_count} Workers)")
 
     executor.run(reporter)
