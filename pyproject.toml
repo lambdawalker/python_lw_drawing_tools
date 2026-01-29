@@ -34,7 +34,8 @@ dependencies = [
   "noise==1.2.2",
   "datasets==4.5.0",
   "requests==2.32.5",
-  "uvicorn==0.40.0"
+  "uvicorn==0.40.0",
+  "opencv-python==4.12.0.88"
 ]
 
 [project.urls]
@@ -42,10 +43,13 @@ Homepage = "https://github.com/lambdawalker/python_lw_drawing_tools"
 Repository = "https://github.com/lambdawalker/python_lw_drawing_tools"
 Issues = "https://github.com/lambdawalker/python_lw_drawing_tools/issues"
 
-# Configure setuptools to discover packages (grid, waves, header)
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["lambdawaker.*"]
+include = ["lambdawaker", "lambdawaker.*"]
 
 [tool.setuptools.package-data]
-"mypackage" = ["assets"]
+lambdawaker = ["assets/**"]
