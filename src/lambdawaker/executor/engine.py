@@ -131,8 +131,6 @@ class SubprocessExecutor(BaseExecutor):
             except Exception as e:
                 state.status = TaskStatus.CRASHED
                 state.message = str(e)
-            finally:
-                output.close()
 
             if state.attempts < self.config.max_retries and not self._stop_event.is_set():
                 state.status = TaskStatus.RETRYING
