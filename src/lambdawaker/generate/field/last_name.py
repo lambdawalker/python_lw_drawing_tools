@@ -1,11 +1,11 @@
 import os
 
-from lambdawaker.file.path.wd import path_from_root
+from importlib import resources
 from lambdawaker.random.selection.select_random_word_from_nested_directory import select_random_word_from_nested_directory
 
 
 def generate_last_name():
-    db_path = path_from_root("assets/text/last_name") + os.sep
+    db_path = str(resources.files("lambdawaker").joinpath("assets/text/last_name")) + os.sep
 
     name, source = select_random_word_from_nested_directory(
         db_path

@@ -1,11 +1,11 @@
 import os
 
-from lambdawaker.file.path.wd import path_from_root
+from importlib import resources
 from lambdawaker.random.selection.select_random_word_from_nested_directory import select_random_word_from_nested_directory
 
 
 def generate_voting_institution_name():
-    db_path = path_from_root("assets/text/institutions") + os.sep
+    db_path = str(resources.files("lambdawaker").joinpath("assets/text/institutions")) + os.sep
 
     name, name_source = select_random_word_from_nested_directory(db_path)
 
