@@ -7,7 +7,7 @@ import yaml
 from fastapi import FastAPI, HTTPException
 from jinja2 import FileSystemLoader, select_autoescape
 from starlette.requests import Request
-from starlette.responses import Response, FileResponse
+from starlette.responses import Response, FileResponse, RedirectResponse
 from starlette.staticfiles import StaticFiles
 
 from lambdawaker.dataset.DiskDataset import DiskDataset
@@ -63,16 +63,13 @@ class TemplateServer:
                 primary_color: Tuple[float, float, float, float] = (0, 0, 0, 1)
         ):
             path = os.path.join(template_type, variant, "index.html.j2")
-            print(path)
             env_path = str(self.site_path.joinpath(template_type, variant, "meta", "common.json"))
-            print(env_path)
             common = {}
 
             if os.path.exists(env_path):
                 with open(env_path, 'r') as f:
                     import json
                     common = json.load(f)
-            print(common)
 
             return self.render_template(
                 path,
@@ -84,6 +81,44 @@ class TemplateServer:
                     },
                     "common": common
                 }
+            )
+
+        @self.app.get("/render/{template_type}/{variant}")
+        def render_card_by_random_record(
+                template_type: str,
+                variant: str,
+                request: Request,
+                primary_color: Tuple[float, float, float, float] = (0, 0, 0, 1)
+        ):
+            path = os.path.join(template_type, variant, "index.html.j2")
+            env_path = str(self.site_path.joinpath(template_type, variant, "meta", "common.json"))
+            common = {}
+
+            if os.path.exists(env_path):
+                with open(env_path, 'r') as f:
+                    import json
+                    common = json.load(f)
+
+            return self.render_template(
+                path,
+                request,
+                primary_color,
+                data={
+                    "data": {
+                        "id": "random"
+                    },
+                    "common": common
+                }
+            )
+
+        @self.app.get("/render/{template_type}/{variant}")
+        def render_card_random_record_redirect(
+                template_type: str,
+                variant: str,
+        ):
+            return RedirectResponse(
+                url=f"/render/{template_type}/{variant}/",
+                status_code=307,  # preserves method & body
             )
 
         @self.app.get("/render/{path:path}")
@@ -156,10 +191,4 @@ class TemplateServer:
 
     def run(self):
         import uvicorn
-        if self.workers > 1:
-            print(f"WARNING: uvicorn.run(app) does not support multiple workers directly when passing the app object.")
-            print(f"To use multiple workers, uvicorn needs an import string, but that's tricky with a dynamic class instance.")
-            print(f"Running with 1 worker instead.")
-            uvicorn.run(self.app, host=self.host, port=self.port)
-        else:
-            uvicorn.run(self.app, host=self.host, port=self.port)
+        uvicorn.run(self.app, host=self.host, port=self.port, workers=self.workers)

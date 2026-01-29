@@ -219,19 +219,28 @@ class DiskDataset(Dataset):
 
         split = self
         key = path[1]
+        field = None
+        if len(path) > 2:
+            field = path[2]
 
-        if key == "len":
+        if key == "":
+            return split
+        elif key == "len":
             return len(split)
 
         elif key == "random":
             limit = len(split)
-            return split[random.randint(0, limit)]
+            record = split[random.randint(0, limit)]
+            if field is None:
+                return record
+            return record[field]
+
         elif key.isdigit():
             key = int(key)
             path_size = len(path)
-
             if path_size == 2:
                 return split[key]
+
             elif path_size == 3:
                 field = path[2]
                 return split[key][field]
