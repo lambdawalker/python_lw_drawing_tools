@@ -6,6 +6,7 @@ from typing import Tuple, Dict, Any, Optional
 import yaml
 from fastapi import FastAPI, HTTPException
 from jinja2 import FileSystemLoader, select_autoescape
+from jinja2.exceptions import TemplateNotFound
 from starlette.requests import Request
 from starlette.responses import Response, FileResponse, RedirectResponse
 from starlette.staticfiles import StaticFiles
@@ -63,6 +64,9 @@ class TemplateServer:
                 primary_color: Tuple[float, float, float, float] = (0, 0, 0, 1)
         ):
             path = os.path.join(template_type, variant, "index.html.j2")
+            if not self.site_path.joinpath(path).exists():
+                raise HTTPException(status_code=404, detail="Template not found")
+
             env_path = str(self.site_path.joinpath(template_type, variant, "meta", "common.json"))
             common = {}
 
@@ -91,6 +95,9 @@ class TemplateServer:
                 primary_color: Tuple[float, float, float, float] = (0, 0, 0, 1)
         ):
             path = os.path.join(template_type, variant, "index.html.j2")
+            if not self.site_path.joinpath(path).exists():
+                raise HTTPException(status_code=404, detail="Template not found")
+
             env_path = str(self.site_path.joinpath(template_type, variant, "meta", "common.json"))
             common = {}
 
@@ -126,13 +133,21 @@ class TemplateServer:
             if path.endswith(".j2"):
                 return render_jinja_any(path, request)
 
-            result = str(self.site_path.joinpath(path))
-            return FileResponse(path=result)
+            full_path = self.site_path.joinpath(path)
+            if not full_path.exists():
+                raise HTTPException(status_code=404, detail="File not found")
+            return FileResponse(path=str(full_path))
 
         @self.app.get("/ds/{path:path}")
         def server_dataset_resource(path: str):
-            data = self.dataset_handler[path]
+            try:
+                data = self.dataset_handler[path]
+            except (KeyError, IndexError, ValueError):
+                raise HTTPException(status_code=404, detail="Dataset resource not found")
+
             content_type, data = process_data_payload(data)
+            if content_type is None:
+                raise HTTPException(status_code=404, detail="Dataset resource processing failed")
             return Response(content=data, media_type=content_type)
 
         @self.app.get("/{path:path}")
@@ -174,15 +189,22 @@ class TemplateServer:
         media_type, _ = mimetypes.guess_type(output_name)
         media_type = media_type or "text/plain"
 
-        template = self.env.get_template(path)
+        try:
+            template = self.env.get_template(path)
+        except TemplateNotFound:
+            raise HTTPException(status_code=404, detail="Template not found")
 
-        rendered = template.render(
-            request=request,
-            env=default_env,
-            gen=field_generators,
-            ds=self.dataset_handler,
-            **data
-        )
+        try:
+            rendered = template.render(
+                request=request,
+                env=default_env,
+                gen=field_generators,
+                ds=self.dataset_handler,
+                **data
+            )
+        except (KeyError, IndexError, ValueError) as e:
+            # Often data access in template might fail if record doesn't exist
+            raise HTTPException(status_code=404, detail=f"Data or template error: {str(e)}")
 
         return Response(
             content=rendered,
