@@ -46,12 +46,10 @@ class TemplateServer:
         )
 
     def _setup_datasets(self):
-        self.person_ds = DiskDataset(dataset_id="lambdaWalker/ds.photo_id")
-        self.person_ds.load("@DS/lw_person_V0.0.0")
+        dataset_paths = self.config.get("datasets", [])
+        datasets = [DiskDataset(path) for path in dataset_paths]
 
-        self.dataset_handler = DataSetsHandler([
-            self.person_ds
-        ])
+        self.dataset_handler = DataSetsHandler(datasets)
 
     def _setup_routes(self):
         self.handel_path_info = FileMetadataHandler(self.site_path)
@@ -64,7 +62,7 @@ class TemplateServer:
                 request: Request,
                 primary_color: Tuple[float, float, float, float] = (0, 0, 0, 1)
         ):
-            path = os.path.join( template_type, variant, "index.html.j2")
+            path = os.path.join(template_type, variant, "index.html.j2")
             print(path)
             env_path = str(self.site_path.joinpath(template_type, variant, "meta", "common.json"))
             print(env_path)
@@ -82,7 +80,6 @@ class TemplateServer:
                 primary_color,
                 data={
                     "data": {
-                        "record": self.person_ds[record_id],
                         "id": record_id
                     },
                     "common": common

@@ -20,13 +20,11 @@ class DiskDataset(Dataset):
     of the dataset, including the fields and their storage locations.
     """
 
-    def __init__(self, dataset_id: str, provider: Optional[DataProvider] = None, read_only: bool = False):
+    def __init__(self, path: str, provider: Optional[DataProvider] = None, read_only: bool = False):
         """
         Initializes the dataset.
 
         Args:
-            dataset_id (str): A string identifier for the dataset from a collection of datasets.
-                The format should be "owner/dataset" (e.g., "lambdaWalker/ds.photo_id").
             provider (Optional[DataProvider], optional): A data provider instance.
                 If no provider is given, it defaults to a DiskProvider.
             read_only (bool, optional): If True, the dataset cannot be modified. Defaults to False.
@@ -35,7 +33,8 @@ class DiskDataset(Dataset):
         self.manifest = None
         self.record_ids = []
         self.read_only = read_only
-        self.id = dataset_id
+        self.id = None
+        self.load(path)
 
     def load(self, root_path: str, manifest_name: str = "manifest.yaml"):
         """
@@ -50,6 +49,7 @@ class DiskDataset(Dataset):
         # 1. Load the YAML manifest using the provider
         raw_manifest = self.provider.serve(manifest_name)
         self.manifest = yaml.safe_load(raw_manifest)
+        self.id = self.manifest.get('id')
 
         # 2. Synchronize the internal ID list
         self._refresh_ids()
