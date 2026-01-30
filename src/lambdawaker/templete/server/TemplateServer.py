@@ -1,9 +1,8 @@
 import mimetypes
 import os
 from pathlib import Path
-from typing import Tuple, Dict, Any, Optional
+from typing import Tuple
 
-import yaml
 from fastapi import FastAPI, HTTPException
 from jinja2 import FileSystemLoader, select_autoescape
 from jinja2.exceptions import TemplateNotFound
@@ -22,17 +21,9 @@ from lambdawaker.templete.server.RelativeLoader import RelativeEnvironment
 
 
 class TemplateServer:
-    def __init__(self, config: Optional[Dict[str, Any]] = None, config_path: Optional[str] = None):
-        if config_path:
-            with open(config_path, 'r') as f:
-                self.config = yaml.safe_load(f)
-        else:
-            self.config = config or {}
-
-        self.host = self.config.get("host", "0.0.0.0")
-        self.port = self.config.get("port", 8001)
-        self.workers = self.config.get("workers", 1)
-        self.site_path = Path(self.config.get("site_path", "./site")).resolve()
+    def __init__(self, site_path: str, datasets: list):
+        self.site_path = Path(site_path).resolve()
+        self.datasets = datasets
 
         self.app = FastAPI()
         self._setup_jinja()
@@ -47,7 +38,7 @@ class TemplateServer:
         )
 
     def _setup_datasets(self):
-        dataset_paths = self.config.get("datasets", [])
+        dataset_paths = self.datasets
         datasets = [DiskDataset(path) for path in dataset_paths]
 
         self.dataset_handler = DataSetsHandler(datasets)
@@ -87,7 +78,7 @@ class TemplateServer:
                 }
             )
 
-        @self.app.get("/render/{template_type}/{variant}")
+        @self.app.get("/render/{template_type}/{variant}/")
         def render_card_by_random_record(
                 template_type: str,
                 variant: str,
@@ -210,7 +201,3 @@ class TemplateServer:
             content=rendered,
             media_type=media_type
         )
-
-    def run(self):
-        import uvicorn
-        uvicorn.run(self.app, host=self.host, port=self.port, workers=self.workers)
