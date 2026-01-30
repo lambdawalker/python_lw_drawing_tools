@@ -68,7 +68,7 @@ class CardRenderer:
         elements = [{
             "class": meta["class"],
             "box": [0, 0, w, h]
-        }] + await self.capture_elements()
+        }]  # + await self.capture_elements()
 
         self.metadata_handler.save_object_detection_log(record_id, template_name, elements)
 
