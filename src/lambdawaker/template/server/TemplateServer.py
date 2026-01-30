@@ -15,9 +15,9 @@ from lambdawaker.dataset.hadlers.DatasetSourceHandler import DataSetsHandler
 from lambdawaker.dataset.hadlers.process_data_payload import process_data_payload
 from lambdawaker.draw.color.HSLuvColor import to_hsluv_color
 from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
-from lambdawaker.templete.fields import field_generators
-from lambdawaker.templete.server.FileMetadataHandler import FileMetadataHandler
-from lambdawaker.templete.server.RelativeLoader import RelativeEnvironment
+from lambdawaker.template.fields import field_generators
+from lambdawaker.template.server.FileMetadataHandler import FileMetadataHandler
+from lambdawaker.template.server.RelativeLoader import RelativeEnvironment
 
 
 class TemplateServer:

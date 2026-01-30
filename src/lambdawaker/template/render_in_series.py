@@ -4,7 +4,7 @@ import asyncio
 import traceback
 from typing import Tuple
 
-from lambdawaker.templete.render.CardRenderer import CardRenderer
+from lambdawaker.template.render.CardRenderer import CardRenderer
 
 
 async def render(

@@ -3,9 +3,9 @@ from typing import Tuple
 import requests
 
 from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
-from lambdawaker.templete.AsyncPlaywrightRenderer import AsyncPlaywrightRenderer
-from lambdawaker.templete.render.CardImageProcessor import CardImageProcessor
-from lambdawaker.templete.render.CardMetadataHandler import CardMetadataHandler
+from lambdawaker.template.AsyncPlaywrightRenderer import AsyncPlaywrightRenderer
+from lambdawaker.template.render.CardImageProcessor import CardImageProcessor
+from lambdawaker.template.render.CardMetadataHandler import CardMetadataHandler
 
 
 def fetch_available_templates(base_url: str) -> Tuple[str, ...]:
