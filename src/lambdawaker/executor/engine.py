@@ -6,7 +6,8 @@ from abc import ABC, abstractmethod
 from typing import List, Callable, Optional
 
 from .models import WorkerState, TaskStatus, TaskConfig
-from ..file.path.ensure_directory import ensure_directory
+from ..file.path.ensure_directory import ensure_directory_for_file
+from ..file.path.lazy_file_writer import LazyFileWriter
 
 
 class ProtocolHandler:
@@ -95,49 +96,51 @@ class SubprocessExecutor(BaseExecutor):
             start += size
 
     def _run_worker(self, state: WorkerState):
-        while state.attempts < self.config.max_retries and not self._stop_event.is_set():
-            state.attempts += 1
-            state.status = TaskStatus.RUNNING
+        log_path = f"./logs/worker_{state.worker_id}.log"
 
-            cmd = self.get_command_func(state)
+        with LazyFileWriter(log_path, "w") as output_log:
+            while state.attempts < self.config.max_retries and not self._stop_event.is_set():
+                state.attempts += 1
+                state.status = TaskStatus.RUNNING
 
-            ensure_directory("./logs")
-            output_log = open(f"./logs/worker_{state.worker_id}.log", "w")
+                cmd = self.get_command_func(state)
 
-            try:
-                proc = subprocess.Popen(
-                    cmd,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    bufsize=1,
-                    env={**os.environ, "PYTHONUNBUFFERED": "1"}
-                )
+                try:
+                    proc = subprocess.Popen(
+                        cmd,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        text=True,
+                        bufsize=1,
+                        env={**os.environ, "PYTHONUNBUFFERED": "1"},
+                        encoding="utf-8"
+                    )
 
-                for line in iter(proc.stdout.readline, ""):
-                    if self._stop_event.is_set():
-                        proc.terminate()
-                        break
-                    ProtocolHandler.parse_line(line, state, log_file=output_log)
+                    with proc.stdout:
+                        for line in iter(proc.stdout.readline, ""):
+                            if self._stop_event.is_set():
+                                proc.terminate()
+                                break
+                            ProtocolHandler.parse_line(line, state, log_file=output_log)
 
-                proc.wait()
-                if proc.returncode == 0:
-                    state.status = TaskStatus.SUCCESS
-                    state.completed = state.total  # Ensure it's marked as done
-                    return
-                else:
-                    state.status = TaskStatus.FAILED
-                    state.message = f"Exit code: {proc.returncode}"
-            except Exception as e:
-                state.status = TaskStatus.CRASHED
-                state.message = str(e)
+                    proc.wait()
+                    if proc.returncode == 0:
+                        state.status = TaskStatus.SUCCESS
+                        state.completed = state.total  # Ensure it's marked as done
+                        return
+                    else:
+                        state.status = TaskStatus.FAILED
+                        state.message = f"Exit code: {proc.returncode}"
+                except Exception as e:
+                    state.status = TaskStatus.CRASHED
+                    state.message = str(e)
 
-            if state.attempts < self.config.max_retries and not self._stop_event.is_set():
-                state.status = TaskStatus.RETRYING
-                time.sleep(1)
+                if state.attempts < self.config.max_retries and not self._stop_event.is_set():
+                    state.status = TaskStatus.RETRYING
+                    time.sleep(1)
 
-        if state.status != TaskStatus.SUCCESS:
-            state.status = TaskStatus.FINISHED if state.completed >= state.total else TaskStatus.FAILED
+            if state.status != TaskStatus.SUCCESS:
+                state.status = TaskStatus.FINISHED if state.completed >= state.total else TaskStatus.FAILED
 
     def run(self, reporter_func: Optional[Callable] = None):
         threads = []

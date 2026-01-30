@@ -9,7 +9,7 @@ from PIL import Image
 
 from lambdawaker.draw import card_background as card_background_module
 from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
-from lambdawaker.file.path.ensure_directory import ensure_directory
+from lambdawaker.file.path.ensure_directory import ensure_directory_for_file
 from lambdawaker.reflection.query import select_random_function_from_module_and_submodules
 from lambdawaker.templete.AsyncPlaywrightRenderer import AsyncPlaywrightRenderer
 
@@ -77,7 +77,7 @@ class CardRenderer:
         for image in [card_background_image, first_layer_image]:
             canvas.paste(image, (0, 0), image)
 
-        ensure_directory(self.outdir)
+        ensure_directory_for_file(self.outdir)
         canvas.save(f"{self.outdir.rstrip('/')}/{record_id}_{template_name}.png")
 
 
