@@ -66,7 +66,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p.add_argument(
         "--outdir",
-        default="./output/img/",
+        default="./output",
         help="Output directory (default: %(default)s)",
     )
 

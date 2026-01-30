@@ -67,7 +67,7 @@ class CardRenderer:
         w, h = first_layer_image.size
         elements = [{
             "class": meta["class"],
-            "box": [0, 0, w, h]
+            "boundingBox": [0, 0, w, h]
         }]  # + await self.capture_elements()
 
         self.metadata_handler.save_object_detection_log(record_id, template_name, elements)
