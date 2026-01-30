@@ -3,7 +3,7 @@ import argparse
 import asyncio
 from typing import Tuple
 
-from lambdawaker.templete.CardRenderer import CardRenderer
+from lambdawaker.templete.render.CardRenderer import CardRenderer
 
 
 async def render(

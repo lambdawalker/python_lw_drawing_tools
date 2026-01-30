@@ -4,7 +4,8 @@ import requests
 
 from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
 from lambdawaker.templete.AsyncPlaywrightRenderer import AsyncPlaywrightRenderer
-from lambdawaker.templete.card_processing import CardImageProcessor, CardMetadataHandler
+from lambdawaker.templete.card_processing import CardMetadataHandler
+from lambdawaker.templete.render.CardImageProcessor import CardImageProcessor
 
 
 def fetch_available_templates(base_url: str) -> Tuple[str, ...]:
