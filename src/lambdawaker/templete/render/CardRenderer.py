@@ -19,7 +19,7 @@ def fetch_available_templates(base_url: str) -> Tuple[str, ...]:
 
 
 class CardRenderer:
-    def __init__(self, base_url: str, outdir: str = "./output/img/", headless: bool = True):
+    def __init__(self, base_url: str, outdir: str = "./output/", headless: bool = True):
         self.base_url = base_url
         self.outdir = outdir
         self.headless = headless

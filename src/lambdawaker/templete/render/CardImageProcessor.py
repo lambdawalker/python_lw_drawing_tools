@@ -29,6 +29,6 @@ class CardImageProcessor:
         for image in [card_background_image, first_layer_image]:
             canvas.paste(image, (0, 0), image)
 
-        image_output_path = os.path.join(self.outdir, "../../assets/img", f"{record_id}_{template_name}.png")
+        image_output_path = os.path.join(self.outdir, "img", f"{record_id}_{template_name}.png")
         ensure_directory_for_file(image_output_path)
         canvas.save(image_output_path)
