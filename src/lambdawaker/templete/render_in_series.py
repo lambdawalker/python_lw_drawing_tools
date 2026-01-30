@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import argparse
 import asyncio
+import traceback
 from typing import Tuple
 
 from lambdawaker.templete.render.CardRenderer import CardRenderer
@@ -38,7 +39,8 @@ async def render(
 
         print("STATUS: SUCCESS")
     except Exception as e:
-        print(f"MESSAGE: Error during rendering: {e}")
+        error_message = traceback.format_exc()
+        print(f"MESSAGE: Error during rendering: {error_message}")
         print("STATUS: FAILED")
     finally:
         await card_renderer.close()
