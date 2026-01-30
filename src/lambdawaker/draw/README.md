@@ -1,6 +1,7 @@
 ### Draw
 
-The `draw` module is the core component for generating graphics and visual patterns. It contains a wide variety of tools for creating complex backgrounds, shapes, and effects.
+The `draw` module is the core component for generating graphics and visual patterns. It contains a wide variety of tools
+for creating complex backgrounds, shapes, and effects.
 
 #### Submodules
 

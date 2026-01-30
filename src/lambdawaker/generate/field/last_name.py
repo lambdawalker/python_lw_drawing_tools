@@ -1,6 +1,5 @@
-import os
-
 from importlib import resources
+
 from lambdawaker.random.selection.select_random_word_from_nested_directory import select_random_word_from_nested_directory
 
 

@@ -6,7 +6,6 @@ from abc import ABC, abstractmethod
 from typing import List, Callable, Optional
 
 from .models import WorkerState, TaskStatus, TaskConfig
-from ..file.path.ensure_directory import ensure_directory_for_file
 from ..file.path.lazy_file_writer import LazyFileWriter
 
 

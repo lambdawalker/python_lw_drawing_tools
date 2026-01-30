@@ -32,4 +32,3 @@ class CardImageProcessor:
         image_output_path = os.path.join(self.outdir, "../../assets/img", f"{record_id}_{template_name}.png")
         ensure_directory_for_file(image_output_path)
         canvas.save(image_output_path)
-        return first_layer_image

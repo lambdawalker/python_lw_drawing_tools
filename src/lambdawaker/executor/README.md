@@ -1,6 +1,7 @@
 ### Lambdawaker Executor
 
-A reusable package for running multi-process tasks with real-time progress reporting and status monitoring via a robust signaling protocol.
+A reusable package for running multi-process tasks with real-time progress reporting and status monitoring via a robust
+signaling protocol.
 
 #### Features
 
@@ -14,19 +15,20 @@ A reusable package for running multi-process tasks with real-time progress repor
 
 The package is organized into four main components:
 
-1.  **`models.py`**: Contains core data structures:
+1. **`models.py`**: Contains core data structures:
     - `TaskStatus`: Enum for task states (`PENDING`, `RUNNING`, `SUCCESS`, `FAILED`, `CRASHED`, `RETRYING`, `FINISHED`).
     - `WorkerState`: Tracks the current state, progress, and metadata for an individual worker.
     - `TaskConfig`: Global configuration for the execution run (total items, number of workers, retries, etc.).
 
-2.  **`engine.py`**: The execution core:
+2. **`engine.py`**: The execution core:
     - `ProtocolHandler`: Parses worker output lines following the signaling protocol.
-    - `SubprocessExecutor`: Manages a pool of subprocesses, maps work ranges to workers, and handles execution lifecycle.
+    - `SubprocessExecutor`: Manages a pool of subprocesses, maps work ranges to workers, and handles execution
+      lifecycle.
 
-3.  **`reporter.py`**: The visualization layer:
+3. **`reporter.py`**: The visualization layer:
     - `RichReporter`: A `rich`-based implementation that displays a global progress bar and a grid of worker panels.
 
-4.  **`mock_task.py`**: A utility script for testing and demonstrating the protocol.
+4. **`mock_task.py`**: A utility script for testing and demonstrating the protocol.
 
 #### Signaling Protocol
 
@@ -37,6 +39,7 @@ Workers communicate with the executor by printing specific prefixes to `stdout`.
 - `MESSAGE: <string>`: Displays an arbitrary message in the worker's UI panel.
 
 **Example Worker Output:**
+
 ```text
 STATUS: RUNNING
 MESSAGE: Initializing resources...

@@ -1,4 +1,3 @@
-import os
 from .ensure_directory import ensure_directory_for_file
 
 

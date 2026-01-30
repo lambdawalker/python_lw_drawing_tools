@@ -1,4 +1,5 @@
 from importlib import resources
+
 from PIL import Image
 
 from lambdawaker.draw.color.HSLuvColor import HSLuvColor, random_alpha

@@ -4,8 +4,8 @@ import requests
 
 from lambdawaker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
 from lambdawaker.templete.AsyncPlaywrightRenderer import AsyncPlaywrightRenderer
-from lambdawaker.templete.card_processing import CardMetadataHandler
 from lambdawaker.templete.render.CardImageProcessor import CardImageProcessor
+from lambdawaker.templete.render.CardMetadataHandler import CardMetadataHandler
 
 
 def fetch_available_templates(base_url: str) -> Tuple[str, ...]:
@@ -74,7 +74,7 @@ class CardRenderer:
 
     async def capture_elements(self):
         page = self.renderer.page
-        selector = "[data-capture]"
+        selector = "[data-class]"
 
         # Ensure at least one exists before continuing
         await page.wait_for_selector(selector)
@@ -85,7 +85,7 @@ class CardRenderer:
         results = []
         for el in handles:
             # attribute value (string or None)
-            val = await el.get_attribute("data-capture")
+            val = await el.get_attribute("data-class")
 
             # bounding box (dict or None; can be None if not visible / not in layout)
             box = await el.bounding_box()
