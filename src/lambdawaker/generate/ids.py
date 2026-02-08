@@ -64,10 +64,10 @@ def generate_line_3():
     return "".join(parts).ljust(30, '<')
 
 
-def get_complete_mrz():
+def generate_random_mrz():
     """The Grand Finale: 3 lines, 90 characters, 100% beauty."""
     return f"{generate_line_1()}\n{generate_line_2()}\n{generate_line_3()}"
 
 
 if __name__ == "__main__":
-    print(get_complete_mrz())
+    print(generate_random_mrz())
