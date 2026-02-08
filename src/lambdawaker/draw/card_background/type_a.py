@@ -23,12 +23,12 @@ def generate_card_background_type_a(size=(800, 600), primary_color: Union[ColorU
 
     profiler = Profiler(False)
 
-    profiler.start("SELECTING FUNCTIONS")
+    profiler.begin("SELECTING FUNCTIONS")
     background_paint_function = select_random_function_from_module_and_submodules(fill_module, "paint_random_.*")
     background_details = select_random_function_from_module_and_submodules(grid_module, "paint_random_.*")
     lines_details = select_random_function_from_module_and_submodules(waves_module, "paint_random_.*")
     header = select_random_function_from_module_and_submodules(header_module, "paint_random_.*")
-    selecting_functions_time = profiler.finalize("SELECTING FUNCTIONS")
+    selecting_functions_time = profiler.stop("SELECTING FUNCTIONS")
 
     draw_functions = [
         background_paint_function,
@@ -47,10 +47,10 @@ def generate_card_background_type_a(size=(800, 600), primary_color: Union[ColorU
 
     operations = []
 
-    profiler.start("DRAWING")
+    profiler.begin("DRAWING")
 
     for i, func in enumerate(draw_functions):
-        profiler.start(f"DRAWING {func.__name__}")
+        profiler.begin(f"DRAWING {func.__name__}")
         color = colors[i]
 
         parameters = func(
@@ -58,7 +58,7 @@ def generate_card_background_type_a(size=(800, 600), primary_color: Union[ColorU
             primary_color=color,
         )
 
-        elapsed = profiler.finalize(f"DRAWING {func.__name__}")
+        elapsed = profiler.stop(f"DRAWING {func.__name__}")
 
         operations.append({
             "parameters": parameters,
@@ -67,7 +67,7 @@ def generate_card_background_type_a(size=(800, 600), primary_color: Union[ColorU
             "elapsed": elapsed
         })
 
-    drawing_time = profiler.finalize("DRAWING")
+    drawing_time = profiler.stop("DRAWING")
 
     log = {
         "operations": operations,

@@ -1,56 +1,60 @@
 import time
 from functools import wraps
+from typing import Optional, Dict
 
 
 class Profiler:
-    def __init__(self, verbose=False):
-        self.timers = {}
+    def __init__(self, verbose: bool = False):
+        self.active_timers: Dict[str, float] = {}
         self.verbose = verbose
+        self._check_counter = 0
+        # Use perf_counter for high-precision timing
+        self._global_start = time.perf_counter()
 
-    def start(self, label, verbose=None):
-        """Start the timer for a given label."""
+    def begin(self, label: str, verbose: Optional[bool] = None):
+        """Starts a named timer."""
+        is_verbose = verbose if verbose is not None else self.verbose
+        if is_verbose:
+            print(f"[Profiler] Starting: {label}")
 
-        verbose = verbose if verbose is not None else self.verbose
+        self.active_timers[label] = time.perf_counter()
 
-        if verbose:
-            print(f"P> {label}: started")
-        self.timers[label] = time.time()
+    def peek(self, label: str) -> float:
+        """Returns elapsed time without stopping the timer."""
+        if label not in self.active_timers:
+            raise KeyError(f"Timer '{label}' was never started.")
+        return time.perf_counter() - self.active_timers[label]
 
-    def measure(self, label):
-        """Return the elapsed time for a given label without removing it."""
-        if label not in self.timers:
-            raise ValueError(f"Timer '{label}' has not been started")
-        return time.time() - self.timers[label]
+    def stop(self, label: str, verbose: Optional[bool] = None) -> float:
+        """Stops the timer and returns total duration."""
+        duration = self.peek(label)
+        del self.active_timers[label]
 
-    def finalize(self, label, verbose=None):
-        """Return the elapsed time and remove the label from tracking."""
-        verbose = verbose if verbose is not None else self.verbose
+        is_verbose = verbose if verbose is not None else self.verbose
+        if is_verbose:
+            print(f"[Profiler] {label} completed in {duration:.4f}s")
+        return duration
 
-        if label not in self.timers:
-            raise ValueError(f"Timer '{label}' has not been started")
-        elapsed = time.time() - self.timers[label]
-        del self.timers[label]
-        if verbose:
-            print(f"P> {label}: {elapsed:.3f}s")
+    def checkpoint(self, label: Optional[str] = None) -> float:
+        """Measures time since the Profiler was initialized (global offset)."""
+        self._check_counter += 1
+        tag = label or f"Checkpoint {self._check_counter}"
+        elapsed = time.perf_counter() - self._global_start
+
+        if self.verbose:
+            print(f"[Profiler] {tag}: {elapsed:.4f}s since init")
         return elapsed
 
 
-def log_time(func):
+def time_it(func):
+    """Decorator to measure function execution time."""
+
     @wraps(func)
     def wrapper(*args, **kwargs):
-        # Record the start time
-        start_time = time.perf_counter()
-
-        # Execute the actual function
+        start = time.perf_counter()
         result = func(*args, **kwargs)
-
-        # Record the end time
-        end_time = time.perf_counter()
-
-        # Calculate and print duration
-        duration = end_time - start_time
-        print(f"Function '{func.__name__}' executed in {duration:.4f} seconds")
-
+        end = time.perf_counter()
+        print(f"DEBUG: '{func.__name__}' took {end - start:.6f}s")
         return result
 
     return wrapper
