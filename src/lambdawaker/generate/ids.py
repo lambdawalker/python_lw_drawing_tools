@@ -1,19 +1,10 @@
+
 import secrets
 import string
 
 
-# =============================================================================
-# THE MRZ GENERATOR 3000
-#
-# "Why did the MRZ string break up with the Database?"
-# "Because he said she was too 'random', and she said he was too 'constrained'.
-#  He wanted a long-term relationship, but she just wanted to stay under 30."
-#
-# "Also, they couldn't communicate... he spoke SQL, and she only spoke <<<<<<."
-# =============================================================================
-
 def generate_line_1():
-    """Format: [AlphaNum(25-29)][Filler] to 30 chars"""
+    """Generating the 'First Impression' line—robust and structured."""
     alphabet = string.ascii_uppercase + string.digits
     first_part_len = secrets.choice(range(25, 30))
     random_seq = ''.join(secrets.choice(alphabet) for _ in range(first_part_len))
@@ -21,7 +12,7 @@ def generate_line_1():
 
 
 def generate_line_2():
-    """Format: [AlphaNum(18-25)][3 Letters][Filler][NumericID(1-4)] to 30 chars"""
+    """The 'Complex Middle Child'—mixing letters, numbers, and logic."""
     alpha_num = string.ascii_uppercase + string.digits
     letters = string.ascii_uppercase
     numbers = string.digits
@@ -33,13 +24,13 @@ def generate_line_2():
     letters_part = ''.join(secrets.choice(letters) for _ in range(3))
     num_id_part = ''.join(secrets.choice(numbers) for _ in range(num_id_len))
 
-    # The 'Sponge' logic: filler soaks up the remaining space
+    # Sponge logic: ensuring the filler absorbs the chaos to hit exactly 30
     filler_needed = 30 - (len(seq_part) + len(letters_part) + len(num_id_part))
     return f"{seq_part}{letters_part}{'<' * filler_needed}{num_id_part}"
 
 
 def generate_line_3():
-    """Format: [[Name][SEP]] repeated 1-4 times, then padded to 30 chars"""
+    """The 'Identity Line'—where random names meet the edge of the budget."""
     alphabet = string.ascii_uppercase
     num_segments = secrets.choice(range(1, 5))
 
@@ -50,7 +41,7 @@ def generate_line_3():
         if remaining_space < 4:
             break
 
-        # Range safety check to avoid the 'Empty Sequence' IndexError
+        # The 'Doll-Approved' safety check: avoiding the empty sequence error
         upper_bound = min(11, remaining_space)
         if upper_bound <= 3:
             name_seg = ''.join(secrets.choice(alphabet) for _ in range(max(1, remaining_space - 1)))
@@ -65,9 +56,13 @@ def generate_line_3():
 
 
 def generate_random_mrz():
-    """The Grand Finale: 3 lines, 90 characters, 100% beauty."""
+    """
+    Returns the final 90-character symphony. 
+    May your cards be crisp and your scanners never fail.
+    """
     return f"{generate_line_1()}\n{generate_line_2()}\n{generate_line_3()}"
 
 
+# Final Crescendo: Success is defined by an exit code of 0.
 if __name__ == "__main__":
     print(generate_random_mrz())
