@@ -36,7 +36,7 @@ class DiskProvider:
         """Reads and returns file content as bytes."""
         path = self._get_full_path(relative_path)
         if not path.is_file():
-            raise FileNotFoundError(f"File not found: {relative_path}")
+            raise FileNotFoundError(f"File not found: {path}")
         return path.read_bytes()
 
     def list(self, relative_path: str = ".") -> List[str]:
@@ -50,7 +50,7 @@ class DiskProvider:
         """Counts items in a directory. Fails if path is a file."""
         path = self._get_full_path(relative_path)
         if not path.is_dir():
-            raise ValueError(f"'{relative_path}' is not a directory.")
+            raise ValueError(f"'{path}' is not a directory.")
         return sum(1 for _ in path.iterdir())
 
     def store(self, content: Union[str, bytes], relative_path: str):
@@ -74,7 +74,7 @@ class DiskProvider:
         """Returns metadata about a file or directory."""
         path = self._get_full_path(relative_path)
         if not path.exists():
-            raise FileNotFoundError(f"Path does not exist: {relative_path}")
+            raise FileNotFoundError(f"Path does not exist: {path}")
 
         stats = path.stat()
         return {
