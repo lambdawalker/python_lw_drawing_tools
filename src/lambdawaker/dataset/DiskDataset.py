@@ -1,3 +1,4 @@
+import os
 import pathlib
 import random
 import re
@@ -106,8 +107,14 @@ class DiskDataset(Dataset):
             rel_path = self._find_file_for_id(folder, record_id)
             raw_data = self.provider.serve(rel_path)
 
+            file_details = os.path.splitext(rel_path)
+            file_extension = file_details[1]
+
             # Using the new FieldCaster
-            result[name] = FieldCaster.cast(raw_data, field['type'])
+            result[name] = FieldCaster.cast(
+                raw_data, field['type'], file_extension
+            )
+
         return Record(result)
 
     def random(self) -> Record:

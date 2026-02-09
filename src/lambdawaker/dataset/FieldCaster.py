@@ -1,9 +1,12 @@
 import io
 import json
+import mimetypes
 import xml.etree.ElementTree as ET
 from typing import Any
 
 import yaml
+
+from lambdawaker.dataset.RawImage import RawImage
 
 
 class FieldCaster:
@@ -12,7 +15,7 @@ class FieldCaster:
     """
 
     @staticmethod
-    def cast(raw_data: bytes, field_type: str) -> Any:
+    def cast(raw_data: bytes, field_type: str, file_extension: str) -> Any:
         """
         Casts raw byte data into a specific Python type.
 
@@ -70,6 +73,10 @@ class FieldCaster:
                 return np.array(Image.open(io.BytesIO(raw_data)))
             except ImportError:
                 return raw_data
+
+        elif field_type == 'rawImage':
+            mime_type, encoding = mimetypes.guess_type(file_extension)
+            return RawImage(raw_data, mime_type)
 
         return raw_data
 

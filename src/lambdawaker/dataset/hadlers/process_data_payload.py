@@ -5,6 +5,8 @@ import xml.etree.ElementTree as ET
 import numpy as np
 from PIL import Image
 
+from lambdawaker.dataset.RawImage import RawImage
+
 
 def process_data_payload(data):
     """
@@ -36,7 +38,6 @@ def process_data_payload(data):
             if data.ndim >= 2:
                 data = Image.fromarray(data)
             else:
-
                 buffer = io.BytesIO()
                 np.save(buffer, data)
                 return "application/octet-stream", buffer.getvalue()
@@ -48,6 +49,9 @@ def process_data_payload(data):
         else:
             data.save(buffer, format="JPEG")
             return "image/jpeg", buffer.getvalue()
+
+    if isinstance(data, RawImage):
+        return data.mime_type, data.raw_data
 
     if isinstance(data, (bytes, bytearray, io.BytesIO)):
         content = data.getvalue() if isinstance(data, io.BytesIO) else data
