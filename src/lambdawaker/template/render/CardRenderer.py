@@ -1,3 +1,4 @@
+import urllib.parse
 from typing import Tuple
 
 import requests
@@ -47,10 +48,14 @@ class CardRenderer:
     async def render_single_card(self, record_id: int, template_name: str):
         primary_color = generate_hsluv_black_text_contrasting_color()
 
+        tuple_str = ",".join(map(str, primary_color.to_hsl_tuple()))
+        escaped_tuple = urllib.parse.quote(tuple_str)
+
         url = (
             f"{self.base_url}/render/id_cards/{template_name}/{record_id}"
-            f"?primary_color={primary_color.to_hsl_tuple()}"
+            f"?primary_color={escaped_tuple}"
         )
+        print(f"Rendering {template_name} {record_id} to {url}")
 
         page = self.renderer.page
         await page.goto(url)
