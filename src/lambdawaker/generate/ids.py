@@ -1,4 +1,4 @@
-
+import random
 import secrets
 import string
 
@@ -17,12 +17,14 @@ def generate_line_2():
     letters = string.ascii_uppercase
     numbers = string.digits
 
-    seq_len = secrets.choice(range(18, 26))
     num_id_len = secrets.choice(range(1, 5))
+    seq_len = 30 - 3 - num_id_len - random.randint(0, 3)
 
     seq_part = ''.join(secrets.choice(alpha_num) for _ in range(seq_len))
     letters_part = ''.join(secrets.choice(letters) for _ in range(3))
     num_id_part = ''.join(secrets.choice(numbers) for _ in range(num_id_len))
+
+
 
     # Sponge logic: ensuring the filler absorbs the chaos to hit exactly 30
     filler_needed = 30 - (len(seq_part) + len(letters_part) + len(num_id_part))
