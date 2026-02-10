@@ -1,6 +1,5 @@
 import pathlib
 import random
-import re
 from typing import Dict, Any, Union, Optional
 
 import yaml
@@ -55,35 +54,28 @@ class DiskDataset(Dataset):
         self._refresh_ids()
 
     def _refresh_ids(self):
-        """Scans the first field's directory to find valid Record IDs."""
+        """Scans all fields' directories to find valid Record IDs."""
         if not self.manifest or not self.manifest.get('fields'):
             return
 
-        master_field = self.manifest['fields'][0]
-        pattern = self.manifest.get('filename_pattern', "{id}")
-
-        # Build a regex to extract the 'id' part from filenames
-        # Escapes literals and converts {id} into a named capture group
-        regex_str = re.escape(pattern).replace(r'\{id\}', r'(?P<id>.+)')
-        regex = re.compile(f"^{regex_str}$")
-
-        # List files in the directory of the primary source (e.g., 'img/')
-        files = self.provider.list(master_field['source'])
-
         self.record_ids = []
-        for f in files:
-            stem = pathlib.Path(f).stem
-            match = regex.match(stem)
-            if match:
-                self.record_ids.append(match.group('id'))
+        for field in self.manifest['fields']:
+            folder = field.get('source')
+            if not folder:
+                continue
+            
+            files = self.provider.list(folder)
+            for f in files:
+                stem = pathlib.Path(f).stem
+                if stem not in self.record_ids:
+                    self.record_ids.append(stem)
+        
+        self.record_ids.sort()
 
     def _find_file_for_id(self, folder: str, record_id: str) -> str:
         """Helper to find the actual filename (with extension) for an ID."""
-        pattern = self.manifest.get('filename_pattern', "{id}")
-        target_stem = pattern.format(id=record_id)
-
         for f in self.provider.list(folder):
-            if pathlib.Path(f).stem == target_stem:
+            if pathlib.Path(f).stem == record_id:
                 return f
         raise FileNotFoundError(f"No file found for ID '{record_id}' in '{folder}'")
 
@@ -103,13 +95,17 @@ class DiskDataset(Dataset):
             name = field['name']
             folder = field['source']
 
-            rel_path = self._find_file_for_id(folder, record_id)
-            raw_data = self.provider.serve(rel_path)
+            try:
+                rel_path = self._find_file_for_id(folder, record_id)
+                raw_data = self.provider.serve(rel_path)
 
-            # Using the new FieldCaster
-            result[name] = FieldCaster.cast(
-                raw_data, field['type'], rel_path
-            )
+                # Using the new FieldCaster
+                result[name] = FieldCaster.cast(
+                    raw_data, field['type'], rel_path
+                )
+            except FileNotFoundError:
+                # If a file is missing for a field, we just skip it for this record
+                continue
 
         return Record(result)
 
@@ -135,9 +131,6 @@ class DiskDataset(Dataset):
         if self.read_only:
             raise RuntimeError("Cannot insert into read-only dataset.")
 
-        pattern = self.manifest.get('filename_pattern', "{id}")
-        filename_base = pattern.format(id=record_id)
-
         for field in self.manifest['fields']:
             name = field['name']
             if name not in data: continue
@@ -160,11 +153,12 @@ class DiskDataset(Dataset):
             }
             ext = ext_map.get(field['type'], '.bin')
 
-            path = f"{field['source']}/{filename_base}{ext}"
+            path = f"{field['source']}/{record_id}{ext}"
             self.provider.store(content, path)
 
         if record_id not in self.record_ids:
             self.record_ids.append(record_id)
+            self.record_ids.sort()
 
     def delete(self, record_id: str):
         """

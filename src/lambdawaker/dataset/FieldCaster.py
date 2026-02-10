@@ -4,7 +4,7 @@ import mimetypes
 import xml.etree.ElementTree as ET
 from typing import Any
 
-import magic
+
 import yaml
 
 from lambdawaker.dataset.RawImage import RawImage

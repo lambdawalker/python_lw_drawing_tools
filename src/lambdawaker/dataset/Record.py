@@ -8,6 +8,9 @@ class Record:
             return self._data[name]
         raise AttributeError(f"Record has no field '{name}'")
 
+    def __contains__(self, item):
+        return item in self._data
+
     def __getitem__(self, key):
         return self._data[key]
 
