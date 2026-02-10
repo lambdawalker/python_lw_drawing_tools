@@ -25,7 +25,7 @@ class CardImageProcessor:
             primary_color,
         )
 
-        canvas = Image.new("RGBA", first_layer_image.size)
+        canvas = Image.new("RGB", first_layer_image.size)
         for image in [card_background_image, first_layer_image]:
             canvas.paste(image, (0, 0), image)
 
