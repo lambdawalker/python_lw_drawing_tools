@@ -1,3 +1,4 @@
+import traceback
 import urllib.parse
 from typing import Tuple
 
@@ -43,9 +44,23 @@ class CardRenderer:
     async def render_record(self, record_id: int):
         templates = await self.get_available_templates()
         for template_name in templates:
-            await self.render_single_card(record_id, template_name)
+            local_count = 0
+            while True:
+                try:
+                    await self.render_single_card(record_id, template_name)
+                    pass
+                except Exception as e:
+                    error_message = traceback.format_exc()
+                    self.metadata_handler.log_error(record_id, template_name, error_message)
+                local_count += 1
+
+                if local_count > 3:
+                    break
 
     async def render_single_card(self, record_id: int, template_name: str):
+        if self.metadata_handler.record_exists(record_id, template_name):
+            return
+
         primary_color = generate_hsluv_black_text_contrasting_color()
 
         tuple_str = ",".join(map(str, primary_color.to_hsl_tuple()))

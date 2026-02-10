@@ -23,3 +23,13 @@ class CardMetadataHandler:
         ensure_directory_for_file(obj_detection_log_path)
         with open(obj_detection_log_path, "w") as f:
             f.write(json.dumps(elements))
+
+    def record_exists(self, record_id: int, template_name: str) -> bool:
+        obj_detection_log_path = os.path.join(self.outdir, "obj", f"{record_id}_{template_name}.json")
+        return os.path.exists(obj_detection_log_path)
+
+    def log_error(self, record_id: int, template_name: str, error: str):
+        error_log_path = os.path.join(self.outdir, "errors", f"{record_id}_{template_name}.txt")
+        ensure_directory_for_file(error_log_path)
+        with open(error_log_path, "a") as f:
+            f.write(error + "\n")
