@@ -119,4 +119,12 @@ class FieldCaster:
             data.save(buf, format='PNG')
             return buf.getvalue()
 
+        elif field_type == 'npImage':
+            from PIL import Image
+            import numpy as np
+            buf = io.BytesIO()
+            img = Image.fromarray(data.astype('uint8'))
+            img.save(buf, format='PNG')
+            return buf.getvalue()
+
         return data if isinstance(data, bytes) else str(data).encode('utf-8')

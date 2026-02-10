@@ -31,6 +31,7 @@ class DiskDataset(Dataset):
         self.provider = provider if provider is not None else DiskProvider()
         self.manifest = None
         self.record_ids = []
+        self.extensions = {} # name: extension
         self.read_only = read_only
         self.id = None
         self.load(path)
@@ -54,28 +55,51 @@ class DiskDataset(Dataset):
         self._refresh_ids()
 
     def _refresh_ids(self):
-        """Scans all fields' directories to find valid Record IDs."""
+        """Scans all fields' directories to find valid Record IDs and detect extensions."""
         if not self.manifest or not self.manifest.get('fields'):
             return
 
         self.record_ids = []
+        self.extensions = {}
         for field in self.manifest['fields']:
             folder = field.get('source')
+            name = field.get('name')
             if not folder:
                 continue
             
             files = self.provider.list(folder)
             for f in files:
-                stem = pathlib.Path(f).stem
+                p = pathlib.Path(f)
+                stem = p.stem
+                
+                # Assign extension per field if not already assigned
+                if name not in self.extensions:
+                    self.extensions[name] = p.suffix
+
                 if stem not in self.record_ids:
                     self.record_ids.append(stem)
         
         self.record_ids.sort()
 
-    def _find_file_for_id(self, folder: str, record_id: str) -> str:
-        """Helper to find the actual filename (with extension) for an ID."""
+    def _find_file_for_id(self, field: dict, record_id: str) -> str:
+        """Helper to find the actual filename for an ID using stored extensions."""
+        folder = field.get('source')
+        name = field.get('name')
+        
+        # 1. Try using the stored extension first
+        ext = self.extensions.get(name)
+        if ext:
+            path = f"{folder}/{record_id}{ext}"
+            if self.provider.exists(path):
+                return path
+        
+        # 2. Fallback to scanning the directory if extension is not known or file not found with that extension
         for f in self.provider.list(folder):
-            if pathlib.Path(f).stem == record_id:
+            p = pathlib.Path(f)
+            if p.stem == record_id:
+                # Update extension for this field if it was missing
+                if name not in self.extensions:
+                    self.extensions[name] = p.suffix
                 return f
         raise FileNotFoundError(f"No file found for ID '{record_id}' in '{folder}'")
 
@@ -93,10 +117,9 @@ class DiskDataset(Dataset):
 
         for field in self.manifest['fields']:
             name = field['name']
-            folder = field['source']
 
             try:
-                rel_path = self._find_file_for_id(folder, record_id)
+                rel_path = self._find_file_for_id(field, record_id)
                 raw_data = self.provider.serve(rel_path)
 
                 # Using the new FieldCaster
@@ -138,20 +161,23 @@ class DiskDataset(Dataset):
             # Use FieldCaster to turn Python object into bytes
             content = FieldCaster.serialize(data[name], field['type'])
 
-            # Determine extension (could be added to FieldCaster too)
-            ext_map = {
-                'json': '.json',
-                'yaml': '.yaml',
-                'str': '.txt',
-                'int': '.txt',
-                'float': '.txt',
-                'xml': '.xml',
-                'svgDoc': '.svg',
-                'numpy': '.npy',
-                'PilImage': '.png',
-                'npImage': '.png'
-            }
-            ext = ext_map.get(field['type'], '.bin')
+            # Determine extension
+            ext = self.extensions.get(name)
+            if not ext:
+                ext_map = {
+                    'json': '.json',
+                    'yaml': '.yaml',
+                    'str': '.txt',
+                    'int': '.txt',
+                    'float': '.txt',
+                    'xml': '.xml',
+                    'svgDoc': '.svg',
+                    'numpy': '.npy',
+                    'PilImage': '.png',
+                    'npImage': '.png'
+                }
+                ext = ext_map.get(field['type'], '.bin')
+                self.extensions[name] = ext
 
             path = f"{field['source']}/{record_id}{ext}"
             self.provider.store(content, path)
@@ -172,7 +198,7 @@ class DiskDataset(Dataset):
 
         for field in self.manifest['fields']:
             try:
-                path = self._find_file_for_id(field['source'], record_id)
+                path = self._find_file_for_id(field, record_id)
                 self.provider.delete(path)
             except FileNotFoundError:
                 continue
@@ -199,14 +225,16 @@ class DiskDataset(Dataset):
             if key < 0:
                 key = key % len(self.record_ids)
 
-            if key > len(self.record_ids):
+            if key >= len(self.record_ids):
                 raise IndexError(f"Dataset index {key} out of range.")
 
             return self.record_by_name(self.record_ids[key])
 
 
         elif isinstance(key, str):
-            return self.__str__getitem__(key)
+            if "/" in key:
+                return self.__str__getitem__(key)
+            return self.record_by_name(key)
 
         else:
             raise TypeError("Key must be an integer index or a string Record ID.")
