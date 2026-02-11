@@ -59,6 +59,18 @@ class DiskDataset(Dataset):
         if not self.manifest or not self.manifest.get('fields'):
             return
 
+        cache_name = ".dataset_cache.yaml"
+        if self.provider.exists(cache_name):
+            try:
+                raw_cache = self.provider.serve(cache_name)
+                cache = yaml.safe_load(raw_cache)
+                self.record_ids = cache.get('record_ids', [])
+                self.extensions = cache.get('extensions', {})
+                return
+            except Exception:
+                # If cache is corrupted, we just ignore it and refresh
+                pass
+
         self.record_ids = []
         self.extensions = {}
         for field in self.manifest['fields']:
@@ -72,7 +84,6 @@ class DiskDataset(Dataset):
                 p = pathlib.Path(f)
                 stem = p.stem
                 
-                # Assign extension per field if not already assigned
                 if name not in self.extensions:
                     self.extensions[name] = p.suffix
 
@@ -80,27 +91,32 @@ class DiskDataset(Dataset):
                     self.record_ids.append(stem)
         
         self.record_ids.sort()
+        self._save_cache()
+
+    def _save_cache(self):
+        """Saves the current record_ids and extensions to a cache file."""
+        if self.read_only:
+            return
+            
+        cache_name = ".dataset_cache.yaml"
+        cache_data = {
+            'record_ids': self.record_ids,
+            'extensions': self.extensions
+        }
+        content = yaml.dump(cache_data, default_flow_style=False)
+        self.provider.store(content, cache_name)
 
     def _find_file_for_id(self, field: dict, record_id: str) -> str:
         """Helper to find the actual filename for an ID using stored extensions."""
         folder = field.get('source')
         name = field.get('name')
-        
-        # 1. Try using the stored extension first
+
         ext = self.extensions.get(name)
         if ext:
             path = f"{folder}/{record_id}{ext}"
             if self.provider.exists(path):
                 return path
-        
-        # 2. Fallback to scanning the directory if extension is not known or file not found with that extension
-        for f in self.provider.list(folder):
-            p = pathlib.Path(f)
-            if p.stem == record_id:
-                # Update extension for this field if it was missing
-                if name not in self.extensions:
-                    self.extensions[name] = p.suffix
-                return f
+
         raise FileNotFoundError(f"No file found for ID '{record_id}' in '{folder}'")
 
     def record_by_name(self, record_id: str) -> Record:
@@ -185,6 +201,7 @@ class DiskDataset(Dataset):
         if record_id not in self.record_ids:
             self.record_ids.append(record_id)
             self.record_ids.sort()
+            self._save_cache()
 
     def delete(self, record_id: str):
         """
@@ -203,6 +220,7 @@ class DiskDataset(Dataset):
             except FileNotFoundError:
                 continue
         self.record_ids = [rid for rid in self.record_ids if rid != record_id]
+        self._save_cache()
 
     def __len__(self) -> int:
         """
