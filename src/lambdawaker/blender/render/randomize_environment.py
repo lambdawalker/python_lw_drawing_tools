@@ -2,7 +2,7 @@ import math
 import random
 
 import bpy
-from lambdawaker.blender.material.randomize import randomize_material
+from lambdawaker.blender import randomize_material
 
 from lambdawalker.blender.find_materials import find_materials_by_regex
 from lambdawalker.blender.images.assign_image_to_texture import assign_image_to_world_node, assign_image_to_texture
