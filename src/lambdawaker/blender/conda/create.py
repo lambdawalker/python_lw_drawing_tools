@@ -2,7 +2,7 @@ import platform
 import random
 import string
 
-from lambdawaker.conda.conda_interface import create_conda_environment
+from lambdawaker.conda.interface import create_conda_environment
 
 
 def generate_random_string(length: int = 5) -> str:
