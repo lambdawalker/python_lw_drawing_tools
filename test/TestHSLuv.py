@@ -1,6 +1,6 @@
 import unittest
 
-from lambdawaker.draw.color.HSLuvColor import HSLuvColor
+from lambdawalker.draw.color.HSLuvColor import HSLuvColor
 
 
 class TestHSLuv(unittest.TestCase):

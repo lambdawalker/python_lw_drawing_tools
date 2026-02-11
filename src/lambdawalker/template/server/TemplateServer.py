@@ -1,0 +1,203 @@
+import mimetypes
+import os
+from pathlib import Path
+from typing import Tuple
+
+from fastapi import FastAPI, HTTPException
+from jinja2 import FileSystemLoader, select_autoescape
+from jinja2.exceptions import TemplateNotFound
+from starlette.requests import Request
+from starlette.responses import Response, FileResponse, RedirectResponse
+from starlette.staticfiles import StaticFiles
+
+from lambdawalker.dataset.DiskDataset import DiskDataset
+from lambdawalker.dataset.hadlers.DatasetSourceHandler import DataSetsHandler
+from lambdawalker.dataset.hadlers.process_data_payload import process_data_payload
+from lambdawalker.draw.color.HSLuvColor import to_hsluv_color
+from lambdawalker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
+from lambdawalker.template.fields import field_generators
+from lambdawalker.template.server.FileMetadataHandler import FileMetadataHandler
+from lambdawalker.template.server.RelativeLoader import RelativeEnvironment
+
+
+class TemplateServer:
+    def __init__(self, site_path: str, datasets: list):
+        self.site_path = Path(site_path).resolve()
+        self.datasets = datasets
+
+        self.app = FastAPI()
+        self._setup_jinja()
+        self._setup_datasets()
+        self._setup_routes()
+        self._setup_static()
+
+    def _setup_jinja(self):
+        self.env = RelativeEnvironment(
+            loader=FileSystemLoader(str(self.site_path)),
+            autoescape=select_autoescape(["html", "xml", "svg"]),
+        )
+
+    def _setup_datasets(self):
+        dataset_paths = self.datasets
+        datasets = [DiskDataset(path) for path in dataset_paths]
+
+        self.dataset_handler = DataSetsHandler(datasets)
+
+    def _setup_routes(self):
+        self.handel_path_info = FileMetadataHandler(self.site_path)
+
+        @self.app.get("/render/{template_type}/{variant}/{record_id:int}")
+        def render_card_by_record(
+                template_type: str,
+                variant: str,
+                record_id: int,
+                request: Request,
+                primary_color: Tuple[float, float, float, float] = (0, 0, 0, 1)
+        ):
+            path = os.path.join(template_type, variant, "index.html.j2")
+            if not self.site_path.joinpath(path).exists():
+                raise HTTPException(status_code=404, detail="Template not found")
+
+            env_path = str(self.site_path.joinpath(template_type, variant, "meta", "common.json"))
+            common = {}
+
+            if os.path.exists(env_path):
+                with open(env_path, 'r') as f:
+                    import json
+                    common = json.load(f)
+
+            return self.render_template(
+                path,
+                request,
+                primary_color,
+                data={
+                    "data": {
+                        "id": record_id
+                    },
+                    "common": common
+                }
+            )
+
+        @self.app.get("/render/{template_type}/{variant}/")
+        def render_card_by_random_record(
+                template_type: str,
+                variant: str,
+                request: Request,
+                primary_color: Tuple[float, float, float, float] = (0, 0, 0, 1)
+        ):
+            path = os.path.join(template_type, variant, "index.html.j2")
+            if not self.site_path.joinpath(path).exists():
+                raise HTTPException(status_code=404, detail="Template not found")
+
+            env_path = str(self.site_path.joinpath(template_type, variant, "meta", "common.json"))
+            common = {}
+
+            if os.path.exists(env_path):
+                with open(env_path, 'r') as f:
+                    import json
+                    common = json.load(f)
+
+            return self.render_template(
+                path,
+                request,
+                primary_color,
+                data={
+                    "data": {
+                        "id": "random"
+                    },
+                    "common": common
+                }
+            )
+
+        @self.app.get("/render/{template_type}/{variant}")
+        def render_card_random_record_redirect(
+                template_type: str,
+                variant: str,
+        ):
+            return RedirectResponse(
+                url=f"/render/{template_type}/{variant}/",
+                status_code=307,  # preserves method & body
+            )
+
+        @self.app.get("/render/{path:path}")
+        def serve_relative_to_site(path: str, request: Request):
+            if path.endswith(".j2"):
+                return render_jinja_any(path, request)
+
+            full_path = self.site_path.joinpath(path)
+            if not full_path.exists():
+                raise HTTPException(status_code=404, detail="File not found")
+            return FileResponse(path=str(full_path))
+
+        @self.app.get("/ds/{path:path}")
+        def server_dataset_resource(path: str):
+            try:
+                data = self.dataset_handler[path]
+            except (KeyError, IndexError, ValueError):
+                raise HTTPException(status_code=404, detail="Dataset resource not found")
+
+            content_type, data = process_data_payload(data)
+            if content_type is None:
+                raise HTTPException(status_code=404, detail="Dataset resource processing failed")
+            return Response(content=data, media_type=content_type)
+
+        @self.app.get("/{path:path}")
+        def render_jinja_any(path: str, request: Request):
+            if path == "":
+                path = "index.html.j2"
+
+            if not path.endswith(".j2"):
+                raise HTTPException(status_code=404)
+
+            template_path = self.site_path / path
+            if not template_path.exists():
+                raise HTTPException(status_code=404)
+
+            return self.render_template(path, request)
+
+        @self.app.api_route("/{path:path}", methods=["INFO"])
+        def handle_info(path: str):
+            return self.handel_path_info(path)
+
+    def _setup_static(self):
+        self.app.mount("/", StaticFiles(directory=str(self.site_path)), name="site")
+
+    def render_template(self, path: str, request: Request, primary_color=None, data=None) -> Response:
+        data = data if data is not None else {}
+        path = path.replace("\\", "/")
+
+        primary_color = to_hsluv_color(primary_color) if primary_color is not None else generate_hsluv_black_text_contrasting_color()
+        text_color_hex = to_hsluv_color((0, 0, 0, 1))
+
+        default_env = {
+            "theme": {
+                "primary_color": primary_color,
+                "text_color": text_color_hex
+            }
+        }
+
+        output_name = path[:-3]  # remove ".j2"
+        media_type, _ = mimetypes.guess_type(output_name)
+        media_type = media_type or "text/plain"
+
+        try:
+            template = self.env.get_template(path)
+        except TemplateNotFound:
+            raise HTTPException(status_code=404, detail="Template not found")
+
+        try:
+            rendered = template.render(
+                request=request,
+                env=default_env,
+                gen=field_generators,
+                ds=self.dataset_handler,
+                **data
+            )
+        except (KeyError, IndexError, ValueError) as e:
+            # Often data access in template might fail if record doesn't exist
+            raise HTTPException(status_code=404, detail=f"Data or template error: {str(e)}")
+
+        return Response(
+            content=rendered,
+            media_type=media_type
+        )

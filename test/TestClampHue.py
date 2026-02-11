@@ -1,6 +1,6 @@
 import unittest
 
-from lambdawaker.draw.color.utils import clamp_hue, is_inside
+from lambdawalker.draw.color.utils import clamp_hue, is_inside
 
 
 class TestClampHue(unittest.TestCase):

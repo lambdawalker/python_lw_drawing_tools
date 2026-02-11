@@ -6,8 +6,8 @@ from pathlib import Path
 # Add src to sys.path to import lambdawaker
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
-from lambdawaker.executor.engine import SubprocessExecutor
-from lambdawaker.executor.models import TaskConfig, TaskStatus
+from lambdawalker.executor.engine import SubprocessExecutor
+from lambdawalker.executor.models import TaskConfig, TaskStatus
 
 
 class TestExecutorHappyPath(unittest.TestCase):
