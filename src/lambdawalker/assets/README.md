@@ -1,6 +1,6 @@
 ### Assets
 
-This directory contains static assets used by the lambdawaker package.
+This directory contains static assets used by the lambdawalker package.
 
 #### Contents
 

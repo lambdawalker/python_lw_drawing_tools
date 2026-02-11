@@ -3,7 +3,7 @@ import sys
 import os
 from pathlib import Path
 
-# Add src to sys.path to import lambdawaker
+# Add src to sys.path to import lambdawalker
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from lambdawalker.executor.engine import SubprocessExecutor
@@ -18,7 +18,7 @@ class TestExecutorHappyPath(unittest.TestCase):
             max_retries=10  # Increased retries to handle random failures in mock_task.py
         )
 
-        mock_task_script = Path(__file__).parent.parent / "src" / "lambdawaker" / "executor" / "mock_task.py"
+        mock_task_script = Path(__file__).parent.parent / "src" / "lambdawalker" / "executor" / "mock_task.py"
 
         def get_command(state):
             return [

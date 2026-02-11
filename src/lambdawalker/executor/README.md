@@ -1,4 +1,4 @@
-### Lambdawaker Executor
+### lambdawalker Executor
 
 A reusable package for running multi-process tasks with real-time progress reporting and status monitoring via a robust
 signaling protocol.
@@ -88,5 +88,5 @@ executor.run(reporter)
 You can see a live demonstration of the executor and reporter by running:
 
 ```bash
-python src/lambdawaker/executor/demo.py
+python src/lambdawalker/executor/demo.py
 ```

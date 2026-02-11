@@ -4,7 +4,7 @@ from lambdawalker.random.selection.select_random_word_from_nested_directory impo
 
 
 def generate_voting_institution_name():
-    db_path = resources.files("lambdawaker").joinpath("assets/text/institutions")
+    db_path = resources.files("lambdawalker").joinpath("assets/text/institutions")
 
     name, name_source = select_random_word_from_nested_directory(db_path)
 

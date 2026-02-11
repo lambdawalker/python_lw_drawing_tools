@@ -4,7 +4,7 @@ from lambdawalker.random.selection.select_random_word_from_nested_directory impo
 
 
 def generate_last_name():
-    db_path = resources.files("lambdawaker").joinpath("assets/text/last_name")
+    db_path = resources.files("lambdawalker").joinpath("assets/text/last_name")
 
     name, source = select_random_word_from_nested_directory(
         db_path

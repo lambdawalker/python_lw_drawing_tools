@@ -1,6 +1,3 @@
-from lambdawaker.draw.gradient.voronoid.create import create_voronoid, create_random_voronoid
-from lambdawaker.draw.gradient.voronoid.paint import paint_voronoid, paint_random_voronoid
-from lambdawaker.draw.gradient.voronoid.parameters import generate_random_voronoid_parameters
 https://www.shadertoy.com/view/4dKXDK
 https://www.shadertoy.com/view/ldjBDm
 https://www.shadertoy.com/view/4st3DS

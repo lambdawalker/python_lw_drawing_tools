@@ -4,7 +4,7 @@ import os
 import shutil
 from pathlib import Path
 
-# Add src to sys.path to import lambdawaker
+# Add src to sys.path to import lambdawalker
 sys.path.append(str(Path(__file__).parent.parent / "src"))
 
 from lambdawalker.executor.engine import SubprocessExecutor
