@@ -1,11 +1,13 @@
-import os
 import json
+import os
 from typing import Tuple, TYPE_CHECKING
+
 from fastapi import APIRouter, HTTPException, Request
 from starlette.responses import RedirectResponse
 
 if TYPE_CHECKING:
     from lambdawalker.template.server.TemplateServer import TemplateServer
+
 
 class RenderRouter:
     def __init__(self, server: 'TemplateServer'):

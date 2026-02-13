@@ -1,12 +1,15 @@
 from typing import TYPE_CHECKING
+
 from fastapi import APIRouter
-from lambdawalker.template.server.router.RenderRouter import RenderRouter
+
 from lambdawalker.template.server.router.AssetRouter import AssetRouter
 from lambdawalker.template.server.router.DatasetRouter import DatasetRouter
 from lambdawalker.template.server.router.MetadataRouter import MetadataRouter
+from lambdawalker.template.server.router.RenderRouter import RenderRouter
 
 if TYPE_CHECKING:
     from lambdawalker.template.server.TemplateServer import TemplateServer
+
 
 class TemplateRouter:
     def __init__(self, server: 'TemplateServer'):

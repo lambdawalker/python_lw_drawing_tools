@@ -1,8 +1,10 @@
 from typing import TYPE_CHECKING
+
 from fastapi import APIRouter
 
 if TYPE_CHECKING:
     from lambdawalker.template.server.TemplateServer import TemplateServer
+
 
 class MetadataRouter:
     def __init__(self, server: 'TemplateServer'):

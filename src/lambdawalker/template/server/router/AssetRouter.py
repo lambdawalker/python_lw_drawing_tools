@@ -1,9 +1,11 @@
 from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, HTTPException, Request
 from starlette.responses import FileResponse
 
 if TYPE_CHECKING:
     from lambdawalker.template.server.TemplateServer import TemplateServer
+
 
 class AssetRouter:
     def __init__(self, server: 'TemplateServer'):

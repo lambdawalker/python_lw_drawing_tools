@@ -1,9 +1,12 @@
 from typing import TYPE_CHECKING
+
 from fastapi import APIRouter, HTTPException, Response
+
 from lambdawalker.dataset.hadlers.process_data_payload import process_data_payload
 
 if TYPE_CHECKING:
     from lambdawalker.template.server.TemplateServer import TemplateServer
+
 
 class DatasetRouter:
     def __init__(self, server: 'TemplateServer'):
