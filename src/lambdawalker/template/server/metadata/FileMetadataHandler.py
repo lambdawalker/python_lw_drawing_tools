@@ -7,6 +7,7 @@ import yaml
 from fastapi import HTTPException
 
 
+
 class FileMetadataHandler:
     def __init__(self, root_path: Union[str, Path]):
         self.root = Path(root_path).resolve()
