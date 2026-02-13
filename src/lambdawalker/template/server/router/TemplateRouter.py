@@ -19,12 +19,12 @@ class TemplateRouter:
 
     def _setup_sub_routers(self):
         # Specific routes should generally come before more generic ones
+        self.metadata_router = MetadataRouter(self.server)
         self.render_router = RenderRouter(self.server)
         self.dataset_router = DatasetRouter(self.server)
         self.asset_router = AssetRouter(self.server)
-        self.metadata_router = MetadataRouter(self.server)
 
+        self.router.include_router(self.metadata_router.router)
         self.router.include_router(self.render_router.router)
         self.router.include_router(self.dataset_router.router)
         self.router.include_router(self.asset_router.router)
-        self.router.include_router(self.metadata_router.router)
