@@ -120,7 +120,7 @@ class CardRenderer:
 
             results.append({
                 "class": val if val is not None else "",
-                "bbox": [box["x"], box["y"], box["width"], box["height"]],
+                "bbox": [box["x"], box["y"], box["x"] + box["width"], box["y"] + box["height"]],
             })
 
         return results
