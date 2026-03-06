@@ -94,7 +94,7 @@ class CardRenderer:
             "boundingBox": [0, 0, w, h],
             "subtype": template_name,
             "photo_id": record_id
-        }]  # + await self.capture_elements()
+        }] + await self.capture_elements()
 
         self.metadata_handler.save_object_detection_log(record_id, template_name, elements)
 
