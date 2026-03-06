@@ -43,15 +43,19 @@ class CardRenderer:
 
     async def render_record(self, record_id: int):
         templates = await self.get_available_templates()
+
         for template_name in templates:
             local_count = 0
             while True:
                 try:
                     await self.render_single_card(record_id, template_name)
-                    pass
                 except Exception as e:
                     error_message = traceback.format_exc()
-                    self.metadata_handler.log_error(record_id, template_name, error_message)
+                    self.metadata_handler.log_error(
+                        record_id,
+                        template_name,
+                        error_message
+                    )
                 local_count += 1
 
                 if local_count > 3:
@@ -87,7 +91,9 @@ class CardRenderer:
         w, h = first_layer_image.size
         elements = [{
             "class": meta["class"],
-            "boundingBox": [0, 0, w, h]
+            "boundingBox": [0, 0, w, h],
+            "subtype": template_name,
+            "photo_id": record_id
         }]  # + await self.capture_elements()
 
         self.metadata_handler.save_object_detection_log(record_id, template_name, elements)

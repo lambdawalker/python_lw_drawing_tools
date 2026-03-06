@@ -17,7 +17,7 @@ class TemplateServer:
 
         self.app = FastAPI()
         self._setup_datasets()
-        self.renderer = TemplateRenderer(self.site_path, self.dataset_handler)
+        self.renderer = TemplateRenderer(str(self.site_path), self.dataset_handler)
         self.handel_path_info = FileMetadataHandler(self.site_path)
         self.router = TemplateRouter(self)
         self._setup_routes()
