@@ -46,7 +46,7 @@ class CardRenderer:
         templates = await self.get_available_templates()
 
         for template_name in templates:
-            local_count = 0
+            try_count = 0
             while True:
                 try:
                     await self.render_single_card(record_id, template_name)
@@ -57,9 +57,9 @@ class CardRenderer:
                         template_name,
                         error_message
                     )
-                local_count += 1
+                try_count += 1
 
-                if local_count > 3:
+                if try_count > 3:
                     break
 
     async def render_single_card(self, record_id: int, template_name: str):

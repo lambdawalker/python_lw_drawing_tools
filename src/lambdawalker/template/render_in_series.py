@@ -15,10 +15,15 @@ async def render(
         outdir: str = "./output/img/",
 ):
     print("STATUS: RUNNING")
-    card_renderer = CardRenderer(base_url=base_url, outdir=outdir, headless=headless)
+    start, end = ds_range
+
+    card_renderer = CardRenderer(
+        base_url=base_url,
+        outdir=outdir,
+        headless=headless
+    )
     await card_renderer.start()
 
-    start, end = ds_range
 
     try:
         await card_renderer.get_available_templates()
