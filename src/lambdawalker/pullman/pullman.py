@@ -1,13 +1,15 @@
-import hashlib
 import json
 import multiprocessing
 import multiprocessing.connection
 import os
-import pathlib
 import queue
 import threading
 import time
 import traceback
+import pathlib
+import hashlib
+import asyncio
+import inspect
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union, Type
 
@@ -19,6 +21,7 @@ except ImportError:
 
 # Rich imports for the UI
 from rich.live import Live
+from rich.table import Table
 from rich.progress import Progress, BarColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.panel import Panel
 from rich.console import Group, RenderableType
@@ -42,6 +45,7 @@ class BaseWorker:
     """
     Base class for Parallel Task Workers.
     Users should inherit from this and override the 'work' method.
+    Optional: Override 'setup' for initialization and 'teardown' for cleanup.
     """
 
     def __init__(self, pipe: multiprocessing.connection.Connection, worker_id: int, blackboard: Dict[str, Any]):
@@ -49,6 +53,22 @@ class BaseWorker:
         self.worker_id = worker_id
         self.blackboard = blackboard  # Shared memory access
         self.current_task_id = None
+
+    async def setup(self):
+        """
+        Optional: Override this method to initialize heavy resources.
+        Called once per worker process startup.
+        Supports both synchronous and 'async def' implementations.
+        """
+        pass
+
+    async def teardown(self):
+        """
+        Optional: Override this method to clean up resources (DB connections, etc).
+        Called once per worker process just before exit.
+        Supports both synchronous and 'async def' implementations.
+        """
+        pass
 
     def log(self, message: str):
         """Sends a log message to the Coordinator to be written to the task log file."""
@@ -84,13 +104,20 @@ class BaseWorker:
         """
         Override this method with custom logic.
         Return a JSON-serializable value to store it in the results.
-        Access shared data via self.blackboard.
+        Supports both synchronous and 'async def' implementations.
         """
         raise NotImplementedError("Subclasses must implement the 'work' method.")
 
     def _run_loop(self):
-        """Internal execution loop handling the IPC protocol."""
+        """Internal execution loop handling the lifecycle and IPC protocol."""
         try:
+            # 1. Run Setup (detect async)
+            if inspect.iscoroutinefunction(self.setup):
+                asyncio.run(self.setup())
+            else:
+                self.setup()
+
+            # 2. Main Pull Loop
             while True:
                 self.pipe.send(json.dumps({"type": MSG_READY, "worker_id": self.worker_id}))
                 try:
@@ -109,7 +136,11 @@ class BaseWorker:
 
                     result_data = None
                     try:
-                        result_data = self.work(payload)
+                        # 3. Run Work (detect async)
+                        if inspect.iscoroutinefunction(self.work):
+                            result_data = asyncio.run(self.work(payload))
+                        else:
+                            result_data = self.work(payload)
                         status = "PASS"
                     except Exception:
                         status = "FAIL"
@@ -129,6 +160,15 @@ class BaseWorker:
                     self.current_task_id = None
         except Exception as e:
             print(f"Worker {self.worker_id} fatal error: {e}")
+        finally:
+            # 4. Run Teardown (detect async)
+            try:
+                if inspect.iscoroutinefunction(self.teardown):
+                    asyncio.run(self.teardown())
+                else:
+                    self.teardown()
+            except Exception as e:
+                print(f"Worker {self.worker_id} teardown error: {e}")
 
 
 def _worker_process_launcher(worker_class: Type[BaseWorker], pipe: multiprocessing.connection.Connection, worker_id: int, blackboard: Dict[str, Any]):
@@ -398,7 +438,7 @@ class Orchestrator:
             show_ui: bool = True,
             resume: bool = True,
             force: bool = False,
-            blackboard: Optional[Dict[str, Any]] = None  # New Shared Blackboard parameter
+            blackboard: Optional[Dict[str, Any]] = None  # Shared Blackboard parameter
     ):
         self.storage = StorageManager(session_id)
         self.session_id = session_id
@@ -408,7 +448,7 @@ class Orchestrator:
         self.retries = retries
         self.show_ui = show_ui
         self.initial_blackboard = blackboard
-        self.shared_blackboard = None  # This will hold the multiprocessing proxy
+        self.shared_blackboard = None
 
         self.max_workers = self._calculate_concurrency(max_workers, worker_scale)
         self.results = {}
@@ -654,7 +694,7 @@ class Orchestrator:
         parent_conn, child_conn = multiprocessing.Pipe(duplex=True)
         process = multiprocessing.Process(
             target=_worker_process_launcher,
-            args=(self.worker_class, child_conn, worker_id, self.shared_blackboard),  # Pass blackboard
+            args=(self.worker_class, child_conn, worker_id, self.shared_blackboard),
             daemon=True
         )
         self.workers[worker_id] = process
@@ -664,8 +704,6 @@ class Orchestrator:
         thread.start()
 
     def run(self):
-        # We wrap execution in a Manager context to ensure the shared memory lives
-        # for the duration of the execute block and cleanup.
         with multiprocessing.Manager() as manager:
             self.shared_blackboard = manager.dict(self.initial_blackboard or {})
 
@@ -693,3 +731,44 @@ class Orchestrator:
             if p.is_alive():
                 if self.abort_triggered: p.terminate()
                 p.join(timeout=1)
+
+
+# --- Example Usage ---
+
+class AsyncLifecycleWorker(BaseWorker):
+    async def setup(self):
+        """Called once per worker process startup."""
+        self.log("Worker initializing heavy resources...")
+        await asyncio.sleep(1)  # Simulate async setup
+        self.log("Resources initialized.")
+
+    async def work(self, payload: Dict[str, Any]):
+        """Called for each task."""
+        num = payload.get("number", 0)
+        self.log(f"Starting task {num}...")
+        self.report_progress(0.5)
+        await asyncio.sleep(1)
+        return {"squared": num * num}
+
+    async def teardown(self):
+        """Called once per worker process just before exit."""
+        self.log("Worker cleaning up resources...")
+        await asyncio.sleep(1)  # Simulate async cleanup
+        # Note: Logs might not reach Coordinator if pipe closes,
+        # so we also print to terminal for visibility.
+        print(f"Worker {self.worker_id} cleanup complete.")
+
+
+if __name__ == "__main__":
+    tasks = [{"id": f"T{i}", "payload": {"number": i}} for i in range(4)]
+
+    orchestrator = Orchestrator(
+        tasks=tasks,
+        worker_class=AsyncLifecycleWorker,
+        max_workers=2,
+        session_id="teardown_demo",
+        show_ui=True
+    )
+
+    final_results = orchestrator.run()
+    print("\nProcessing complete.")
