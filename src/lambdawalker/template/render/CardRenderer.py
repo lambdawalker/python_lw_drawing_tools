@@ -5,7 +5,7 @@ from typing import Tuple
 import requests
 
 from lambdawalker.draw.color.generate_color import generate_hsluv_black_text_contrasting_color
-from lambdawalker.template.AsyncPlaywrightRenderer import AsyncPlaywrightRenderer
+from lambdawalker.template.SyncPlaywrightRenderer import SyncPlaywrightRenderer
 from lambdawalker.template.render.CardImageProcessor import CardImageProcessor
 from lambdawalker.template.render.CardMetadataHandler import CardMetadataHandler
 
@@ -25,7 +25,7 @@ class CardRenderer:
         self.base_url = base_url
         self.outdir = outdir
         self.headless = headless
-        self.renderer = AsyncPlaywrightRenderer()
+        self.renderer = SyncPlaywrightRenderer(log=log, report_progress=report_progress)
         self._available_templates = None
         self.image_processor = CardImageProcessor(outdir)
         self.metadata_handler = CardMetadataHandler(base_url, outdir)
@@ -33,38 +33,13 @@ class CardRenderer:
         self.log = log
         self.report_progress = report_progress
 
-    async def start(self):
-        await self.renderer.start(headless=self.headless)
+    def start(self):
+        self.renderer.start(headless=self.headless)
 
-    async def close(self):
-        await self.renderer.close()
+    def close(self):
+        self.renderer.close()
 
-    async def get_available_templates(self) -> Tuple[str, ...]:
-        if self._available_templates is None:
-            self._available_templates = fetch_available_templates(self.base_url)
-        return self._available_templates
-
-    async def render_record_for_all_templates(self, record_id: int):
-        templates = await self.get_available_templates()
-
-        for template_name in templates:
-            try_count = 0
-            while True:
-                try:
-                    await self.render_single_card(record_id, template_name)
-                except Exception as e:
-                    error_message = traceback.format_exc()
-                    self.metadata_handler.log_error(
-                        record_id,
-                        template_name,
-                        error_message
-                    )
-                try_count += 1
-
-                if try_count > 3:
-                    break
-
-    async def render_single_card(self, record_id: int, template_name: str):
+    def render_single_card(self, record_id: int, template_name: str):
         if self.metadata_handler.record_exists(record_id, template_name):
             reporting_message = f"Skipping {template_name} {record_id} because it already exists"
             self.log(reporting_message)
@@ -87,11 +62,11 @@ class CardRenderer:
         self.report_progress(.25)
 
         page = self.renderer.page
-        await page.goto(url)
+        page.goto(url)
         self.report_progress(.5)
 
-        card = await page.wait_for_selector("#view-port")
-        image_bytes = await card.screenshot(omit_background=True)
+        card = page.wait_for_selector("#view-port")
+        image_bytes = card.screenshot(omit_background=True)
         self.report_progress(.6)
 
         first_layer_image = self.image_processor.process_and_save_image(
@@ -109,7 +84,7 @@ class CardRenderer:
             "boundingBox": [0, 0, w, h],
             "subtype": template_name,
             "photo_id": data_id
-        }] + await self.capture_elements()
+        }] + self.capture_elements()
 
         self.log("Captured elements")
         self.report_progress(.8)
@@ -118,23 +93,23 @@ class CardRenderer:
         self.report_progress(1)
         self.log("Saved object detection log")
 
-    async def capture_elements(self):
+    def capture_elements(self):
         page = self.renderer.page
         selector = "[data-class]"
 
         # Ensure at least one exists before continuing
-        await page.wait_for_selector(selector)
+        page.wait_for_selector(selector)
 
         # Grab all matching elements
-        handles = await page.query_selector_all(selector)
+        handles = page.query_selector_all(selector)
 
         results = []
         for el in handles:
             # attribute value (string or None)
-            val = await el.get_attribute("data-class")
+            val = el.get_attribute("data-class")
 
             # bounding box (dict or None; can be None if not visible / not in layout)
-            box = await el.bounding_box()
+            box = el.bounding_box()
             if not box:
                 continue  # skip elements without a box (display:none, etc.)
 

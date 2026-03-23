@@ -69,18 +69,20 @@ class BaseWorker:
         """
         pass
 
-    def log(self, message: str):
+    def log(self, message: str, log_id: Optional[str] = None):
+        log_id = log_id if log_id is not None else self.current_task_id
+        log_id = log_id if log_id is not None else f"W-{self.worker_id}"
+
         """Sends a log message to the Coordinator to be written to the task log file."""
-        if self.current_task_id is not None:
-            msg = {
-                "type": MSG_LOG,
-                "task_id": self.current_task_id,
-                "msg": message
-            }
-            try:
-                self.pipe.send(json.dumps(msg))
-            except (BrokenPipeError, ConnectionResetError):
-                pass
+        msg = {
+            "type": MSG_LOG,
+            "log_id": log_id,
+            "msg": message
+        }
+        try:
+            self.pipe.send(json.dumps(msg))
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
     def report_progress(self, percent: float):
         """
@@ -527,8 +529,8 @@ class Orchestrator:
         if self.max_workers < 1: raise ValueError("max_workers must be at least 1")
         if not issubclass(self.worker_class, BaseWorker): raise TypeError("worker_class must inherit from BaseWorker")
 
-    def _write_log(self, task_id: Union[str, int], message: str):
-        filename = os.path.join(self.log_path, f"{task_id}.log")
+    def _write_log(self, log_id: Union[str, int], message: str):
+        filename = os.path.join(self.log_path, f"{log_id}.log")
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         with open(filename, "a") as f:
             f.write(f"[{timestamp}] {message}\n")
@@ -611,7 +613,7 @@ class Orchestrator:
                             return
 
                     elif msg_type == MSG_LOG:
-                        self._write_log(msg["task_id"], msg["msg"])
+                        self._write_log(msg["log_id"], msg["msg"])
                         if self.show_ui: self.ui.update_worker_log(worker_id, msg["msg"])
 
                     elif msg_type == MSG_PROGRESS:
@@ -730,8 +732,3 @@ class Orchestrator:
             if p.is_alive():
                 if self.abort_triggered: p.terminate()
                 p.join(timeout=1)
-
-
-
-
-
