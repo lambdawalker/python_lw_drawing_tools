@@ -38,7 +38,7 @@ class FileMetadataHandler:
                     if meta_data and isinstance(meta_data, dict):
                         samples = meta_data.get("samples", 0)
                         # Template name is relative to root
-                        name = str(template_dir.relative_to(self.root)).replace("\\", "/")
+                        name = str(template_dir.relative_to(id_cards_root)).replace("\\", "/")
                         
                         templates.append({
                             "name": name,

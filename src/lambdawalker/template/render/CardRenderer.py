@@ -58,7 +58,7 @@ class CardRenderer:
             f"{self.base_url}/render/id_cards/{template_name}/{data_id}"
             f"?primary_color={escaped_tuple}"
         )
-        self.log(f"Rendering {template_name} {record_id} from {url}")
+        self.log(f"{url}")
         self.report_progress(.25)
 
         page = self.renderer.page
