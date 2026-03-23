@@ -380,7 +380,7 @@ class DashboardUI:
 
         # Intra-task progress bar
         if status == "Working":
-            bar_width = 18
+            bar_width = 10
             filled = int(task_progress * bar_width)
             bar = "━" * filled + "╌" * (bar_width - filled)
             progress_line = f"[{status_style}]{bar}[/] {int(task_progress * 100)}%"
@@ -395,21 +395,20 @@ class DashboardUI:
             log_lines = []
             for line in logs:
                 # Truncate long log lines to fit card
-                truncated = (line[:28] + "..") if len(line) > 28 else line
+                truncated = (line[:12] + "..") if len(line) > 12 else line
                 log_lines.append(f"[dim]› {truncated}[/]")
             log_content = "\n".join(log_lines)
         else:
             log_content = "[dim italic]Waiting for logs...[/]"
 
         content = (
-            f"[bold cyan]Worker {worker_id}[/]\n"
-            f"Status: [{status_style}]{status}[/]\n"
+            f"[bold cyan]Worker {worker_id}[/] [{status_style}]{status}[/]\n"
             f"Active: [magenta]{task}[/]\n"
-            f"Resources: {resource_line}\n"
+            f"{resource_line}\n"
             f"Progress: {progress_line}\n"
-            f"Logs:\n{log_content}\n"
             f"Stats: {stats_line}\n"
-            f"Last: [green]{speed}[/] | Avg: [bold white]{avg_speed}[/]"
+            f"Last: [green]{speed}[/] | Avg: [bold white]{avg_speed}[/]\n"
+            f"{log_content}"
         )
         return Panel(content, width=34, border_style=status_style)
 

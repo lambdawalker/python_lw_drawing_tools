@@ -29,7 +29,6 @@ class CardRenderer:
         self._available_templates = None
         self.image_processor = CardImageProcessor(outdir)
         self.metadata_handler = CardMetadataHandler(base_url, outdir)
-        self.counter = 0
         self.log = log
         self.report_progress = report_progress
 
@@ -51,11 +50,8 @@ class CardRenderer:
         tuple_str = ",".join(map(str, primary_color.to_hsl_tuple()))
         escaped_tuple = urllib.parse.quote(tuple_str)
 
-        data_id = self.counter
-        self.counter += 1
-
         url = (
-            f"{self.base_url}/render/id_cards/{template_name}/{data_id}"
+            f"{self.base_url}/render/id_cards/{template_name}/{record_id}"
             f"?primary_color={escaped_tuple}"
         )
         self.log(f"{url}")
@@ -83,7 +79,7 @@ class CardRenderer:
             "class": meta["class"],
             "boundingBox": [0, 0, w, h],
             "subtype": template_name,
-            "photo_id": data_id
+            "photo_id": record_id
         }] + self.capture_elements()
 
         self.log("Captured elements")
