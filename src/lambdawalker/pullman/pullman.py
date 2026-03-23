@@ -1,15 +1,15 @@
+import asyncio
+import hashlib
+import inspect
 import json
 import multiprocessing
 import multiprocessing.connection
 import os
+import pathlib
 import queue
 import threading
 import time
 import traceback
-import pathlib
-import hashlib
-import asyncio
-import inspect
 from datetime import datetime
 from typing import Any, Dict, List, Optional, Union, Type
 
@@ -21,7 +21,6 @@ except ImportError:
 
 # Rich imports for the UI
 from rich.live import Live
-from rich.table import Table
 from rich.progress import Progress, BarColumn, TextColumn, TimeElapsedColumn, TimeRemainingColumn
 from rich.panel import Panel
 from rich.console import Group, RenderableType
@@ -739,7 +738,7 @@ class AsyncLifecycleWorker(BaseWorker):
     async def setup(self):
         """Called once per worker process startup."""
         self.log("Worker initializing heavy resources...")
-        await asyncio.sleep(1)  # Simulate async setup
+        await asyncio.sleep(10)  # Simulate async setup
         self.log("Resources initialized.")
 
     async def work(self, payload: Dict[str, Any]):
