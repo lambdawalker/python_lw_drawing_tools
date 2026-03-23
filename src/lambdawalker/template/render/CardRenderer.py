@@ -58,7 +58,16 @@ class CardRenderer:
         self.report_progress(.25)
 
         page = self.renderer.page
-        page.goto(url)
+        response = page.goto(url)
+
+        if response is None:
+            self.log("Navigation failed: No response received.")
+            raise Exception("Navigation failed: No response received.")
+
+        if not response.ok:
+            self.log(f"Page failed to load: {response.status} {response.status_text}")
+            raise Exception(f"Page failed to load: {response.status} {response.status_text}")
+
         self.report_progress(.5)
 
         card = page.wait_for_selector("#view-port")
