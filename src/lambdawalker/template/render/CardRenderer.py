@@ -42,7 +42,7 @@ class CardRenderer:
             self._available_templates = fetch_available_templates(self.base_url)
         return self._available_templates
 
-    async def render_record(self, record_id: int):
+    async def render_record_for_all_templates(self, record_id: int):
         templates = await self.get_available_templates()
 
         for template_name in templates:
