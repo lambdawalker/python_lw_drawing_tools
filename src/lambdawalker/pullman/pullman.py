@@ -732,42 +732,6 @@ class Orchestrator:
                 p.join(timeout=1)
 
 
-# --- Example Usage ---
-
-class AsyncLifecycleWorker(BaseWorker):
-    async def setup(self):
-        """Called once per worker process startup."""
-        self.log("Worker initializing heavy resources...")
-        await asyncio.sleep(10)  # Simulate async setup
-        self.log("Resources initialized.")
-
-    async def work(self, payload: Dict[str, Any]):
-        """Called for each task."""
-        num = payload.get("number", 0)
-        self.log(f"Starting task {num}...")
-        self.report_progress(0.5)
-        await asyncio.sleep(1)
-        return {"squared": num * num}
-
-    async def teardown(self):
-        """Called once per worker process just before exit."""
-        self.log("Worker cleaning up resources...")
-        await asyncio.sleep(1)  # Simulate async cleanup
-        # Note: Logs might not reach Coordinator if pipe closes,
-        # so we also print to terminal for visibility.
-        print(f"Worker {self.worker_id} cleanup complete.")
 
 
-if __name__ == "__main__":
-    tasks = [{"id": f"T{i}", "payload": {"number": i}} for i in range(4)]
 
-    orchestrator = Orchestrator(
-        tasks=tasks,
-        worker_class=AsyncLifecycleWorker,
-        max_workers=2,
-        session_id="teardown_demo",
-        show_ui=True
-    )
-
-    final_results = orchestrator.run()
-    print("\nProcessing complete.")

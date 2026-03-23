@@ -21,7 +21,7 @@ def fetch_available_templates(base_url: str) -> Tuple[str, ...]:
 
 
 class CardRenderer:
-    def __init__(self, base_url: str, outdir: str = "./output/", headless: bool = True):
+    def __init__(self, base_url: str, outdir: str = "./output/", headless: bool = True, log=lambda m: None, report_progress=lambda p: None):
         self.base_url = base_url
         self.outdir = outdir
         self.headless = headless
@@ -30,6 +30,8 @@ class CardRenderer:
         self.image_processor = CardImageProcessor(outdir)
         self.metadata_handler = CardMetadataHandler(base_url, outdir)
         self.counter = 0
+        self.log = log
+        self.report_progress = report_progress
 
     async def start(self):
         await self.renderer.start(headless=self.headless)
@@ -64,6 +66,9 @@ class CardRenderer:
 
     async def render_single_card(self, record_id: int, template_name: str):
         if self.metadata_handler.record_exists(record_id, template_name):
+            reporting_message = f"Skipping {template_name} {record_id} because it already exists"
+            self.log(reporting_message)
+            self.report_progress(1)
             return
 
         primary_color = generate_hsluv_black_text_contrasting_color()
@@ -78,19 +83,25 @@ class CardRenderer:
             f"{self.base_url}/render/id_cards/{template_name}/{data_id}"
             f"?primary_color={escaped_tuple}"
         )
-        print(f"Rendering {template_name} {record_id} to {url}")
+        self.log(f"Rendering {template_name} {record_id} from {url}")
+        self.report_progress(.25)
 
         page = self.renderer.page
         await page.goto(url)
+        self.report_progress(.5)
 
         card = await page.wait_for_selector("#view-port")
         image_bytes = await card.screenshot(omit_background=True)
+        self.report_progress(.6)
 
         first_layer_image = self.image_processor.process_and_save_image(
             image_bytes, record_id, template_name, primary_color
         )
+        self.log("Processed image")
 
         meta = self.metadata_handler.fetch_template_meta(template_name)
+        self.log("Fetched meta")
+        self.report_progress(.7)
 
         w, h = first_layer_image.size
         elements = [{
@@ -100,7 +111,12 @@ class CardRenderer:
             "photo_id": data_id
         }] + await self.capture_elements()
 
+        self.log("Captured elements")
+        self.report_progress(.8)
+
         self.metadata_handler.save_object_detection_log(record_id, template_name, elements)
+        self.report_progress(1)
+        self.log("Saved object detection log")
 
     async def capture_elements(self):
         page = self.renderer.page
