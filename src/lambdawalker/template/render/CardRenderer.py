@@ -1,4 +1,3 @@
-import traceback
 import urllib.parse
 from typing import Tuple
 
@@ -38,7 +37,7 @@ class CardRenderer:
     def close(self):
         self.renderer.close()
 
-    def render_single_card(self, record_id: int, template_name: str):
+    def render_single_card(self, record_id: int, photo_id: int, template_name: str):
         if self.metadata_handler.record_exists(record_id, template_name):
             reporting_message = f"Skipping {template_name} {record_id} because it already exists"
             self.log(reporting_message)
@@ -51,7 +50,7 @@ class CardRenderer:
         escaped_tuple = urllib.parse.quote(tuple_str)
 
         url = (
-            f"{self.base_url}/render/id_cards/{template_name}/{record_id}"
+            f"{self.base_url}/render/id_cards/{template_name}/{photo_id}"
             f"?primary_color={escaped_tuple}"
         )
         self.log(f"{url}")
@@ -88,7 +87,7 @@ class CardRenderer:
             "class": meta["class"],
             "boundingBox": [0, 0, w, h],
             "subtype": template_name,
-            "photo_id": record_id
+            "photo_id": photo_id
         }] + self.capture_elements()
 
         self.log("Captured elements")
