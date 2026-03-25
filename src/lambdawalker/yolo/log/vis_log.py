@@ -1,7 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont
 
 
-def draw_bounding_boxes(image_path, annotations, output_path):
+def save_visual_log(image_path, annotations, output_path):
     """
     Draw bounding boxes and print their type over the image.
 
@@ -16,7 +16,7 @@ def draw_bounding_boxes(image_path, annotations, output_path):
 
     # Optionally, load a font
     try:
-        font = ImageFont.truetype("arial.ttf", 20)
+        font = ImageFont.truetype("arial.ttf", 25)
     except IOError:
         font = ImageFont.load_default()
 
@@ -26,6 +26,8 @@ def draw_bounding_boxes(image_path, annotations, output_path):
 
         # Draw the bounding box
         draw.rectangle([x0, y0, x1, y1], outline="red", width=2)
+
+        draw.text((x0, y0 - (font.size + 1)), bbox_type, fill="white", font=font)
 
     # Save the output image
     original_width, original_height = image.size
@@ -37,3 +39,4 @@ def draw_bounding_boxes(image_path, annotations, output_path):
     # Resize the image
     resized_image = image.resize((new_width, new_height))
     resized_image.save(output_path)
+
