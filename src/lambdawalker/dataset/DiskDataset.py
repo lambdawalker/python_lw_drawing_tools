@@ -31,7 +31,7 @@ class DiskDataset(Dataset):
         self.provider = provider if provider is not None else DiskProvider()
         self.manifest = None
         self.record_ids = []
-        self.extensions = {} # name: extension
+        self.extensions = {}  # name: extension
         self.read_only = read_only
         self.id = None
         self.load(path)
@@ -78,18 +78,18 @@ class DiskDataset(Dataset):
             name = field.get('name')
             if not folder:
                 continue
-            
+
             files = self.provider.list(folder)
             for f in files:
                 p = pathlib.Path(f)
                 stem = p.stem
-                
+
                 if name not in self.extensions:
                     self.extensions[name] = p.suffix
 
                 if stem not in self.record_ids:
                     self.record_ids.append(stem)
-        
+
         self.record_ids.sort()
         self._save_cache()
 
@@ -97,7 +97,7 @@ class DiskDataset(Dataset):
         """Saves the current record_ids and extensions to a cache file."""
         if self.read_only:
             return
-            
+
         cache_name = ".dataset_cache.yaml"
         cache_data = {
             'record_ids': self.record_ids,
@@ -289,3 +289,6 @@ class DiskDataset(Dataset):
                 return split[key][field]
 
         raise ValueError(f"Unsupported data type: {path}")
+
+    def __str__(self):
+        return f"DiskDataset({len(self)}, '{self.provider.root}', '{self.manifest['fields']}')"
